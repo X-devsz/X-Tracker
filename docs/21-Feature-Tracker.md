@@ -140,9 +140,9 @@
 | ------- | ----------------------------------------------------------- | ------ | ------------------------------------------------------ |
 | F-022.1 | `useSettingsStore` - theme, currency, onboarding            | [x]    | Persisted to AsyncStorage                              |
 | F-022.2 | `useAuthStore` - user, isAuthenticated, isLoading           | [x]    | Persisted to AsyncStorage                              |
-| F-022.3 | `useExpenseStore` - recentExpenses, summary, CRUD actions   | [ ]    | Reads from SQLite repos                                |
-| F-022.4 | `useCategoryStore` - categories list, CRUD actions          | [ ]    | Reads from SQLite repos                                |
-| F-022.5 | `useFilterStore` - dateRange, category filter, search, sort | [ ]    | Not persisted (reset on app restart)                   |
+| F-022.3 | `useExpenseStore` - recentExpenses, summary, CRUD actions   | [x]    | `src/store/useExpenseStore.ts` uses repositories       |
+| F-022.4 | `useCategoryStore` - categories list, CRUD actions          | [x]    | `src/store/useCategoryStore.ts` uses repositories      |
+| F-022.5 | `useFilterStore` - dateRange, category filter, search, sort | [x]    | `src/store/useFilterStore.ts` (not persisted)          |
 | F-022.6 | MMKV persist middleware for Zustand                         | [/]    | AsyncStorage adapter in `src/services/storage/mmkv.ts` |
 
 ### F-023: MMKV Settings Storage
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 54        | 9           | 2        |
+| Phase 1 - Core MVP        | 86             | 57        | 9           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **76**    | **11**      | **13**   |
+| **Total**                 | **151**        | **79**    | **11**      | **13**   |
