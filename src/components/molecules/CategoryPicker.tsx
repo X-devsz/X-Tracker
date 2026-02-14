@@ -75,7 +75,7 @@ export function CategoryPicker({
         {ordered.map((category) => {
           const isSelected = category.id === selectedId;
           const iconColor = category.color ?? theme.primary?.val;
-          const badgeColor = category.color ? `${category.color}20` : theme.primaryLight?.val;
+          const badgeColor = category.color ? `${category.color}20` : '$primaryLight';
 
           return (
             <CategoryCard

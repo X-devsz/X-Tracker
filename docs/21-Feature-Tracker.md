@@ -87,14 +87,14 @@
 
 | #       | Feature                                           | Status | Details                                                     |
 | ------- | ------------------------------------------------- | ------ | ----------------------------------------------------------- |
-| F-012.1 | `MonthlySummaryCard` - total spent + change %     | [ ]    | Prominent display on Home                                   |
-| F-012.2 | `ExpenseList` - virtualized list of expense items | [ ]    | Uses `FlashList` or `FlatList`, handles loading/empty/error |
-| F-012.3 | `ExpenseForm` - full add/edit expense form        | [ ]    | Amount, category, date, note, merchant, payment method      |
-| F-012.4 | `CategoryBreakdown` - pie/donut chart             | [ ]    | Uses gifted-charts, themed colors                           |
-| F-012.5 | `SpendingTrendChart` - line/bar chart             | [ ]    | Monthly trend by category or total                          |
-| F-012.6 | `QuickAddFAB` - floating action button            | [ ]    | Opens expense/add modal                                     |
-| F-012.7 | `FilterBar` - combined date + category filter row | [ ]    | Horizontal scrollable chips                                 |
-| F-012.8 | `SettingsGroup` - grouped settings rows           | [ ]    | Toggle, picker, navigation rows                             |
+| F-012.1 | `MonthlySummaryCard` - total spent + change %     | [x]    | MonthlySummaryCard organism with amount + trend badge       |
+| F-012.2 | `ExpenseList` - virtualized list of expense items | [x]    | ExpenseList with FlatList + loading/empty/error handling    |
+| F-012.3 | `ExpenseForm` - full add/edit expense form        | [x]    | ExpenseForm with amount, category, date, note, merchant, payment |
+| F-012.4 | `CategoryBreakdown` - pie/donut chart             | [x]    | CategoryBreakdown using gifted-charts PieChart              |
+| F-012.5 | `SpendingTrendChart` - line/bar chart             | [x]    | SpendingTrendChart using gifted-charts LineChart            |
+| F-012.6 | `QuickAddFAB` - floating action button            | [x]    | QuickAddFAB with floating variant                           |
+| F-012.7 | `FilterBar` - combined date + category filter row | [x]    | FilterBar with DateSelector + FilterChip row                |
+| F-012.8 | `SettingsGroup` - grouped settings rows           | [x]    | SettingsGroup with toggle/navigation rows                   |
 | F-012.9 | Auth landing components                           | [x]    | LandingHero + AuthForm built with atomic components         |
 
 ### F-013: Template Components
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 28        | 9           | 2        |
+| Phase 1 - Core MVP        | 86             | 36        | 9           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **50**    | **11**      | **13**   |
+| **Total**                 | **151**        | **58**    | **11**      | **13**   |
