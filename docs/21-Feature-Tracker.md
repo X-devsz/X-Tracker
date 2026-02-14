@@ -61,12 +61,12 @@
 | F-010.2  | `Text` - all typography variants                      | [x]    | AppText variants added (h1-h4, body, label, caption, amount)                    |
 | F-010.3  | `Input` - text input with label + error               | [/]    | Base AppInput + labeled AuthField wrapper                                       |
 | F-010.4  | `Card` - elevated, pressable variants                 | [x]    | AppCard atom added with elevated + pressable variants                           |
-| F-010.5  | `Icon` - vector icon wrapper                          | [/]    | AppIconButton built + Home header styling; generic icon wrapper pending         |
-| F-010.6  | `Badge` - success, danger, warning variants           | [ ]    | Small label chips for percentages                                               |
-| F-010.7  | `Chip` - selectable filter chips                      | [ ]    | Active/inactive states                                                          |
-| F-010.8  | `Divider` - horizontal/vertical separator             | [/]    | OrDivider built for auth screens                                                |
-| F-010.9  | `Spinner` - loading indicator                         | [ ]    | Themed color                                                                    |
-| F-010.10 | `Avatar` - user profile image                         | [ ]    | Fallback initials                                                               |
+| F-010.5  | `Icon` - vector icon wrapper                          | [x]    | AppIcon atom added alongside AppIconButton                                      |
+| F-010.6  | `Badge` - success, danger, warning variants           | [x]    | AppBadge atom with tone variants                                                |
+| F-010.7  | `Chip` - selectable filter chips                      | [x]    | AppChip atom with active/inactive states                                        |
+| F-010.8  | `Divider` - horizontal/vertical separator             | [x]    | AppDivider atom added + OrDivider remains for auth screens                      |
+| F-010.9  | `Spinner` - loading indicator                         | [x]    | AppSpinner atom with themed color default                                       |
+| F-010.10 | `Avatar` - user profile image                         | [x]    | AppAvatar atom with fallback initials                                           |
 
 ### F-011: Molecule Components
 
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 13        | 12          | 2        |
+| Phase 1 - Core MVP        | 86             | 19        | 10          | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **35**    | **14**      | **13**   |
+| **Total**                 | **151**        | **41**    | **12**      | **13**   |
