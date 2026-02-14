@@ -1,6 +1,7 @@
 import { format, isSameMonth, isSameYear, isToday, isYesterday } from 'date-fns';
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
+  LKR: 'Rs ',
   USD: '$',
   CAD: '$',
   AUD: '$',
@@ -9,8 +10,9 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   GBP: 'GBP ',
   INR: 'INR ',
   JPY: 'JPY ',
-  LKR: 'Rs ',
 };
+
+export const SUPPORTED_CURRENCY_CODES = Object.keys(CURRENCY_SYMBOLS);
 
 export const getCurrencySymbol = (code: string, locale?: string): string => {
   const upper = code.toUpperCase();

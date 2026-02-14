@@ -3,17 +3,17 @@
  *
  * Theme toggle, currency, account info.
  */
-import { Ionicons } from '@expo/vector-icons';
 import { Alert } from 'react-native';
-import { Text, XStack, YStack, useTheme } from 'tamagui';
+import { Text, XStack, YStack } from 'tamagui';
 import { useAuthStore, useSettingsStore, type ThemeMode } from '../../store';
 import { useGoogleSignIn } from '../../services/auth';
-import { AppAvatar, AppChip, ScreenContainer, SettingsGroup } from '../../components';
+import { AppAvatar, ScreenContainer, SettingsGroup } from '../../components';
+import { SUPPORTED_CURRENCY_CODES, formatCurrency } from '../../utils/formatters';
 
-const themeOptions: { value: ThemeMode; label: string; icon: string }[] = [
-  { value: 'light', label: 'Light', icon: 'sunny-outline' },
-  { value: 'dark', label: 'Dark', icon: 'moon-outline' },
-  { value: 'system', label: 'System', icon: 'desktop-outline' },
+const themeOptions: { value: ThemeMode; label: string }[] = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'system', label: 'System' },
 ];
 
 const getInitials = (email?: string | null) => {
@@ -23,16 +23,25 @@ const getInitials = (email?: string | null) => {
 };
 
 export default function SettingsScreen() {
-  const theme = useTheme();
   const { themeMode, setThemeMode, currency, setCurrency } = useSettingsStore();
   const { user } = useAuthStore();
   const { signOut } = useGoogleSignIn();
 
+  const handleThemeSelect = () => {
+    Alert.alert('Select theme', 'Choose the appearance mode', [
+      ...themeOptions.map((option) => ({
+        text: option.label,
+        onPress: () => setThemeMode(option.value),
+      })),
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
   const handleCurrencySelect = () => {
-    const options = ['USD', 'INR', 'EUR', 'GBP'];
+    const options = SUPPORTED_CURRENCY_CODES;
     Alert.alert('Select currency', 'Choose the default currency', [
       ...options.map((code) => ({
-        text: code,
+        text: `${code} • ${formatCurrency(123400, code)}`,
         onPress: () => setCurrency(code),
       })),
       { text: 'Cancel', style: 'cancel' },
@@ -66,25 +75,9 @@ export default function SettingsScreen() {
             label: 'Theme',
             description: 'Match your device or pick a mode',
             iconName: 'color-palette-outline',
-            rightElement: (
-              <XStack gap={8} flexWrap="wrap" justifyContent="flex-end">
-                {themeOptions.map((option) => (
-                  <AppChip
-                    key={option.value}
-                    label={option.label}
-                    active={themeMode === option.value}
-                    icon={
-                      <Ionicons
-                        name={option.icon as keyof typeof Ionicons.glyphMap}
-                        size={14}
-                        color={themeMode === option.value ? theme.primary?.val : theme.textSecondary?.val}
-                      />
-                    }
-                    onPress={() => setThemeMode(option.value)}
-                  />
-                ))}
-              </XStack>
-            ),
+            type: 'navigation',
+            detail: themeOptions.find((option) => option.value === themeMode)?.label ?? 'System',
+            onPress: handleThemeSelect,
           },
           {
             id: 'currency',
@@ -92,7 +85,7 @@ export default function SettingsScreen() {
             description: 'Default currency for new expenses',
             iconName: 'cash-outline',
             type: 'navigation',
-            detail: currency,
+            detail: `${currency} • ${formatCurrency(123400, currency)}`,
             onPress: handleCurrencySelect,
           },
         ]}
