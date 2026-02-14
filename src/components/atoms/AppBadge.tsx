@@ -1,5 +1,6 @@
 import { styled, Text, XStack } from 'tamagui';
 import type { ComponentProps } from 'react';
+import { triggerHaptic, type HapticFeedbackType } from '../../services/haptics';
 
 const BadgeContainer = styled(XStack, {
   borderRadius: 9999,
@@ -37,6 +38,7 @@ type BadgeTone = ComponentProps<typeof BadgeContainer>['tone'];
 
 interface AppBadgeProps extends ComponentProps<typeof BadgeContainer> {
   label: string;
+  haptic?: HapticFeedbackType;
 }
 
 const getLabelColor = (tone?: BadgeTone) => {
@@ -53,9 +55,30 @@ const getLabelColor = (tone?: BadgeTone) => {
   }
 };
 
-export function AppBadge({ label, tone = 'success', ...props }: AppBadgeProps) {
+export function AppBadge({
+  label,
+  tone = 'success',
+  haptic = 'selection',
+  onPress,
+  disabled,
+  ...props
+}: AppBadgeProps) {
+  const handlePress = onPress
+    ? (...args: Parameters<NonNullable<typeof onPress>>) => {
+        if (!disabled) {
+          triggerHaptic(haptic);
+        }
+        onPress(...args);
+      }
+    : undefined;
+
   return (
-    <BadgeContainer tone={tone} {...props}>
+    <BadgeContainer
+      tone={tone}
+      onPress={handlePress}
+      disabled={disabled}
+      {...props}
+    >
       <Text color={getLabelColor(tone)} fontSize={11} fontWeight="600">
         {label}
       </Text>

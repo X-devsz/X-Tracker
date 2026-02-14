@@ -8,6 +8,7 @@ import { useTheme } from 'tamagui';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
+import { triggerHaptic } from '../../services/haptics';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -28,6 +29,9 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      screenListeners={{
+        tabPress: () => triggerHaptic('selection'),
+      }}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.tabBarActive?.val,

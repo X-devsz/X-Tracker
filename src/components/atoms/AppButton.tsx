@@ -1,5 +1,6 @@
 import { styled, Text, XStack } from 'tamagui';
 import type { ComponentProps, ReactNode } from 'react';
+import { triggerHaptic, type HapticFeedbackType } from '../../services/haptics';
 
 const ButtonContainer = styled(XStack, {
   height: 52,
@@ -44,6 +45,7 @@ type ButtonTone = ComponentProps<typeof ButtonContainer>['tone'];
 interface AppButtonProps extends ComponentProps<typeof ButtonContainer> {
   label: string;
   icon?: ReactNode;
+  haptic?: HapticFeedbackType;
 }
 
 const getLabelColor = (tone?: ButtonTone) => {
@@ -60,9 +62,33 @@ const getLabelColor = (tone?: ButtonTone) => {
   }
 };
 
-export function AppButton({ label, icon, tone = 'primary', ...props }: AppButtonProps) {
+export function AppButton({
+  label,
+  icon,
+  tone = 'primary',
+  haptic,
+  onPress,
+  disabled,
+  ...props
+}: AppButtonProps) {
+  const resolvedHaptic =
+    haptic ?? (tone === 'danger' ? 'warning' : 'selection');
+  const handlePress = onPress
+    ? (...args: Parameters<NonNullable<typeof onPress>>) => {
+        if (!disabled) {
+          triggerHaptic(resolvedHaptic);
+        }
+        onPress(...args);
+      }
+    : undefined;
+
   return (
-    <ButtonContainer tone={tone} {...props}>
+    <ButtonContainer
+      tone={tone}
+      onPress={handlePress}
+      disabled={disabled}
+      {...props}
+    >
       {icon}
       <Text color={getLabelColor(tone)} fontSize={15} fontWeight="600">
         {label}
