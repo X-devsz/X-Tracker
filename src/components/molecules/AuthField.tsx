@@ -16,14 +16,23 @@ const FieldContainer = styled(XStack, {
   height: 52,
   animation: 'fast',
   pressStyle: { borderColor: '$borderFocused', backgroundColor: '$surfaceHover' },
+  variants: {
+    error: {
+      true: {
+        borderColor: '$borderError',
+        pressStyle: { borderColor: '$borderError', backgroundColor: '$surfaceHover' },
+      },
+    },
+  } as const,
 });
 
 interface AuthFieldProps extends ComponentProps<typeof AppInput> {
   label: string;
   icon: IconName;
+  error?: string;
 }
 
-export function AuthField({ label, icon, ...props }: AuthFieldProps) {
+export function AuthField({ label, icon, error, ...props }: AuthFieldProps) {
   const theme = useTheme();
 
   return (
@@ -31,13 +40,18 @@ export function AuthField({ label, icon, ...props }: AuthFieldProps) {
       <Text color="$textSecondary" fontSize={12} fontWeight="600">
         {label}
       </Text>
-      <FieldContainer>
+      <FieldContainer error={Boolean(error)}>
         <Ionicons name={icon} size={18} color={theme.textTertiary?.val} />
         <AppInput
           placeholderTextColor={theme.textTertiary?.val}
           {...props}
         />
       </FieldContainer>
+      {error ? (
+        <Text color="$danger" fontSize={12}>
+          {error}
+        </Text>
+      ) : null}
     </YStack>
   );
 }
