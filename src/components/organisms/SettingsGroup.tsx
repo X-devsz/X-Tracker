@@ -20,7 +20,13 @@ const RowContainer = styled(XStack, {
   alignItems: 'center',
   justifyContent: 'space-between',
   gap: 12,
-  pressStyle: { backgroundColor: '$surfaceHover' },
+  variants: {
+    interactive: {
+      true: {
+        pressStyle: { backgroundColor: '$surfaceHover' },
+      },
+    },
+  } as const,
 });
 
 const RowText = styled(YStack, {
@@ -67,7 +73,7 @@ export function SettingsGroup({ title, rows }: SettingsGroupProps) {
 
           return (
             <YStack key={row.id}>
-              <RowContainer onPress={row.onPress}>
+              <RowContainer interactive={Boolean(row.onPress)} onPress={row.onPress}>
                 <XStack alignItems="center" gap={12} flex={1}>
                   {row.iconName ? (
                     <Ionicons

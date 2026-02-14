@@ -52,13 +52,13 @@ function useProtectedRoute(user: any, loading: boolean) {
 
 export default function RootLayout() {
   const systemColorScheme = useColorScheme();
-  const { theme: userTheme } = useSettingsStore();
+  const { themeMode } = useSettingsStore();
   const { user, loading, initialize } = useAuthStore();
   const rootNavigationState = useRootNavigationState();
 
-  const activeTheme = userTheme === 'system'
+  const activeTheme = themeMode === 'system'
     ? (systemColorScheme || 'light')
-    : userTheme;
+    : themeMode;
 
   // Initialize the authentication listener once
   useEffect(() => {
