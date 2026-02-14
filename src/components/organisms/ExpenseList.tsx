@@ -29,7 +29,10 @@ interface ExpenseListProps {
   emptyActionLabel?: string;
   onEmptyAction?: () => void;
   onItemPress?: (item: ExpenseListItemData) => void;
+  renderItem?: ListRenderItem<ExpenseListItemData>;
+  keyExtractor?: (item: ExpenseListItemData) => string;
   contentContainerStyle?: ComponentProps<typeof FlatList>['contentContainerStyle'];
+  listStyle?: ComponentProps<typeof FlatList>['style'];
 }
 
 export function ExpenseList({
@@ -44,7 +47,10 @@ export function ExpenseList({
   emptyActionLabel,
   onEmptyAction,
   onItemPress,
+  renderItem,
+  keyExtractor,
   contentContainerStyle,
+  listStyle,
 }: ExpenseListProps) {
   if (isLoading && data.length === 0) {
     return (
@@ -63,7 +69,7 @@ export function ExpenseList({
     );
   }
 
-  const renderItem: ListRenderItem<ExpenseListItemData> = ({ item }) => (
+  const defaultRenderItem: ListRenderItem<ExpenseListItemData> = ({ item }) => (
     <ExpenseListItem
       title={item.title}
       category={item.category}
@@ -81,9 +87,10 @@ export function ExpenseList({
   return (
     <FlatList
       data={data}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
+      renderItem={renderItem ?? defaultRenderItem}
+      keyExtractor={keyExtractor ?? ((item) => item.id)}
       contentContainerStyle={contentContainerStyle ?? { paddingBottom: 24 }}
+      style={listStyle}
       ItemSeparatorComponent={() => <YStack height={12} />}
       refreshing={refreshing}
       onRefresh={onRefresh}

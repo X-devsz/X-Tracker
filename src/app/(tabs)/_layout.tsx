@@ -11,19 +11,11 @@ import { BackHandler } from 'react-native';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
-interface TabConfig {
-  name: string;
-  title: string;
-  icon: IconName;
-  iconFocused: IconName;
-}
-
-const tabs: TabConfig[] = [
-  { name: 'index', title: 'Home', icon: 'home-outline', iconFocused: 'home' },
-  { name: 'history', title: 'History', icon: 'list-outline', iconFocused: 'list' },
-  { name: 'insights', title: 'Insights', icon: 'pie-chart-outline', iconFocused: 'pie-chart' },
-  { name: 'settings', title: 'Settings', icon: 'settings-outline', iconFocused: 'settings' },
-];
+const renderTabIcon =
+  (icon: IconName, iconFocused: IconName) =>
+  ({ color, focused, size }: { color: string; focused: boolean; size: number }) => (
+    <Ionicons name={focused ? iconFocused : icon} size={size} color={color} />
+  );
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -55,30 +47,34 @@ export default function TabLayout() {
         },
       }}
     >
-      {tabs.map((tab) => (
-        <Tabs.Screen
-          key={tab.name}
-          name={tab.name}
-          options={{
-            title: tab.title,
-            tabBarIcon: ({
-              color,
-              focused,
-              size,
-            }: {
-              color: string;
-              focused: boolean;
-              size: number;
-            }) => (
-              <Ionicons
-                name={focused ? tab.iconFocused : tab.icon}
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-      ))}
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: renderTabIcon('home-outline', 'home'),
+        }}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: 'History',
+          tabBarIcon: renderTabIcon('list-outline', 'list'),
+        }}
+      />
+      <Tabs.Screen
+        name="insights"
+        options={{
+          title: 'Insights',
+          tabBarIcon: renderTabIcon('pie-chart-outline', 'pie-chart'),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: renderTabIcon('settings-outline', 'settings'),
+        }}
+      />
     </Tabs>
   );
 }

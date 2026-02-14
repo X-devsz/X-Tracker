@@ -1,122 +1,56 @@
 /**
- * Add Expense Screen — Modal form
- *
- * Placeholder styled layout.
+ * Add Expense Screen - Modal form
  */
-import { styled, Text, YStack, XStack } from 'tamagui';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from 'tamagui';
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { categoryColors } from '../../theme';
+import type { CategoryOption } from '../../components/molecules/CategoryPicker';
+import { ExpenseForm, ModalLayout } from '../../components';
 
-const FormField = styled(YStack, {
-  gap: 4,
-  animation: 'fast',
-  enterStyle: { opacity: 0, y: 8 },
-});
-
-const MockInput = styled(XStack, {
-  backgroundColor: '$inputBackground',
-  borderRadius: 12,
-  borderWidth: 1,
-  borderColor: '$inputBorder',
-  height: 48,
-  paddingHorizontal: 16,
-  alignItems: 'center',
-  animation: 'fast',
-  pressStyle: { borderColor: '$borderFocused', backgroundColor: '$surfaceHover' },
-});
+const categories: CategoryOption[] = [
+  { id: 'food', label: 'Food', iconName: 'fast-food-outline', color: categoryColors.food, isFavorite: true },
+  { id: 'transport', label: 'Transport', iconName: 'bus-outline', color: categoryColors.transport },
+  { id: 'shopping', label: 'Shopping', iconName: 'bag-handle-outline', color: categoryColors.shopping },
+  { id: 'bills', label: 'Bills', iconName: 'receipt-outline', color: categoryColors.bills },
+  { id: 'health', label: 'Health', iconName: 'medkit-outline', color: categoryColors.health },
+  { id: 'entertainment', label: 'Fun', iconName: 'game-controller-outline', color: categoryColors.entertainment },
+  { id: 'education', label: 'Education', iconName: 'school-outline', color: categoryColors.education },
+  { id: 'other', label: 'Other', iconName: 'ellipsis-horizontal-outline', color: categoryColors.other },
+];
 
 export default function AddExpenseScreen() {
-  const theme = useTheme();
   const router = useRouter();
+  const [amount, setAmount] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(
+    categories[0]?.id,
+  );
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [note, setNote] = useState('');
+  const [merchant, setMerchant] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
 
   return (
-    <YStack
-      flex={1}
-      backgroundColor="$background"
-      padding={16}
-      gap={20}
+    <ModalLayout
+      title="Add Expense"
+      subtitle="Log your spending quickly"
+      onClose={() => router.back()}
     >
-      {/* Amount */}
-      <YStack alignItems="center" gap={8} paddingVertical={24} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <Text color="$textSecondary" fontSize={13} fontWeight="500">
-          Amount
-        </Text>
-        <Text color="$textPrimary" fontSize={34} fontWeight="700">
-          ₹0.00
-        </Text>
-      </YStack>
-
-      {/* Form Fields */}
-      <YStack gap={16} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <FormField>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500">
-            Category
-          </Text>
-          <MockInput>
-            <Ionicons name="grid-outline" size={18} color={theme.textTertiary?.val} />
-            <Text color="$textTertiary" fontSize={15} marginLeft={12}>
-              Select category
-            </Text>
-          </MockInput>
-        </FormField>
-
-        <FormField>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500">
-            Date
-          </Text>
-          <MockInput>
-            <Ionicons name="calendar-outline" size={18} color={theme.textTertiary?.val} />
-            <Text color="$textPrimary" fontSize={15} marginLeft={12}>
-              Today
-            </Text>
-          </MockInput>
-        </FormField>
-
-        <FormField>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500">
-            Note (optional)
-          </Text>
-          <MockInput>
-            <Ionicons name="create-outline" size={18} color={theme.textTertiary?.val} />
-            <Text color="$textTertiary" fontSize={15} marginLeft={12}>
-              Add a note...
-            </Text>
-          </MockInput>
-        </FormField>
-
-        <FormField>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500">
-            Merchant (optional)
-          </Text>
-          <MockInput>
-            <Ionicons name="storefront-outline" size={18} color={theme.textTertiary?.val} />
-            <Text color="$textTertiary" fontSize={15} marginLeft={12}>
-              Where did you spend?
-            </Text>
-          </MockInput>
-        </FormField>
-      </YStack>
-
-      {/* Save Button */}
-      <YStack flex={1} justifyContent="flex-end" paddingBottom={20}>
-        <XStack
-          backgroundColor="$primary"
-          borderRadius={12}
-          height={52}
-          alignItems="center"
-          justifyContent="center"
-          gap={8}
-          animation="bouncy"
-          pressStyle={{ scale: 0.98 }}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="checkmark" size={20} color={theme.textInverse?.val} />
-          <Text color="$textInverse" fontSize={15} fontWeight="600">
-            Save Expense
-          </Text>
-        </XStack>
-      </YStack>
-    </YStack>
+      <ExpenseForm
+        amount={amount}
+        onAmountChange={setAmount}
+        categories={categories}
+        selectedCategoryId={selectedCategoryId}
+        onCategorySelect={(category) => setSelectedCategoryId(category.id)}
+        date={date}
+        onDateChange={setDate}
+        note={note}
+        onNoteChange={setNote}
+        merchant={merchant}
+        onMerchantChange={setMerchant}
+        paymentMethod={paymentMethod}
+        onPaymentMethodChange={setPaymentMethod}
+        onSubmit={() => router.back()}
+      />
+    </ModalLayout>
   );
 }

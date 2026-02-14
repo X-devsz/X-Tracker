@@ -12,6 +12,14 @@ export default function SignUpScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { signInWithGoogle } = useGoogleSignIn();
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace('/(auth)/welcome');
+  };
 
   return (
     <AuthTemplate>
@@ -19,7 +27,7 @@ export default function SignUpScreen() {
         <AppIconButton
           tone="surface"
           icon={<Ionicons name="arrow-back" size={18} color={theme.textPrimary?.val} />}
-          onPress={() => router.back()}
+          onPress={handleBack}
         />
       </XStack>
 
