@@ -57,7 +57,7 @@
 
 | #        | Feature                                               | Status | Details                                                                         |
 | -------- | ----------------------------------------------------- | ------ | ------------------------------------------------------------------------------- |
-| F-010.1  | `Button` - primary, secondary, danger, ghost variants | [x]    | AppButton with primary/soft/surface/outline tones + animated CTA/press feedback |
+| F-010.1  | `Button` - primary, secondary, danger, ghost variants | [x]    | AppButton with primary/secondary/danger/ghost tones + animated CTA/press feedback |
 | F-010.2  | `Text` - all typography variants                      | [x]    | AppText variants added (h1-h4, body, label, caption, amount)                    |
 | F-010.3  | `Input` - text input with label + error               | [/]    | Base AppInput + labeled AuthField wrapper                                       |
 | F-010.4  | `Card` - elevated, pressable variants                 | [x]    | AppCard atom added with elevated + pressable variants                           |
@@ -72,15 +72,15 @@
 
 | #        | Feature                                                    | Status | Details                                                 |
 | -------- | ---------------------------------------------------------- | ------ | ------------------------------------------------------- |
-| F-011.1  | `AmountInput` - currency symbol + large number input       | [ ]    | Decimal keypad, formatted display                       |
-| F-011.2  | `CategoryPicker` - grid/list of category options           | [ ]    | Icons + colors, favorites at top                        |
-| F-011.3  | `DateSelector` - quick presets (Today, Yesterday) + picker | [ ]    | Platform-native date picker                             |
-| F-011.4  | `ExpenseListItem` - single expense row                     | [/]    | Swipeable demo row in History; full data wiring pending |
-| F-011.5  | `SearchBar` - debounced text search                        | [ ]    | Clear button, themed styling                            |
-| F-011.6  | `FilterChip` - category/date filter chips                  | [ ]    | Active/deselect states                                  |
-| F-011.7  | `EmptyState` - icon + title + description + CTA            | [ ]    | Used on history, insights when no data                  |
-| F-011.8  | `ErrorCard` - error message + retry button                 | [ ]    | Used when data loading fails                            |
-| F-011.9  | `SnackBar` - temporary toast notification                  | [ ]    | Undo delete, success confirmation                       |
+| F-011.1  | `AmountInput` - currency symbol + large number input       | [x]    | AmountInput molecule with decimal keypad + formatted display |
+| F-011.2  | `CategoryPicker` - grid/list of category options           | [x]    | CategoryPicker grid with icons, colors, favorites ordering |
+| F-011.3  | `DateSelector` - quick presets (Today, Yesterday) + picker | [x]    | DateSelector with presets and picker trigger            |
+| F-011.4  | `ExpenseListItem` - single expense row                     | [x]    | ExpenseListItem molecule with icon, category, amount, date, note |
+| F-011.5  | `SearchBar` - debounced text search                        | [x]    | SearchBar with debounce + clear action                  |
+| F-011.6  | `FilterChip` - category/date filter chips                  | [x]    | FilterChip molecule with active/inactive states         |
+| F-011.7  | `EmptyState` - icon + title + description + CTA            | [x]    | EmptyState molecule with CTA support                    |
+| F-011.8  | `ErrorCard` - error message + retry button                 | [x]    | ErrorCard molecule with retry action                    |
+| F-011.9  | `SnackBar` - temporary toast notification                  | [x]    | SnackBar molecule with action + dismiss                 |
 | F-011.10 | Auth molecules                                             | [x]    | AuthField, SectionHeader, SocialButtonRow, AuthFooter   |
 
 ### F-012: Organism Components
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 19        | 10          | 2        |
+| Phase 1 - Core MVP        | 86             | 28        | 9           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **41**    | **12**      | **13**   |
+| **Total**                 | **151**        | **50**    | **11**      | **13**   |
