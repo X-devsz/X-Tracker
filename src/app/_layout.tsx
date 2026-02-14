@@ -12,6 +12,7 @@ import config from '../theme/tamagui.config';
 import { runMigrations } from '../db/client';
 import { seedDefaultCategories } from '../db/seed';
 import { useSettingsStore, useAuthStore } from '../store';
+import { logColdStart } from '../services/performance';
 
 // Keep splash screen visible while the app loads
 SplashScreen.preventAutoHideAsync();
@@ -87,6 +88,7 @@ export default function RootLayout() {
     const isNavigationReady = rootNavigationState?.key != null;
     if (!loading && isNavigationReady) {
       SplashScreen.hideAsync();
+      logColdStart('navigation-ready');
     }
   }, [loading, rootNavigationState?.key]);
 

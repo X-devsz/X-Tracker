@@ -105,6 +105,11 @@ export function ExpenseList({
       data={data}
       renderItem={renderItem ?? defaultRenderItem}
       keyExtractor={keyExtractor ?? ((item) => item.id)}
+      initialNumToRender={8}
+      maxToRenderPerBatch={8}
+      windowSize={5}
+      updateCellsBatchingPeriod={50}
+      removeClippedSubviews
       contentContainerStyle={contentContainerStyle ?? { paddingBottom: 24 }}
       style={listStyle}
       ItemSeparatorComponent={() => <YStack height={12} />}

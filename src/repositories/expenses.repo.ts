@@ -28,6 +28,17 @@ export interface CategoryBreakdown {
 type ExpenseCreateInput = Omit<NewExpense, 'id' | 'createdAt' | 'updatedAt'>;
 type ExpenseUpdateInput = Partial<Omit<NewExpense, 'id' | 'createdAt' | 'updatedAt'>>;
 
+const summaryCache = new Map<string, MonthlySummary>();
+const breakdownCache = new Map<string, CategoryBreakdown[]>();
+
+const getCacheKey = (year: number, month: number) =>
+  `${year}-${String(month).padStart(2, '0')}`;
+
+const clearSummaryCache = () => {
+  summaryCache.clear();
+  breakdownCache.clear();
+};
+
 export const expensesRepo = {
   async create(data: ExpenseCreateInput): Promise<Expense> {
     assertExpenseInput(
@@ -48,6 +59,7 @@ export const expensesRepo = {
     };
 
     await db.insert(expenses).values(record);
+    clearSummaryCache();
     return record as Expense;
   },
 
@@ -65,6 +77,7 @@ export const expensesRepo = {
       .update(expenses)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(expenses.id, id));
+    clearSummaryCache();
   },
 
   async softDelete(id: string): Promise<void> {
@@ -73,6 +86,7 @@ export const expensesRepo = {
       .update(expenses)
       .set({ deletedAt: now, updatedAt: now })
       .where(eq(expenses.id, id));
+    clearSummaryCache();
   },
 
   async restore(id: string): Promise<void> {
@@ -80,6 +94,7 @@ export const expensesRepo = {
       .update(expenses)
       .set({ deletedAt: null, updatedAt: new Date() })
       .where(eq(expenses.id, id));
+    clearSummaryCache();
   },
 
   async getById(id: string): Promise<ExpenseWithCategory | null> {
@@ -127,6 +142,12 @@ export const expensesRepo = {
   },
 
   async getMonthlySummary(year: number, month: number): Promise<MonthlySummary> {
+    const cacheKey = getCacheKey(year, month);
+    const cached = summaryCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59, 999);
 
@@ -144,14 +165,23 @@ export const expensesRepo = {
         )
       );
 
-    return {
+    const summary = {
       totalMinor: result[0]?.totalMinor ?? 0,
       count: result[0]?.count ?? 0,
-      month: `${year}-${String(month).padStart(2, '0')}`,
+      month: cacheKey,
     };
+
+    summaryCache.set(cacheKey, summary);
+    return summary;
   },
 
   async getCategoryBreakdown(year: number, month: number): Promise<CategoryBreakdown[]> {
+    const cacheKey = getCacheKey(year, month);
+    const cached = breakdownCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59, 999);
 
@@ -177,11 +207,14 @@ export const expensesRepo = {
 
     const grandTotal = results.reduce((sum, item) => sum + item.totalMinor, 0);
 
-    return results.map((item) => ({
+    const breakdown = results.map((item) => ({
       ...item,
       categoryName: item.categoryName ?? null,
       categoryColorToken: item.categoryColorToken ?? null,
       percentage: grandTotal > 0 ? Math.round((item.totalMinor / grandTotal) * 100) : 0,
     }));
+
+    breakdownCache.set(cacheKey, breakdown);
+    return breakdown;
   },
 };

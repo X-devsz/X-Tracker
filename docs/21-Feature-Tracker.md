@@ -229,10 +229,10 @@
 
 | #       | Feature                     | Status | Details                                              |
 | ------- | --------------------------- | ------ | ---------------------------------------------------- |
-| F-071.1 | Virtualized expense lists   | [ ]    | `FlashList` or `FlatList` with proper key extraction |
-| F-071.2 | Cold start < 2.5s           | [ ]    | Measure on mid-range device                          |
-| F-071.3 | Screen render < 300ms       | [ ]    | After data load                                      |
-| F-071.4 | Cached summary computations | [ ]    | Avoid re-querying monthly totals on every render     |
+| F-071.1 | Virtualized expense lists   | [x]    | FlatList tuning: key extraction + batching/window configs |
+| F-071.2 | Cold start < 2.5s           | [/]    | Budgeted cold-start logs with OK/SLOW warning        |
+| F-071.3 | Screen render < 300ms       | [/]    | Budgeted render timing logs with OK/SLOW warning     |
+| F-071.4 | Cached summary computations | [x]    | Summary + breakdown cached with invalidation on writes |
 
 ### F-072: Categories Management
 
@@ -314,7 +314,7 @@
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
 | Phase 1 - Core MVP        | 86             | 83        | 1           | 2        |
-| Phase 1.5 - Stabilization | 18             | 7         | 0           | 3        |
+| Phase 1.5 - Stabilization | 18             | 9         | 2           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **112**   | **2**       | **13**   |
+| **Total**                 | **151**        | **114**   | **4**       | **13**   |

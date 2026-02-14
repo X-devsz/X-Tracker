@@ -33,6 +33,7 @@ import {
 } from '../../utils/formatters';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { haptics } from '../../services/haptics';
+import { useScreenRenderTimer } from '../../services/performance';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -74,6 +75,7 @@ export default function HistoryScreen() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [pendingDeleteLabel, setPendingDeleteLabel] = useState('Expense deleted');
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isRenderReady = !isLoadingRecent;
 
   const currencySymbol = useMemo(() => getCurrencySymbol(currency), [currency]);
 
@@ -170,6 +172,8 @@ export default function HistoryScreen() {
       }
     };
   }, []);
+
+  useScreenRenderTimer('History', isRenderReady);
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const filteredExpenses = useMemo(() => {
