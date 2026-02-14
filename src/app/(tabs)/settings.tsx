@@ -4,16 +4,27 @@
  * Theme toggle, currency, account info.
  */
 import { Alert } from 'react-native';
+import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, useTheme } from 'tamagui';
-import { useAuthStore, useSettingsStore, type ThemeMode } from '../../store';
+import {
+  useAuthStore,
+  useFilterStore,
+  useSettingsStore,
+  type ThemeMode,
+} from '../../store';
 import { useGoogleSignIn } from '../../services/auth';
 import { AppAvatar, AppSelect, ScreenContainer, SettingsGroup } from '../../components';
+import { expensesRepo } from '../../repositories';
 import {
   SUPPORTED_CURRENCY_CODES,
   formatCurrency,
   getCurrencySymbol,
 } from '../../utils/formatters';
+import {
+  exportExpensesXlsx,
+  filterExpensesByQuery,
+} from '../../services/export/expenses';
 
 const themeOptions: { value: ThemeMode; label: string; iconName: string }[] = [
   { value: 'system', label: 'System', iconName: 'desktop-outline' },
@@ -30,9 +41,11 @@ const getInitials = (email?: string | null) => {
 export default function SettingsScreen() {
   const theme = useTheme();
   const { themeMode, setThemeMode, currency, setCurrency } = useSettingsStore();
+  const { dateRange, categoryId, searchQuery } = useFilterStore();
   const { user } = useAuthStore();
   const { signOut } = useGoogleSignIn();
   const iconColor = theme.textSecondary?.val ?? '#6B7280';
+  const [isExporting, setIsExporting] = useState(false);
 
   const themeItems = themeOptions.map((option) => ({
     value: option.value,
@@ -71,6 +84,36 @@ export default function SettingsScreen() {
         },
       },
     ]);
+  };
+
+  const handleExport = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const expenses = await expensesRepo.listByDateRange(
+        dateRange.startDate,
+        dateRange.endDate,
+        categoryId ?? undefined,
+      );
+      const filtered = filterExpensesByQuery(expenses, searchQuery);
+
+      if (filtered.length === 0) {
+        Alert.alert('No expenses', 'No expenses match the current filters.');
+        return;
+      }
+
+      const { shared } = await exportExpensesXlsx(filtered, currency);
+      if (!shared) {
+        Alert.alert('Export saved', 'CSV saved to your device.');
+      }
+    } catch (error) {
+      Alert.alert(
+        'Export failed',
+        error instanceof Error ? error.message : 'Unable to export expenses.',
+      );
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -120,11 +163,12 @@ export default function SettingsScreen() {
         rows={[
           {
             id: 'export',
-            label: 'Export CSV',
-            description: 'Download your expense history',
+            label: 'Export Excel',
+            description: 'Download your expense history (.xlsx)',
             iconName: 'download-outline',
-            type: 'navigation',
-            onPress: () => {},
+            type: 'action',
+            onPress: handleExport,
+            detail: isExporting ? 'Exporting...' : undefined,
           },
           {
             id: 'clear',

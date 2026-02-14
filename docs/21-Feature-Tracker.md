@@ -188,11 +188,11 @@
 
 | #       | Feature                         | Status | Details                                                                |
 | ------- | ------------------------------- | ------ | ---------------------------------------------------------------------- |
-| F-050.1 | CSV generation (papaparse)      | [ ]    | Stable columns: date, amount, category, merchant, note, payment method |
-| F-050.2 | File write (expo-file-system)   | [ ]    | Save to app documents directory                                        |
-| F-050.3 | Share sheet (expo-sharing)      | [ ]    | System share dialog with CSV file                                      |
-| F-050.4 | Export handles empty dataset    | [ ]    | Show message instead of empty file                                     |
-| F-050.5 | Export matches displayed totals | [ ]    | Same filters applied as current view                                   |
+| F-050.1 | Excel generation (xlsx-js-style) | [x]    | `src/services/export/expenses.ts` builds styled XLSX export            |
+| F-050.2 | File write (expo-file-system)    | [x]    | Writes to app document/cache directory                                 |
+| F-050.3 | Share sheet (expo-sharing)       | [x]    | System share dialog for XLSX file                                      |
+| F-050.4 | Export handles empty dataset    | [x]    | Alert shown when no expenses match filters                             |
+| F-050.5 | Export matches displayed totals | [x]    | Uses filter store range/category/search before export                  |
 
 ---
 
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 73        | 4           | 2        |
+| Phase 1 - Core MVP        | 86             | 78        | 4           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **95**    | **6**       | **13**   |
+| **Total**                 | **151**        | **100**   | **6**       | **13**   |
