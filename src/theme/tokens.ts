@@ -51,3 +51,28 @@ export const zIndex = {
   lg: 100,     // Toasts
   xl: 200,     // Overlays
 } as const;
+
+export const shadows = {
+  sm: {
+    shadowColor: '$cardShadow',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  md: {
+    shadowColor: '$cardShadow',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  lg: {
+    shadowColor: '$cardShadow',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 1,
+    shadowRadius: 18,
+    elevation: 8,
+  },
+} as const;
+

@@ -33,7 +33,7 @@
 | F-001.4 | Spacing scale (4px base)           | [x]    | 0, xs(4), sm(8), md(12), lg(16), xl(20), 2xl(24), 3xl(32)                      |
 | F-001.5 | Typography system (Inter font)     | [x]    | h1-h4, body, bodySm, label, caption, amount, button variants                   |
 | F-001.6 | Border radius scale                | [x]    | xs(4), sm(8), md(12), lg(16), xl(24), full(9999)                               |
-| F-001.7 | Shadow presets (sm, md, lg)        | [/]    | Shadows applied in key screens; tokenized presets pending                      |
+| F-001.7 | Shadow presets (sm, md, lg)        | [x]    | Tokenized presets applied to cards, FAB, hero                                  |
 | F-001.8 | Animation presets                  | [x]    | fast, medium, slow, bouncy configs used for section entrances + press feedback |
 | F-001.9 | Theme toggle (light/dark/system)   | [x]    | Persisted in AsyncStorage, reads system preference as default                  |
 
@@ -312,9 +312,9 @@
 
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
-| Phase 0 - Foundation      | 25             | 24        | 1           | 0        |
+| Phase 0 - Foundation      | 25             | 25        | 0           | 0        |
 | Phase 1 - Core MVP        | 86             | 83        | 1           | 2        |
 | Phase 1.5 - Stabilization | 18             | 13        | 2           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **120**   | **4**       | **13**   |
+| **Total**                 | **151**        | **121**   | **3**       | **13**   |

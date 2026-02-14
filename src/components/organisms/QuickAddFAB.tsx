@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, XStack, styled, useTheme } from 'tamagui';
 import type { ComponentProps } from 'react';
 import { triggerHaptic, type HapticFeedbackType } from '../../services/haptics';
+import { shadows } from '../../theme';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -14,11 +15,7 @@ const FabContainer = styled(XStack, {
   alignItems: 'center',
   justifyContent: 'center',
   gap: 8,
-  shadowColor: '$cardShadow',
-  shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 1,
-  shadowRadius: 10,
-  elevation: 8,
+  ...shadows.md,
   pressStyle: { scale: 0.96 },
   variants: {
     floating: {
