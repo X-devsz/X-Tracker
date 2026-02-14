@@ -6,6 +6,8 @@
 import { Tabs } from 'expo-router';
 import { useTheme } from 'tamagui';
 import { Ionicons } from '@expo/vector-icons';
+import { useEffect } from 'react';
+import { BackHandler } from 'react-native';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -25,6 +27,12 @@ const tabs: TabConfig[] = [
 
 export default function TabLayout() {
   const theme = useTheme();
+
+  // Prevent going back from the tabs navigator
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => backHandler.remove();
+  }, []);
 
   return (
     <Tabs

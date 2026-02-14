@@ -7,10 +7,11 @@ import { styled, Text, YStack, XStack } from 'tamagui';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from 'tamagui';
 import { useRouter } from 'expo-router';
-import { Pressable } from 'react-native';
 
 const FormField = styled(YStack, {
   gap: 4,
+  animation: 'fast',
+  enterStyle: { opacity: 0, y: 8 },
 });
 
 const MockInput = styled(XStack, {
@@ -21,6 +22,8 @@ const MockInput = styled(XStack, {
   height: 48,
   paddingHorizontal: 16,
   alignItems: 'center',
+  animation: 'fast',
+  pressStyle: { borderColor: '$borderFocused', backgroundColor: '$surfaceHover' },
 });
 
 export default function AddExpenseScreen() {
@@ -35,7 +38,7 @@ export default function AddExpenseScreen() {
       gap={20}
     >
       {/* Amount */}
-      <YStack alignItems="center" gap={8} paddingVertical={24}>
+      <YStack alignItems="center" gap={8} paddingVertical={24} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <Text color="$textSecondary" fontSize={13} fontWeight="500">
           Amount
         </Text>
@@ -45,7 +48,7 @@ export default function AddExpenseScreen() {
       </YStack>
 
       {/* Form Fields */}
-      <YStack gap={16}>
+      <YStack gap={16} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <FormField>
           <Text color="$textSecondary" fontSize={13} fontWeight="500">
             Category
@@ -97,21 +100,22 @@ export default function AddExpenseScreen() {
 
       {/* Save Button */}
       <YStack flex={1} justifyContent="flex-end" paddingBottom={20}>
-        <Pressable onPress={() => router.back()}>
-          <XStack
-            backgroundColor="$primary"
-            borderRadius={12}
-            height={52}
-            alignItems="center"
-            justifyContent="center"
-            gap={8}
-          >
-            <Ionicons name="checkmark" size={20} color={theme.textInverse?.val} />
-            <Text color="$textInverse" fontSize={15} fontWeight="600">
-              Save Expense
-            </Text>
-          </XStack>
-        </Pressable>
+        <XStack
+          backgroundColor="$primary"
+          borderRadius={12}
+          height={52}
+          alignItems="center"
+          justifyContent="center"
+          gap={8}
+          animation="bouncy"
+          pressStyle={{ scale: 0.98 }}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="checkmark" size={20} color={theme.textInverse?.val} />
+          <Text color="$textInverse" fontSize={15} fontWeight="600">
+            Save Expense
+          </Text>
+        </XStack>
       </YStack>
     </YStack>
   );

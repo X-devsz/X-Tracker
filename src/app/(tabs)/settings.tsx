@@ -7,8 +7,9 @@ import { styled, Text, YStack, XStack } from 'tamagui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from 'tamagui';
-import { Pressable } from 'react-native';
-import { useSettingsStore, type ThemeMode } from '../../store';
+import { Alert, Pressable } from 'react-native';
+import { useSettingsStore, useAuthStore, type ThemeMode } from '../../store';
+import { useGoogleSignIn } from '../../services/auth';
 
 const SettingsCard = styled(YStack, {
   backgroundColor: '$cardBackground',
@@ -16,6 +17,13 @@ const SettingsCard = styled(YStack, {
   borderWidth: 1,
   borderColor: '$cardBorder',
   overflow: 'hidden',
+  animation: 'fast',
+  enterStyle: { opacity: 0, y: 8 },
+  shadowColor: '#0B1220',
+  shadowOpacity: 0.08,
+  shadowRadius: 10,
+  shadowOffset: { width: 0, height: 6 },
+  elevation: 4,
 });
 
 const SettingsRow = styled(XStack, {
@@ -25,6 +33,8 @@ const SettingsRow = styled(XStack, {
   justifyContent: 'space-between',
   borderBottomWidth: 1,
   borderBottomColor: '$border',
+  hoverStyle: { backgroundColor: '$surfaceHover' },
+  pressStyle: { backgroundColor: '$surfacePressed' },
 });
 
 const themeOptions: { value: ThemeMode; label: string; icon: string }[] = [
@@ -37,6 +47,21 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { themeMode, setThemeMode, currency } = useSettingsStore();
+  const { user } = useAuthStore();
+  const { signOut } = useGoogleSignIn();
+
+  const handleSignOut = () => {
+    Alert.alert('Sign out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign out',
+        style: 'destructive',
+        onPress: () => {
+          signOut();
+        },
+      },
+    ]);
+  };
 
   return (
     <YStack
@@ -52,7 +77,7 @@ export default function SettingsScreen() {
       </Text>
 
       {/* Appearance */}
-      <YStack gap={8}>
+      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <Text color="$textSecondary" fontSize={13} fontWeight="500" paddingLeft={4}>
           APPEARANCE
         </Text>
@@ -76,6 +101,8 @@ export default function SettingsScreen() {
                     borderColor={themeMode === opt.value ? '$primary' : '$border'}
                     gap={4}
                     alignItems="center"
+                    animation="fast"
+                    pressStyle={{ scale: 0.96 }}
                   >
                     <Text fontSize={11}>{opt.icon}</Text>
                     <Text
@@ -103,7 +130,7 @@ export default function SettingsScreen() {
       </YStack>
 
       {/* Data */}
-      <YStack gap={8}>
+      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <Text color="$textSecondary" fontSize={13} fontWeight="500" paddingLeft={4}>
           DATA
         </Text>
@@ -130,7 +157,7 @@ export default function SettingsScreen() {
       </YStack>
 
       {/* About */}
-      <YStack gap={8}>
+      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <Text color="$textSecondary" fontSize={13} fontWeight="500" paddingLeft={4}>
           ABOUT
         </Text>
@@ -146,6 +173,35 @@ export default function SettingsScreen() {
           </SettingsRow>
         </SettingsCard>
       </YStack>
+
+      {user ? (
+        <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
+          <Text color="$textSecondary" fontSize={13} fontWeight="500" paddingLeft={4}>
+            ACCOUNT
+          </Text>
+          <SettingsCard>
+            <SettingsRow>
+              <XStack alignItems="center" gap={12}>
+                <Ionicons name="person-circle-outline" size={22} color={theme.primary?.val} />
+                <Text color="$textPrimary" fontSize={15} fontWeight="500">
+                  Signed in
+                </Text>
+              </XStack>
+              <Text color="$textSecondary" fontSize={13}>{user.email ?? 'Google account'}</Text>
+            </SettingsRow>
+            <Pressable onPress={handleSignOut}>
+              <SettingsRow borderBottomWidth={0}>
+                <XStack alignItems="center" gap={12}>
+                  <Ionicons name="log-out-outline" size={22} color={theme.danger?.val} />
+                  <Text color="$danger" fontSize={15} fontWeight="500">
+                    Sign out
+                  </Text>
+                </XStack>
+              </SettingsRow>
+            </Pressable>
+          </SettingsCard>
+        </YStack>
+      ) : null}
     </YStack>
   );
 }

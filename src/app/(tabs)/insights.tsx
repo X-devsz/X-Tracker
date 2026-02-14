@@ -16,6 +16,13 @@ const ChartPlaceholder = styled(YStack, {
   justifyContent: 'center',
   height: 200,
   gap: 12,
+  animation: 'medium',
+  enterStyle: { opacity: 0, y: 10 },
+  shadowColor: '#0B1220',
+  shadowOpacity: 0.08,
+  shadowRadius: 10,
+  shadowOffset: { width: 0, height: 6 },
+  elevation: 4,
 });
 
 const StatRow = styled(XStack, {
@@ -26,6 +33,9 @@ const StatRow = styled(XStack, {
   padding: 16,
   alignItems: 'center',
   justifyContent: 'space-between',
+  animation: 'fast',
+  enterStyle: { opacity: 0, y: 6 },
+  pressStyle: { scale: 0.985, backgroundColor: '$surfaceHover' },
 });
 
 export default function InsightsScreen() {
@@ -46,7 +56,7 @@ export default function InsightsScreen() {
       </Text>
 
       {/* Category Breakdown Chart */}
-      <YStack gap={8}>
+      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <Text color="$textPrimary" fontSize={17} fontWeight="600">
           Category Breakdown
         </Text>
@@ -59,7 +69,7 @@ export default function InsightsScreen() {
       </YStack>
 
       {/* Spending Trend */}
-      <YStack gap={8}>
+      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <Text color="$textPrimary" fontSize={17} fontWeight="600">
           Spending Trend
         </Text>
@@ -72,7 +82,7 @@ export default function InsightsScreen() {
       </YStack>
 
       {/* Top Categories */}
-      <YStack gap={8}>
+      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <Text color="$textPrimary" fontSize={17} fontWeight="600">
           Top Categories
         </Text>

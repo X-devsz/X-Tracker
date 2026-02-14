@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from 'tamagui';
 import { ScrollView } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 
 const FilterChip = styled(XStack, {
   backgroundColor: '$surface',
@@ -26,9 +27,69 @@ const FilterChip = styled(XStack, {
   } as const,
 });
 
+const SwipeContainer = styled(YStack, {
+  borderRadius: 16,
+  overflow: 'hidden',
+});
+
+const ExpenseRow = styled(XStack, {
+  backgroundColor: '$cardBackground',
+  borderRadius: 16,
+  borderWidth: 1,
+  borderColor: '$cardBorder',
+  paddingHorizontal: 14,
+  paddingVertical: 12,
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 12,
+  animation: 'fast',
+  enterStyle: { opacity: 0, y: 8 },
+  pressStyle: { scale: 0.985, backgroundColor: '$surfaceHover' },
+  shadowColor: '#0B1220',
+  shadowOpacity: 0.08,
+  shadowRadius: 10,
+  shadowOffset: { width: 0, height: 6 },
+  elevation: 4,
+});
+
+const SwipeAction = styled(YStack, {
+  width: 92,
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 6,
+});
+
+const demoExpenses = [
+  { id: '1', title: 'Groceries', category: 'Food', amount: 420, time: '8:42 PM' },
+  { id: '2', title: 'Metro Pass', category: 'Transport', amount: 120, time: '7:15 PM' },
+  { id: '3', title: 'Coffee', category: 'Food', amount: 90, time: '9:10 AM' },
+];
+
 export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+
+  const renderLeftActions = () => (
+    <XStack flex={1} backgroundColor="$primary">
+      <SwipeAction>
+        <Ionicons name="create-outline" size={20} color={theme.textInverse?.val} />
+        <Text color="$textInverse" fontSize={12} fontWeight="600">
+          Edit
+        </Text>
+      </SwipeAction>
+    </XStack>
+  );
+
+  const renderRightActions = () => (
+    <XStack flex={1} backgroundColor="$danger">
+      <SwipeAction>
+        <Ionicons name="trash-outline" size={20} color={theme.textInverse?.val} />
+        <Text color="$textInverse" fontSize={12} fontWeight="600">
+          Delete
+        </Text>
+      </SwipeAction>
+    </XStack>
+  );
 
   return (
     <YStack
@@ -78,25 +139,56 @@ export default function HistoryScreen() {
         </ScrollView>
       </YStack>
 
-      {/* Empty State */}
-      <YStack flex={1} alignItems="center" justifyContent="center" gap={16} padding={16}>
-        <YStack
-          width={80}
-          height={80}
-          borderRadius={9999}
-          backgroundColor="$surface"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Ionicons name="calendar-outline" size={36} color={theme.textSecondary?.val} />
-        </YStack>
-        <YStack alignItems="center" gap={4}>
-          <Text color="$textPrimary" fontSize={17} fontWeight="600">
-            No expenses found
+      <YStack flex={1} paddingHorizontal={16} paddingTop={16} gap={12}>
+        <XStack justifyContent="space-between" alignItems="center">
+          <Text color="$textSecondary" fontSize={12} fontWeight="600">
+            RECENT ACTIVITY
           </Text>
-          <Text color="$textSecondary" fontSize={13} textAlign="center">
-            Your expense history will appear here
+          <Text color="$textTertiary" fontSize={12}>
+            Swipe left to delete
           </Text>
+        </XStack>
+
+        <YStack gap={12}>
+          {demoExpenses.map((expense) => (
+            <SwipeContainer key={expense.id}>
+              <Swipeable
+                renderLeftActions={renderLeftActions}
+                renderRightActions={renderRightActions}
+              >
+                <ExpenseRow>
+                  <XStack gap={12} alignItems="center" flex={1}>
+                    <YStack
+                      width={44}
+                      height={44}
+                      borderRadius={14}
+                      backgroundColor="$primaryLight"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Ionicons name="receipt-outline" size={22} color={theme.primary?.val} />
+                    </YStack>
+                    <YStack flex={1} gap={2}>
+                      <Text color="$textPrimary" fontSize={15} fontWeight="600">
+                        {expense.title}
+                      </Text>
+                      <Text color="$textSecondary" fontSize={12}>
+                        {expense.category} · Today
+                      </Text>
+                    </YStack>
+                  </XStack>
+                  <YStack alignItems="flex-end" gap={2}>
+                    <Text color="$textPrimary" fontSize={15} fontWeight="700">
+                      INR {expense.amount}
+                    </Text>
+                    <Text color="$textTertiary" fontSize={11}>
+                      {expense.time}
+                    </Text>
+                  </YStack>
+                </ExpenseRow>
+              </Swipeable>
+            </SwipeContainer>
+          ))}
         </YStack>
       </YStack>
     </YStack>

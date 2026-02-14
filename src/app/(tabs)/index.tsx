@@ -3,16 +3,27 @@
  *
  * Placeholder with themed styling. Will show monthly summary + recent expenses.
  */
-import { styled, Text, YStack, XStack } from "tamagui";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "tamagui";
+import { styled, Text, YStack, XStack } from 'tamagui';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from 'tamagui';
+import { useRouter } from 'expo-router';
 
 const SummaryCard = styled(YStack, {
   backgroundColor: "$primary",
   borderRadius: 16,
+  borderWidth: 1,
+  borderColor: "rgba(255,255,255,0.15)",
   padding: 20,
   gap: 8,
+  animation: "medium",
+  enterStyle: { opacity: 0, y: 12 },
+  pressStyle: { scale: 0.985 },
+  shadowColor: "#0B1220",
+  shadowOpacity: 0.25,
+  shadowRadius: 18,
+  shadowOffset: { width: 0, height: 10 },
+  elevation: 8,
 });
 
 const QuickStatCard = styled(YStack, {
@@ -23,11 +34,47 @@ const QuickStatCard = styled(YStack, {
   padding: 16,
   flex: 1,
   gap: 4,
+  animation: "fast",
+  enterStyle: { opacity: 0, y: 8 },
+  hoverStyle: { borderColor: "$primary", backgroundColor: "$surface" },
+  pressStyle: { scale: 0.98, backgroundColor: "$surfaceHover" },
+  shadowColor: "#0B1220",
+  shadowOpacity: 0.08,
+  shadowRadius: 10,
+  shadowOffset: { width: 0, height: 6 },
+  elevation: 4,
+});
+
+const IconButton = styled(XStack, {
+  width: 44,
+  height: 44,
+  borderRadius: 12,
+  alignItems: "center",
+  justifyContent: "center",
+  animation: "fast",
+  pressStyle: { scale: 0.96 },
+  hoverStyle: { opacity: 0.9 },
+  variants: {
+    tone: {
+      surface: {
+        backgroundColor: "$surface",
+        borderWidth: 1,
+        borderColor: "$border",
+      },
+      primary: {
+        backgroundColor: "$primary",
+      },
+      soft: {
+        backgroundColor: "$primaryLight",
+      },
+    },
+  } as const,
 });
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+  const router = useRouter();
 
   return (
     <YStack
@@ -44,19 +91,17 @@ export default function HomeScreen() {
             Welcome back
           </Text>
           <Text color="$textPrimary" fontSize={24} fontWeight="700">
-            Dashboards
+            Dashboard
           </Text>
         </YStack>
-        <YStack
-          width={44}
-          height={44}
-          borderRadius={9999}
-          backgroundColor="$primaryLight"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Ionicons name="person" size={22} color={theme.primary?.val} />
-        </YStack>
+        <XStack gap={10} alignItems="center">
+          <IconButton tone="primary" onPress={() => router.push("/expense/add")}>
+            <Ionicons name="add" size={22} color={theme.textInverse?.val} />
+          </IconButton>
+          <IconButton tone="soft">
+            <Ionicons name="person" size={20} color={theme.primary?.val} />
+          </IconButton>
+        </XStack>
       </XStack>
 
       {/* Monthly Summary Card */}
@@ -80,7 +125,7 @@ export default function HomeScreen() {
       </SummaryCard>
 
       {/* Quick Stats */}
-      <XStack gap={12}>
+      <XStack gap={12} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <QuickStatCard>
           <XStack
             width={36}
@@ -120,7 +165,7 @@ export default function HomeScreen() {
       </XStack>
 
       {/* Recent Expenses Placeholder */}
-      <YStack gap={12} flex={1}>
+      <YStack gap={12} flex={1} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
         <XStack justifyContent="space-between" alignItems="center">
           <Text color="$textPrimary" fontSize={17} fontWeight="600">
             Recent Expenses
@@ -137,6 +182,8 @@ export default function HomeScreen() {
           justifyContent="center"
           gap={16}
           paddingVertical={32}
+          animation="medium"
+          enterStyle={{ opacity: 0, y: 12 }}
         >
           <YStack
             width={80}
