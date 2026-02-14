@@ -16,19 +16,21 @@ const ButtonContainer = styled(XStack, {
         backgroundColor: '$primary',
         borderColor: '$primary',
       },
-      soft: {
-        backgroundColor: '$primaryLight',
-        borderColor: '$primaryLight',
-      },
-      surface: {
+      secondary: {
         backgroundColor: '$surface',
         borderColor: '$border',
         borderWidth: 1,
       },
-      outline: {
+      danger: {
+        backgroundColor: '$danger',
+        borderColor: '$danger',
+      },
+      ghost: {
         backgroundColor: 'transparent',
-        borderColor: '$border',
+        borderColor: 'transparent',
         borderWidth: 1,
+        pressStyle: { scale: 0.98, backgroundColor: '$surfaceHover' },
+        hoverStyle: { backgroundColor: '$surface' },
       },
     },
   } as const,
@@ -46,11 +48,12 @@ interface AppButtonProps extends ComponentProps<typeof ButtonContainer> {
 
 const getLabelColor = (tone?: ButtonTone) => {
   switch (tone) {
-    case 'soft':
-      return '$primary';
-    case 'surface':
-    case 'outline':
+    case 'secondary':
       return '$textPrimary';
+    case 'ghost':
+      return '$textPrimary';
+    case 'danger':
+      return '$textInverse';
     case 'primary':
     default:
       return '$textInverse';
