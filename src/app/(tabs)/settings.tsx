@@ -182,6 +182,14 @@ export default function SettingsScreen() {
         title="DATA"
         rows={[
           {
+            id: 'categories',
+            label: 'Manage Categories',
+            description: 'Create, rename, archive, reorder',
+            iconName: 'list-outline',
+            type: 'navigation',
+            onPress: () => router.push('/(tabs)/categories'),
+          },
+          {
             id: 'export',
             label: 'Export Excel',
             description: 'Download your expense history (.xlsx)',

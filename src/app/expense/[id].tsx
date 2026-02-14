@@ -40,7 +40,7 @@ export default function EditExpenseScreen() {
   );
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategories(false);
   }, [fetchCategories]);
 
   const categoryOptions = useMemo<CategoryOption[]>(

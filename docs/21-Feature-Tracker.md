@@ -238,10 +238,10 @@
 
 | #       | Feature                | Status | Details                                  |
 | ------- | ---------------------- | ------ | ---------------------------------------- |
-| F-072.1 | Create custom category | [ ]    | Name + icon + color picker               |
-| F-072.2 | Rename category        | [ ]    | Updates all related views                |
-| F-072.3 | Archive category       | [ ]    | Hidden from picker, preserved in history |
-| F-072.4 | Reorder categories     | [ ]    | Drag or manual sort order                |
+| F-072.1 | Create custom category | [x]    | Categories screen form with name/icon/color picker |
+| F-072.2 | Rename category        | [x]    | Edit flow updates all related views                |
+| F-072.3 | Archive category       | [x]    | Archive action hides from picker, preserves history |
+| F-072.4 | Reorder categories     | [x]    | Manual reorder via up/down controls                |
 
 ### F-073: Budgets (Optional Post-MVP)
 
@@ -314,7 +314,7 @@
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
 | Phase 1 - Core MVP        | 86             | 83        | 1           | 2        |
-| Phase 1.5 - Stabilization | 18             | 9         | 2           | 3        |
+| Phase 1.5 - Stabilization | 18             | 13        | 2           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **114**   | **4**       | **13**   |
+| **Total**                 | **151**        | **118**   | **4**       | **13**   |

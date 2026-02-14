@@ -80,7 +80,7 @@ export default function HistoryScreen() {
   const currencySymbol = useMemo(() => getCurrencySymbol(currency), [currency]);
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategories(false);
   }, [fetchCategories]);
 
   useEffect(() => {

@@ -79,6 +79,12 @@ export default function TabLayout() {
           tabBarIcon: renderTabIcon('settings-outline', 'settings'),
         }}
       />
+      <Tabs.Screen
+        name="categories"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

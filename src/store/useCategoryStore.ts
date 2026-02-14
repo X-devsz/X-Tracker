@@ -14,6 +14,8 @@ interface CategoryStoreState {
   createCategory: (data: CategoryCreateInput) => Promise<void>;
   updateCategory: (id: string, data: CategoryUpdateInput) => Promise<void>;
   archiveCategory: (id: string) => Promise<void>;
+  restoreCategory: (id: string) => Promise<void>;
+  reorderCategories: (ids: string[]) => Promise<void>;
 }
 
 const toErrorMessage = (error: unknown) =>
@@ -53,6 +55,18 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
   archiveCategory: async (id) => {
     set({ error: null });
     await categoriesRepo.archive(id);
+    await get().fetchCategories();
+  },
+
+  restoreCategory: async (id) => {
+    set({ error: null });
+    await categoriesRepo.restore(id);
+    await get().fetchCategories();
+  },
+
+  reorderCategories: async (ids) => {
+    set({ error: null });
+    await categoriesRepo.reorder(ids);
     await get().fetchCategories();
   },
 }));

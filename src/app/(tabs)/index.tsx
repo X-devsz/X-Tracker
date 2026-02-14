@@ -115,7 +115,7 @@ export default function HomeScreen() {
     const startDate = subDays(endDate, 30);
     fetchRecent({ startDate, endDate });
     fetchMonthlySummary(endDate.getFullYear(), endDate.getMonth() + 1);
-    fetchCategories();
+    fetchCategories(false);
   }, [fetchRecent, fetchMonthlySummary, fetchCategories]);
 
   useFocusEffect(

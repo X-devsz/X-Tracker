@@ -33,11 +33,18 @@ export const categoriesRepo = {
       throw new Error('Category name must be unique.');
     }
 
+    const maxOrder = await db
+      .select({ max: sql<number>`COALESCE(MAX(${categories.sortOrder}), 0)` })
+      .from(categories)
+      .where(isNull(categories.deletedAt));
+
+    const nextSortOrder = (maxOrder[0]?.max ?? 0) + 1;
     const now = new Date();
     const record: NewCategory = {
       ...data,
       name: data.name.trim(),
       id: uuid(),
+      sortOrder: data.sortOrder ?? nextSortOrder,
       isArchived: data.isArchived ?? false,
       createdAt: now,
       updatedAt: now,
@@ -86,6 +93,25 @@ export const categoriesRepo = {
       .update(categories)
       .set({ isArchived: true, updatedAt: new Date() })
       .where(eq(categories.id, id));
+  },
+
+  async restore(id: string): Promise<void> {
+    await db
+      .update(categories)
+      .set({ isArchived: false, updatedAt: new Date() })
+      .where(eq(categories.id, id));
+  },
+
+  async reorder(ids: string[]): Promise<void> {
+    const now = new Date();
+    await db.transaction(async (tx) => {
+      for (const [index, id] of ids.entries()) {
+        await tx
+          .update(categories)
+          .set({ sortOrder: index, updatedAt: now })
+          .where(eq(categories.id, id));
+      }
+    });
   },
 
   async listActive(): Promise<Category[]> {

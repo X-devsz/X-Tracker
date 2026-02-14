@@ -34,7 +34,7 @@ export default function AddExpenseScreen() {
   const currencySymbol = useMemo(() => getCurrencySymbol(currency), [currency]);
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategories(false);
   }, [fetchCategories]);
 
   const categoryOptions = useMemo<CategoryOption[]>(
