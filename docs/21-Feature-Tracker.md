@@ -149,9 +149,9 @@
 
 | #       | Feature                  | Status | Details                                                  |
 | ------- | ------------------------ | ------ | -------------------------------------------------------- |
-| F-023.1 | MMKV instance created    | [/]    | AsyncStorage adapter in `src/services/storage/mmkv.ts`   |
-| F-023.2 | Typed storage keys       | [ ]    | Theme mode, currency, onboarded flag, last used category |
-| F-023.3 | Settings getters/setters | [ ]    | Type-safe wrappers for each setting                      |
+| F-023.1 | MMKV instance created    | [x]    | AsyncStorage adapter in `src/services/storage/mmkv.ts`   |
+| F-023.2 | Typed storage keys       | [x]    | `StorageKeys` for theme, currency, onboarded, category   |
+| F-023.3 | Settings getters/setters | [x]    | `settingsStorage` type-safe wrappers                     |
 
 ---
 
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 57        | 9           | 2        |
+| Phase 1 - Core MVP        | 86             | 60        | 8           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **79**    | **11**      | **13**   |
+| **Total**                 | **151**        | **82**    | **10**      | **13**   |
