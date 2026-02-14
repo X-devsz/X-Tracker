@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react';
 import type { ViewStyle } from 'react-native';
-import { ScrollView } from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native';
 import { YStack } from 'tamagui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -13,6 +13,8 @@ interface ScreenContainerProps {
   contentContainerStyle?: ViewStyle;
   backgroundColor?: ComponentProps<typeof YStack>['backgroundColor'];
   showsVerticalScrollIndicator?: boolean;
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }
 
 export function ScreenContainer({
@@ -24,16 +26,23 @@ export function ScreenContainer({
   contentContainerStyle,
   backgroundColor = '$background',
   showsVerticalScrollIndicator = false,
+  refreshing,
+  onRefresh,
 }: ScreenContainerProps) {
   const insets = useSafeAreaInsets();
   const contentPaddingTop = insets.top + paddingVertical;
   const contentPaddingBottom = insets.bottom + paddingVertical;
 
   if (scrollable) {
+    const refreshControl = onRefresh ? (
+      <RefreshControl refreshing={Boolean(refreshing)} onRefresh={onRefresh} />
+    ) : undefined;
+
     return (
       <YStack flex={1} backgroundColor={backgroundColor}>
         <ScrollView
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+          refreshControl={refreshControl}
           contentContainerStyle={{
             paddingTop: contentPaddingTop,
             paddingBottom: contentPaddingBottom,

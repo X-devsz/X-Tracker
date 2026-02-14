@@ -217,13 +217,13 @@
 
 | #       | Feature                               | Status | Details                                                       |
 | ------- | ------------------------------------- | ------ | ------------------------------------------------------------- |
-| F-070.1 | Loading skeletons on all data screens | [ ]    | Skeleton cards for Home, History, Insights                    |
-| F-070.2 | Empty states on all screens           | [ ]    | Meaningful message + CTA                                      |
-| F-070.3 | Error states with retry               | [ ]    | ErrorCard component on data failure                           |
-| F-070.4 | Undo delete snackbar                  | [ ]    | 5-second timer, restore on tap                                |
-| F-070.5 | Pull-to-refresh on lists              | [ ]    | Home + History                                                |
-| F-070.6 | Swipe-to-delete on expense items      | [/]    | Gesture handler root + swipe UI; edit/delete handlers pending |
-| F-070.7 | Haptic feedback on key actions        | [ ]    | Add expense, delete, category select                          |
+| F-070.1 | Loading skeletons on all data screens | [x]    | Skeleton cards for Home, History, Insights                    |
+| F-070.2 | Empty states on all screens           | [x]    | Meaningful message + CTA                                      |
+| F-070.3 | Error states with retry               | [x]    | ErrorCard component on data failure                           |
+| F-070.4 | Undo delete snackbar                  | [x]    | 5-second timer, restore on tap                                |
+| F-070.5 | Pull-to-refresh on lists              | [x]    | Home + History                                                |
+| F-070.6 | Swipe-to-delete on expense items      | [x]    | Swipe actions wired for edit/delete with undo prompt          |
+| F-070.7 | Haptic feedback on key actions        | [x]    | Add expense, delete, category select                          |
 
 ### F-071: Performance
 
@@ -314,7 +314,7 @@
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
 | Phase 1 - Core MVP        | 86             | 83        | 1           | 2        |
-| Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
+| Phase 1.5 - Stabilization | 18             | 7         | 0           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **105**   | **3**       | **13**   |
+| **Total**                 | **151**        | **112**   | **2**       | **13**   |

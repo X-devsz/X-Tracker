@@ -6,6 +6,7 @@ export { AppDivider } from './AppDivider';
 export { AppIcon } from './AppIcon';
 export { AppIconButton } from './AppIconButton';
 export { AppInput } from './AppInput';
+export { AppSkeleton } from './AppSkeleton';
 export { AppSpinner } from './AppSpinner';
 export { AppText } from './AppText';
 export { AppAvatar } from './AppAvatar';

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, XStack, YStack, styled, useTheme } from 'tamagui';
 import type { ComponentProps } from 'react';
-import { AppBadge, AppCard, AppSpinner } from '../atoms';
+import { AppBadge, AppCard, AppSkeleton } from '../atoms';
 
 const SummaryCard = styled(AppCard, {
   backgroundColor: '$primary',
@@ -50,25 +50,60 @@ export function MonthlySummaryCard({
         {title}
       </Text>
       {isLoading ? (
-        <XStack alignItems="center" gap={10}>
-          <AppSpinner color={theme.textInverse?.val} />
-          <Text color="$textInverse" fontSize={16} fontWeight="600">
-            Loading summary...
-          </Text>
-        </XStack>
+        <YStack gap={10}>
+          <AppSkeleton
+            height={12}
+            width={140}
+            borderRadius={6}
+            backgroundColor="$textInverse"
+            opacity={0.25}
+          />
+          <AppSkeleton
+            height={32}
+            width={180}
+            borderRadius={8}
+            backgroundColor="$textInverse"
+            opacity={0.25}
+          />
+          <XStack alignItems="center" gap={8}>
+            <AppSkeleton
+              width={16}
+              height={16}
+              borderRadius={8}
+              backgroundColor="$textInverse"
+              opacity={0.25}
+            />
+            <AppSkeleton
+              width={52}
+              height={18}
+              borderRadius={9}
+              backgroundColor="$textInverse"
+              opacity={0.25}
+            />
+            <AppSkeleton
+              width={90}
+              height={12}
+              borderRadius={6}
+              backgroundColor="$textInverse"
+              opacity={0.25}
+            />
+          </XStack>
+        </YStack>
       ) : (
         <Text color="$textInverse" fontSize={34} fontWeight="700">
           {currencySymbol}
           {amount}
         </Text>
       )}
-      <XStack alignItems="center" gap={8}>
-        <Ionicons name={trendIcon} size={16} color={theme.textInverse?.val} />
-        <AppBadge label={formatChange(changePercent)} tone={badgeTone} />
-        <Text color="$textInverse" fontSize={12} opacity={0.7}>
-          {changeLabel}
-        </Text>
-      </XStack>
+      {isLoading ? null : (
+        <XStack alignItems="center" gap={8}>
+          <Ionicons name={trendIcon} size={16} color={theme.textInverse?.val} />
+          <AppBadge label={formatChange(changePercent)} tone={badgeTone} />
+          <Text color="$textInverse" fontSize={12} opacity={0.7}>
+            {changeLabel}
+          </Text>
+        </XStack>
+      )}
     </SummaryCard>
   );
 }

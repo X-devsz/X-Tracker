@@ -32,6 +32,7 @@ import {
   formatDateRange,
 } from '../../utils/formatters';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { haptics } from '../../services/haptics';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -231,6 +232,7 @@ export default function HistoryScreen() {
           onPress: async () => {
             try {
               await softDeleteExpense(id);
+              haptics.warning();
               showUndo(id, label);
             } catch (err) {
               Alert.alert(
@@ -374,6 +376,8 @@ export default function HistoryScreen() {
             refreshing={isLoadingRecent}
             emptyTitle="No matching expenses"
             emptyDescription="Try a different filter or search term."
+            emptyActionLabel="Add expense"
+            onEmptyAction={() => router.push('/expense/add')}
           />
         </YStack>
       </ScreenContainer>

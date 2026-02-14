@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, XStack, YStack, styled, useTheme } from 'tamagui';
 import type { ReactNode } from 'react';
+import { haptics } from '../../services/haptics';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -81,7 +82,10 @@ export function CategoryPicker({
             <CategoryCard
               key={category.id}
               selected={isSelected}
-              onPress={() => onSelect?.(category)}
+              onPress={() => {
+                haptics.selection();
+                onSelect?.(category);
+              }}
             >
               <IconBadge backgroundColor={badgeColor}>
                 {category.icon ? (
