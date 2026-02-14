@@ -18,8 +18,8 @@
 | F-000.3 | Path aliases configured (`@/*`)             | [x]    | `tsconfig.json` + metro resolver                                      |
 | F-000.4 | Babel config (Tamagui + Reanimated plugins) | [x]    | `babel.config.js`                                                     |
 | F-000.5 | Tamagui root config                         | [x]    | `tamagui.config.ts` imports from `src/theme/`                         |
-| F-000.6 | EAS build config                            | [ ]    | `eas.json` with dev/preview/prod profiles                             |
-| F-000.7 | ESLint + Prettier config                    | [ ]    | Consistent code formatting                                            |
+| F-000.6 | EAS build config                            | [x]    | `eas.json` with dev/preview/prod profiles                             |
+| F-000.7 | ESLint + Prettier config                    | [x]    | `.eslintrc.cjs` + `.prettierrc.cjs` + lint/format scripts              |
 | F-000.8 | Atomic folder structure created             | [x]    | `src/components` (atoms, molecules, organisms, templates) + exports   |
 | F-000.9 | Custom dev client path                      | [x]    | Google Sign-In plugin enabled + prebuild script added                 |
 
@@ -312,9 +312,9 @@
 
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
-| Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
+| Phase 0 - Foundation      | 25             | 24        | 1           | 0        |
 | Phase 1 - Core MVP        | 86             | 83        | 1           | 2        |
 | Phase 1.5 - Stabilization | 18             | 13        | 2           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **118**   | **4**       | **13**   |
+| **Total**                 | **151**        | **120**   | **4**       | **13**   |
