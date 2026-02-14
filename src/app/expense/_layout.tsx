@@ -15,6 +15,10 @@ export default function ExpenseLayout() {
         name="add"
         options={{ title: 'Add Expense' }}
       />
+      <Stack.Screen
+        name="[id]"
+        options={{ title: 'Edit Expense' }}
+      />
     </Stack>
   );
 }
