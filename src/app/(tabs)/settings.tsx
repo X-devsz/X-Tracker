@@ -24,9 +24,20 @@ const getInitials = (email?: string | null) => {
 
 export default function SettingsScreen() {
   const theme = useTheme();
-  const { themeMode, setThemeMode, currency } = useSettingsStore();
+  const { themeMode, setThemeMode, currency, setCurrency } = useSettingsStore();
   const { user } = useAuthStore();
   const { signOut } = useGoogleSignIn();
+
+  const handleCurrencySelect = () => {
+    const options = ['USD', 'INR', 'EUR', 'GBP'];
+    Alert.alert('Select currency', 'Choose the default currency', [
+      ...options.map((code) => ({
+        text: code,
+        onPress: () => setCurrency(code),
+      })),
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
 
   const handleSignOut = () => {
     Alert.alert('Sign out', 'Are you sure you want to sign out?', [
@@ -82,7 +93,7 @@ export default function SettingsScreen() {
             iconName: 'cash-outline',
             type: 'navigation',
             detail: currency,
-            onPress: () => {},
+            onPress: handleCurrencySelect,
           },
         ]}
       />
