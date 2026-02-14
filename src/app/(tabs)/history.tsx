@@ -1,7 +1,7 @@
 /**
  * History Screen - Expense history with filters
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Swipeable } from 'react-native-gesture-handler';
@@ -15,6 +15,7 @@ import {
   FilterBar,
   ScreenContainer,
   SearchBar,
+  SnackBar,
 } from '../../components';
 import type { ExpenseListItemData } from '../../components/organisms/ExpenseList';
 import {
@@ -28,7 +29,9 @@ import {
   formatAmountMinor,
   formatExpenseDate,
   getCurrencySymbol,
+  formatDateRange,
 } from '../../utils/formatters';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -47,6 +50,7 @@ const SwipeAction = styled(YStack, {
 export default function HistoryScreen() {
   const router = useRouter();
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const { currency } = useSettingsStore();
   const { categories, fetchCategories } = useCategoryStore();
   const {
@@ -55,6 +59,7 @@ export default function HistoryScreen() {
     error,
     fetchRecent,
     softDeleteExpense,
+    restoreExpense,
   } = useExpenseStore();
   const {
     dateRange,
@@ -65,6 +70,9 @@ export default function HistoryScreen() {
     setSearchQuery,
   } = useFilterStore();
   const [activeFilterId, setActiveFilterId] = useState('all');
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [pendingDeleteLabel, setPendingDeleteLabel] = useState('Expense deleted');
+  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currencySymbol = useMemo(() => getCurrencySymbol(currency), [currency]);
 
@@ -100,6 +108,9 @@ export default function HistoryScreen() {
       if (filterId === 'all') {
         setActiveFilterId('all');
         setCategoryId(null);
+        const endDate = new Date();
+        const startDate = subDays(endDate, 30);
+        setDateRange({ startDate, endDate });
         return;
       }
 
@@ -151,6 +162,14 @@ export default function HistoryScreen() {
     }
   }, [categoryId, activeFilterId]);
 
+  useEffect(() => {
+    return () => {
+      if (undoTimerRef.current) {
+        clearTimeout(undoTimerRef.current);
+      }
+    };
+  }, []);
+
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const filteredExpenses = useMemo(() => {
     if (!normalizedQuery) return recentExpenses;
@@ -190,15 +209,57 @@ export default function HistoryScreen() {
     [filteredExpenses, currencySymbol],
   );
 
+  const showUndo = useCallback((id: string, label: string) => {
+    setPendingDeleteId(id);
+    setPendingDeleteLabel(`Deleted ${label}`);
+    if (undoTimerRef.current) {
+      clearTimeout(undoTimerRef.current);
+    }
+    undoTimerRef.current = setTimeout(() => {
+      setPendingDeleteId(null);
+      setPendingDeleteLabel('Expense deleted');
+    }, 5000);
+  }, []);
+
   const confirmDelete = useCallback(
-    (id: string) => {
+    (id: string, label: string) => {
       Alert.alert('Delete expense', 'This will remove the expense from history.', [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => softDeleteExpense(id) },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await softDeleteExpense(id);
+              showUndo(id, label);
+            } catch (err) {
+              Alert.alert(
+                'Delete failed',
+                err instanceof Error ? err.message : 'Unable to delete expense.',
+              );
+            }
+          },
+        },
       ]);
     },
-    [softDeleteExpense],
+    [softDeleteExpense, showUndo],
   );
+
+  const handleUndo = useCallback(async () => {
+    if (!pendingDeleteId) return;
+    if (undoTimerRef.current) {
+      clearTimeout(undoTimerRef.current);
+    }
+    try {
+      await restoreExpense(pendingDeleteId);
+      setPendingDeleteId(null);
+    } catch (err) {
+      Alert.alert(
+        'Undo failed',
+        err instanceof Error ? err.message : 'Unable to restore expense.',
+      );
+    }
+  }, [pendingDeleteId, restoreExpense]);
 
   const renderLeftActions = (itemId: string) => (
     <XStack flex={1} backgroundColor="$primary">
@@ -216,10 +277,10 @@ export default function HistoryScreen() {
     </XStack>
   );
 
-  const renderRightActions = (itemId: string) => (
+  const renderRightActions = (itemId: string, label: string) => (
     <XStack flex={1} backgroundColor="$danger">
       <Pressable
-        onPress={() => confirmDelete(itemId)}
+        onPress={() => confirmDelete(itemId, label)}
         style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
       >
         <SwipeAction>
@@ -236,7 +297,7 @@ export default function HistoryScreen() {
     <SwipeContainer>
       <Swipeable
         renderLeftActions={() => renderLeftActions(item.id)}
-        renderRightActions={() => renderRightActions(item.id)}
+        renderRightActions={() => renderRightActions(item.id, item.title)}
       >
         <ExpenseListItem
           title={item.title}
@@ -255,62 +316,90 @@ export default function HistoryScreen() {
   );
 
   return (
-    <ScreenContainer scrollable={false} gap={16}>
-      <YStack gap={12}>
-        <Text color="$textPrimary" fontSize={24} fontWeight="700">
-          History
-        </Text>
-        <SearchBar
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search expenses"
-        />
-      </YStack>
-
-      <FilterBar
-        title="Filters"
-        date={dateRange.endDate}
-        onDateChange={handleDateChange}
-        filters={filters}
-        activeFilterId={activeFilterId}
-        onFilterSelect={(filter) => handleFilterSelect(filter.id)}
-      />
-
-      <YStack gap={8} flex={1}>
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text color="$textSecondary" fontSize={12} fontWeight="600">
-            RECENT ACTIVITY
+    <YStack flex={1} backgroundColor="$background">
+      <ScreenContainer scrollable={false} gap={16}>
+        <YStack gap={12}>
+          <Text color="$textPrimary" fontSize={24} fontWeight="700">
+            History
           </Text>
-          <Text color="$textTertiary" fontSize={12}>
-            Swipe left to delete
+          <Text color="$textSecondary" fontSize={12}>
+            {formatDateRange(dateRange.startDate, dateRange.endDate)}
           </Text>
-        </XStack>
+          <SearchBar
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search expenses"
+          />
+        </YStack>
 
-        <ExpenseList
-          data={listData}
-          renderItem={renderItem}
-          listStyle={{ flex: 1 }}
-          isLoading={isLoadingRecent}
-          error={error ?? undefined}
-          onRetry={() =>
-            fetchRecent({
-              startDate: dateRange.startDate,
-              endDate: dateRange.endDate,
-              categoryId: categoryId ?? undefined,
-            })
-          }
-          onRefresh={() =>
-            fetchRecent({
-              startDate: dateRange.startDate,
-              endDate: dateRange.endDate,
-              categoryId: categoryId ?? undefined,
-            })
-          }
-          refreshing={isLoadingRecent}
-          emptyTitle="No matching expenses"
-          emptyDescription="Try a different filter or search term."
+        <FilterBar
+          title="Filters"
+          date={dateRange.endDate}
+          onDateChange={handleDateChange}
+          filters={filters}
+          activeFilterId={activeFilterId}
+          onFilterSelect={(filter) => handleFilterSelect(filter.id)}
         />
-      </YStack>
-    </ScreenContainer>
+
+        <YStack gap={8} flex={1}>
+          <XStack justifyContent="space-between" alignItems="center">
+            <Text color="$textSecondary" fontSize={12} fontWeight="600">
+              RECENT ACTIVITY
+            </Text>
+            <Text color="$textTertiary" fontSize={12}>
+              Swipe left to delete
+            </Text>
+          </XStack>
+
+          <ExpenseList
+            data={listData}
+            renderItem={renderItem}
+            listStyle={{ flex: 1 }}
+            isLoading={isLoadingRecent}
+            error={error ?? undefined}
+            onRetry={() =>
+              fetchRecent({
+                startDate: dateRange.startDate,
+                endDate: dateRange.endDate,
+                categoryId: categoryId ?? undefined,
+              })
+            }
+            onRefresh={() =>
+              fetchRecent({
+                startDate: dateRange.startDate,
+                endDate: dateRange.endDate,
+                categoryId: categoryId ?? undefined,
+              })
+            }
+            refreshing={isLoadingRecent}
+            emptyTitle="No matching expenses"
+            emptyDescription="Try a different filter or search term."
+          />
+        </YStack>
+      </ScreenContainer>
+
+      {pendingDeleteId ? (
+        <YStack
+          position="absolute"
+          left={16}
+          right={16}
+          bottom={insets.bottom + 12}
+        >
+          <SnackBar
+            tone="danger"
+            message={pendingDeleteLabel}
+            actionLabel="Undo"
+            onAction={handleUndo}
+            onDismiss={() => {
+              if (undoTimerRef.current) {
+                clearTimeout(undoTimerRef.current);
+              }
+              setPendingDeleteId(null);
+              setPendingDeleteLabel('Expense deleted');
+            }}
+          />
+        </YStack>
+      ) : null}
+    </YStack>
   );
 }

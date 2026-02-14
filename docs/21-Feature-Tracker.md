@@ -174,13 +174,13 @@
 
 | #       | Feature                                            | Status | Details                                                |
 | ------- | -------------------------------------------------- | ------ | ------------------------------------------------------ |
-| F-040.1 | Amount stored as integer minor units (cents)       | [ ]    | Never use floats; `amountMinor: 1050` = $10.50         |
-| F-040.2 | Amount display formatting (locale-aware)           | [ ]    | `formatCurrency(amountMinor, currencyCode)`            |
-| F-040.3 | Date formatting helpers                            | [ ]    | Relative dates ("Today", "Yesterday"), date ranges     |
-| F-040.4 | Expense validation (amount > 0, category required) | [ ]    | `src/domain/validators/expense.validator.ts`           |
-| F-040.5 | Category validation (name required, unique)        | [ ]    | `src/domain/validators/category.validator.ts`          |
-| F-040.6 | Soft delete with undo (snackbar for 5-10s)         | [ ]    | Delete -> snackbar -> timer -> permanent if not undone |
-| F-040.7 | Default last-used category pre-selection           | [ ]    | Read from MMKV, update on each save                    |
+| F-040.1 | Amount stored as integer minor units (cents)       | [x]    | Forms parse to `amountMinor` and repos enforce integers |
+| F-040.2 | Amount display formatting (locale-aware)           | [x]    | `formatCurrency(amountMinor, currencyCode)` helper added |
+| F-040.3 | Date formatting helpers                            | [x]    | Relative dates + `formatDateRange` utilities           |
+| F-040.4 | Expense validation (amount > 0, category required) | [x]    | `src/domain/validators/expense.validator.ts`           |
+| F-040.5 | Category validation (name required, unique)        | [x]    | `src/domain/validators/category.validator.ts` + repo checks |
+| F-040.6 | Soft delete with undo (snackbar for 5-10s)         | [x]    | History swipe delete shows undo snackbar               |
+| F-040.7 | Default last-used category pre-selection           | [x]    | Stored in settings + used for add expense default      |
 
 ---
 
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 66        | 4           | 2        |
+| Phase 1 - Core MVP        | 86             | 73        | 4           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **88**    | **6**       | **13**   |
+| **Total**                 | **151**        | **95**    | **6**       | **13**   |

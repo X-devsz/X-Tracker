@@ -1,15 +1,15 @@
-import { format, isToday, isYesterday } from "date-fns";
+import { format, isSameMonth, isSameYear, isToday, isYesterday } from 'date-fns';
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
-  USD: "$",
-  CAD: "$",
-  AUD: "$",
-  EUR: "€",
-  GBP: "£",
-  INR: "₹",
-  JPY: "¥",
-  LKR: "Rs",
-  NZD: "$",
+  USD: '$',
+  CAD: '$',
+  AUD: '$',
+  NZD: '$',
+  EUR: 'EUR ',
+  GBP: 'GBP ',
+  INR: 'INR ',
+  JPY: 'JPY ',
+  LKR: 'Rs ',
 };
 
 export const getCurrencySymbol = (code: string, locale?: string): string => {
@@ -20,22 +20,40 @@ export const getCurrencySymbol = (code: string, locale?: string): string => {
 
   try {
     const formatter = new Intl.NumberFormat(locale, {
-      style: "currency",
+      style: 'currency',
       currency: upper,
-      currencyDisplay: "narrowSymbol",
+      currencyDisplay: 'narrowSymbol',
     });
     const parts = formatter.formatToParts(0);
-    const symbol = parts.find((part) => part.type === "currency")?.value;
+    const symbol = parts.find((part) => part.type === 'currency')?.value;
     return symbol ?? `${upper} `;
   } catch {
     return `${upper} `;
   }
 };
 
-export const formatAmountMinor = (
+export const formatCurrency = (
   amountMinor: number,
-  locale?: string
+  currencyCode: string,
+  locale?: string,
 ): string => {
+  const amount = amountMinor / 100;
+  const upper = currencyCode.toUpperCase();
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: upper,
+      currencyDisplay: 'narrowSymbol',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    const symbol = getCurrencySymbol(upper, locale);
+    return `${symbol}${formatAmountMinor(amountMinor, locale)}`;
+  }
+};
+
+export const formatAmountMinor = (amountMinor: number, locale?: string): string => {
   const amount = amountMinor / 100;
   try {
     return new Intl.NumberFormat(locale, {
@@ -48,7 +66,7 @@ export const formatAmountMinor = (
 };
 
 export const parseAmountToMinor = (value: string): number => {
-  const normalized = value.replace(/,/g, "").trim();
+  const normalized = value.replace(/,/g, '').trim();
   const parsed = Number(normalized);
   if (Number.isNaN(parsed)) {
     return 0;
@@ -58,12 +76,22 @@ export const parseAmountToMinor = (value: string): number => {
 
 export const formatExpenseDate = (date: Date): string => {
   if (isToday(date)) {
-    return `Today - ${format(date, "h:mm a")}`;
+    return `Today - ${format(date, 'h:mm a')}`;
   }
   if (isYesterday(date)) {
-    return `Yesterday - ${format(date, "h:mm a")}`;
+    return `Yesterday - ${format(date, 'h:mm a')}`;
   }
-  return format(date, "MMM d, yyyy");
+  return format(date, 'MMM d, yyyy');
 };
 
-export const formatMonthLabel = (date: Date): string => format(date, "MMM");
+export const formatMonthLabel = (date: Date): string => format(date, 'MMM');
+
+export const formatDateRange = (startDate: Date, endDate: Date): string => {
+  if (isSameYear(startDate, endDate)) {
+    if (isSameMonth(startDate, endDate)) {
+      return `${format(startDate, 'MMM d')}-${format(endDate, 'd, yyyy')}`;
+    }
+    return `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
+  }
+  return `${format(startDate, 'MMM d, yyyy')} - ${format(endDate, 'MMM d, yyyy')}`;
+};

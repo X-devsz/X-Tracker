@@ -2,6 +2,7 @@ import { and, desc, eq, gte, isNull, lte, sql } from 'drizzle-orm';
 import { v4 as uuid } from 'uuid';
 import { db } from '../db/client';
 import { categories, expenses, type Expense, type NewExpense } from '../db/schema';
+import { assertExpenseInput } from '../domain/validators/expense.validator';
 
 export interface ExpenseWithCategory extends Expense {
   categoryName: string | null;
@@ -27,15 +28,16 @@ export interface CategoryBreakdown {
 type ExpenseCreateInput = Omit<NewExpense, 'id' | 'createdAt' | 'updatedAt'>;
 type ExpenseUpdateInput = Partial<Omit<NewExpense, 'id' | 'createdAt' | 'updatedAt'>>;
 
-const assertPositiveAmount = (amountMinor: number) => {
-  if (amountMinor <= 0) {
-    throw new Error('Amount must be greater than zero.');
-  }
-};
-
 export const expensesRepo = {
   async create(data: ExpenseCreateInput): Promise<Expense> {
-    assertPositiveAmount(data.amountMinor);
+    assertExpenseInput(
+      {
+        amountMinor: data.amountMinor,
+        categoryId: data.categoryId,
+        occurredAt: data.occurredAt,
+      },
+      { requireAll: true },
+    );
 
     const now = new Date();
     const record: NewExpense = {
@@ -50,9 +52,14 @@ export const expensesRepo = {
   },
 
   async update(id: string, data: ExpenseUpdateInput): Promise<void> {
-    if (data.amountMinor !== undefined) {
-      assertPositiveAmount(data.amountMinor);
-    }
+    assertExpenseInput(
+      {
+        amountMinor: data.amountMinor,
+        categoryId: data.categoryId,
+        occurredAt: data.occurredAt,
+      },
+      { requireAll: false },
+    );
 
     await db
       .update(expenses)
