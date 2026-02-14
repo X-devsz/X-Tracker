@@ -7,11 +7,25 @@ import { useRouter } from 'expo-router';
 import { XStack, useTheme } from 'tamagui';
 import { AppIconButton, AuthForm, AuthTemplate, SectionHeader } from '../../components';
 import { useGoogleSignIn } from '../../services/auth';
+import { useAuthStore } from '../../store';
 
 export default function LoginScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { signInWithGoogle } = useGoogleSignIn();
+  const { user } = useAuthStore();
+
+  const confirmAccountSwitch = () =>
+    new Promise<boolean>((resolve) => {
+      Alert.alert(
+        'Switch account?',
+        'You are already signed in. Continue to switch accounts?',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+          { text: 'Continue', style: 'destructive', onPress: () => resolve(true) },
+        ],
+      );
+    });
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
@@ -41,7 +55,16 @@ export default function LoginScreen() {
         onPrimaryPress={() => router.replace('/(tabs)')}
         onGooglePress={async () => {
           try {
-            await signInWithGoogle();
+            if (user) {
+              const confirmed = await confirmAccountSwitch();
+              if (!confirmed) {
+                return;
+              }
+            }
+            const result = await signInWithGoogle();
+            if (result.status === 'cancelled') {
+              return;
+            }
             router.replace('/(tabs)');
           } catch (error) {
             const message =

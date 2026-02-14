@@ -5,7 +5,7 @@ import Constants, { ExecutionEnvironment } from "expo-constants";
 import {
   GoogleAuthProvider,
   signInWithCredential,
-  signOut,
+  signOut as firebaseSignOut,
 } from "firebase/auth";
 import { getFirebaseAuth } from "./firebase";
 
@@ -74,6 +74,7 @@ const resolveRedirectUri = () => {
 };
 
 export const useGoogleSignIn = () => {
+  type SignInResult = { status: "success" | "cancelled" };
   const config = getGoogleConfig();
   const redirectUri = resolveRedirectUri();
   const isExpoGo =
@@ -92,15 +93,21 @@ export const useGoogleSignIn = () => {
   const [request, response, promptAsync] =
     Google.useIdTokenAuthRequest(requestConfig);
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (): Promise<SignInResult> => {
     const auth = getFirebaseAuth();
     if (!auth) {
       throw new Error("Firebase is not configured for Google sign-in.");
     }
 
     const result = await promptAsync();
+    if (result.type === "cancel" || result.type === "dismiss") {
+      return { status: "cancelled" };
+    }
+    if (result.type === "error") {
+      throw new Error("Google sign-in failed.");
+    }
     if (result.type !== "success") {
-      return { type: result.type };
+      return { status: "cancelled" };
     }
 
     const idToken = result.params?.id_token;
@@ -110,7 +117,7 @@ export const useGoogleSignIn = () => {
 
     const credential = GoogleAuthProvider.credential(idToken);
     await signInWithCredential(auth, credential);
-    return { type: "success" as const };
+    return { status: "success" };
   };
 
   const signOut = async () => {
@@ -119,7 +126,7 @@ export const useGoogleSignIn = () => {
       return;
     }
 
-    await signOut();
+    await firebaseSignOut(auth);
   };
 
   return { request, response, signInWithGoogle, signOut };

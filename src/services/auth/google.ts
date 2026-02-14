@@ -1,6 +1,7 @@
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { GoogleAuthProvider, signInWithCredential, signOut } from 'firebase/auth';
 import { getFirebaseAuth } from './firebase';
+import { setAuthToken } from './secureStore';
 
 GoogleSignin.configure({
   webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
@@ -8,6 +9,8 @@ GoogleSignin.configure({
 });
 
 export const useGoogleSignIn = () => {
+  type SignInResult = { status: 'success' | 'cancelled' };
+
   const signInWithGoogle = async () => {
     try {
       console.log('Checking Google Play Services...');
@@ -37,8 +40,11 @@ export const useGoogleSignIn = () => {
 
       console.log('Firebase sign-in success:', userCredential.user.email);
 
-      return userCredential.user;
+      return { status: 'success' as const } satisfies SignInResult;
     } catch (error: any) {
+      if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
+        return { status: 'cancelled' as const } satisfies SignInResult;
+      }
       console.error('Google Sign-In Error:', error);
       console.error('Error code:', error?.code);
       console.error('Error message:', error?.message);
@@ -56,6 +62,7 @@ export const useGoogleSignIn = () => {
         await signOut(auth);
       }
 
+      await setAuthToken(null);
       console.log('Signed out successfully');
     } catch (error) {
       console.error('Sign Out Error:', error);

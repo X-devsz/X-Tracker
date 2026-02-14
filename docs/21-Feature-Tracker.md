@@ -201,12 +201,12 @@
 | #       | Feature                                  | Status | Details                                                       |
 | ------- | ---------------------------------------- | ------ | ------------------------------------------------------------- |
 | F-060.1 | Google Sign-In via Firebase              | [x]    | Native Google Sign-In + Firebase Auth                         |
-| F-060.2 | Token stored in SecureStore              | [ ]    | Never in SQLite or MMKV                                       |
+| F-060.2 | Token stored in SecureStore              | [x]    | SecureStore-backed Firebase persistence + ID token stored     |
 | F-060.3 | Sign-in success -> redirect to Home      | [x]    | Auth guard routes to `(tabs)`                                 |
-| F-060.4 | Sign-in cancelled -> stay on auth screen | [/]    | Default behavior; add explicit handling                       |
+| F-060.4 | Sign-in cancelled -> stay on auth screen | [x]    | Google sign-in cancellation handled without alerts            |
 | F-060.5 | Sign-out -> clear session, stay on auth  | [x]    | Sign-out wired in Settings                                    |
-| F-060.6 | Auth state persistence across restarts   | [/]    | Firebase Auth persistence via AsyncStorage (needs validation) |
-| F-060.7 | Account switch confirmation              | [ ]    | Alert dialog before switching users                           |
+| F-060.6 | Auth state persistence across restarts   | [x]    | Firebase Auth persistence via SecureStore                     |
+| F-060.7 | Account switch confirmation              | [x]    | Settings action prompts before switching accounts             |
 | F-060.8 | Guest mode (optional)                    | [~]    | Deferred - skippable for MVP                                  |
 
 ---
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 78        | 4           | 2        |
+| Phase 1 - Core MVP        | 86             | 82        | 2           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **100**   | **6**       | **13**   |
+| **Total**                 | **151**        | **104**   | **4**       | **13**   |
