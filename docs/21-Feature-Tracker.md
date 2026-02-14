@@ -59,7 +59,7 @@
 | -------- | ----------------------------------------------------- | ------ | ------------------------------------------------------------------------------- |
 | F-010.1  | `Button` - primary, secondary, danger, ghost variants | [x]    | AppButton with primary/secondary/danger/ghost tones + animated CTA/press feedback |
 | F-010.2  | `Text` - all typography variants                      | [x]    | AppText variants added (h1-h4, body, label, caption, amount)                    |
-| F-010.3  | `Input` - text input with label + error               | [/]    | Base AppInput + labeled AuthField wrapper                                       |
+| F-010.3  | `Input` - text input with label + error               | [x]    | AppInput + InputField with label/error; AuthField for auth                      |
 | F-010.4  | `Card` - elevated, pressable variants                 | [x]    | AppCard atom added with elevated + pressable variants                           |
 | F-010.5  | `Icon` - vector icon wrapper                          | [x]    | AppIcon atom added alongside AppIconButton                                      |
 | F-010.6  | `Badge` - success, danger, warning variants           | [x]    | AppBadge atom with tone variants                                                |
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 82        | 2           | 2        |
+| Phase 1 - Core MVP        | 86             | 83        | 1           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **104**   | **4**       | **13**   |
+| **Total**                 | **151**        | **105**   | **3**       | **13**   |

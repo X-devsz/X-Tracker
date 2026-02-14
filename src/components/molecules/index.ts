@@ -8,6 +8,7 @@ export { EmptyState } from './EmptyState';
 export { ErrorCard } from './ErrorCard';
 export { ExpenseListItem } from './ExpenseListItem';
 export { FilterChip } from './FilterChip';
+export { InputField } from './InputField';
 export { OrDivider } from './OrDivider';
 export { SearchBar } from './SearchBar';
 export { SectionHeader } from './SectionHeader';
