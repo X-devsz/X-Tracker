@@ -111,14 +111,14 @@
 
 | #       | Feature                                    | Status | Details                                                                                                        |
 | ------- | ------------------------------------------ | ------ | -------------------------------------------------------------------------------------------------------------- |
-| F-020.1 | SQLite database connection (`expo-sqlite`) | [ ]    | `src/db/client.ts` - Drizzle instance                                                                          |
-| F-020.2 | Categories schema (Drizzle)                | [ ]    | id, name, icon, colorToken, sortOrder, isArchived, timestamps, soft delete                                     |
-| F-020.3 | Expenses schema (Drizzle)                  | [ ]    | id, amountMinor, currency, categoryId (FK), occurredAt, note, merchant, paymentMethod, timestamps, soft delete |
+| F-020.1 | SQLite database connection (`expo-sqlite`) | [x]    | `src/db/client.ts` Drizzle instance + runtime migrations                                                      |
+| F-020.2 | Categories schema (Drizzle)                | [x]    | `src/db/schema/categories.ts` with timestamps + soft delete                                                   |
+| F-020.3 | Expenses schema (Drizzle)                  | [x]    | `src/db/schema/expenses.ts` with FK + timestamps + soft delete                                                |
 | F-020.4 | Accounts schema (optional)                 | [~]    | Deferred to post-MVP                                                                                           |
-| F-020.5 | Migration framework                        | [ ]    | `drizzle-kit generate`, versioned SQL files                                                                    |
-| F-020.6 | Seed default categories                    | [ ]    | 8 categories: Food, Transport, Shopping, Bills, Health, Entertainment, Education, Other                        |
-| F-020.7 | Database initialization on app start       | [ ]    | Run migrations + seed in root layout                                                                           |
-| F-020.8 | Indexes for query performance              | [ ]    | `occurredAt`, `categoryId`, `deletedAt`                                                                        |
+| F-020.5 | Migration framework                        | [x]    | `drizzle.config.ts` + `src/db/migrations` with `0001_init.sql`                                                 |
+| F-020.6 | Seed default categories                    | [x]    | `src/db/seed.ts` seeds 8 default categories                                                                    |
+| F-020.7 | Database initialization on app start       | [x]    | `src/app/_layout.tsx` runs migrations + seed                                                                   |
+| F-020.8 | Indexes for query performance              | [x]    | Indexes on `occurredAt`, `categoryId`, `deletedAt`                                                             |
 
 ### F-021: Repository Layer
 
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 38        | 9           | 2        |
+| Phase 1 - Core MVP        | 86             | 45        | 9           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **60**    | **11**      | **13**   |
+| **Total**                 | **151**        | **67**    | **11**      | **13**   |

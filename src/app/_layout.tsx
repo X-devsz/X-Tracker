@@ -9,6 +9,8 @@ import { StatusBar } from 'expo-status-bar';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import config from '../theme/tamagui.config';
+import { runMigrations } from '../db/client';
+import { seedDefaultCategories } from '../db/seed';
 import { useSettingsStore, useAuthStore } from '../store';
 
 // Keep splash screen visible while the app loads
@@ -63,6 +65,19 @@ export default function RootLayout() {
     const unsubscribe = initialize();
     return unsubscribe;
   }, [initialize]);
+
+  useEffect(() => {
+    const initDb = async () => {
+      try {
+        await runMigrations();
+        await seedDefaultCategories();
+      } catch (error) {
+        console.error('[DB] Initialization failed:', error);
+      }
+    };
+
+    initDb();
+  }, []);
 
   // Use the protected route hook to handle navigation
   useProtectedRoute(user, loading);
