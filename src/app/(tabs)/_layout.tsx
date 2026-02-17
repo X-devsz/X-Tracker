@@ -2,6 +2,7 @@ import { Redirect, Tabs } from 'expo-router';
 import { useTheme } from 'tamagui';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../store';
+import { AUTH_ENABLED } from '../../config/featureFlags';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -22,14 +23,16 @@ const tabs: TabConfig[] = [
 export default function TabLayout() {
   const theme = useTheme();
   const { user, loading } = useAuthStore();
+  // Auth guards are feature-flagged for guest mode.
+  const authEnabled = AUTH_ENABLED;
 
-  if (loading) {
+  if (authEnabled && loading) {
     // We are still checking the user's authentication state.
     // You can show a loading indicator here if you want.
     return null;
   }
 
-  if (!user) {
+  if (authEnabled && !user) {
     // The user is not signed in, so redirect them to the login screen.
     return <Redirect href="/(auth)/login" />;
   }
@@ -56,6 +59,12 @@ export default function TabLayout() {
         },
       }}
     >
+      <Tabs.Screen
+        name="categories"
+        options={{
+          href: null,
+        }}
+      />
       {tabs.map((tab) => (
         <Tabs.Screen
           key={tab.name}

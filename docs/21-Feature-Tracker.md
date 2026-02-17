@@ -1,6 +1,6 @@
 # Feature Tracker - Expense Tracker (End-to-End Development Checklist)
 
-**Last updated:** 2026-02-14  
+**Last updated:** 2026-02-17  
 **Purpose:** Comprehensive, trackable feature list extracted from all project docs. Designed to be given to an AI agent or developer so they understand exactly what each feature requires.
 
 > **Legend:** `[ ]` = Not started | `[/]` = In Progress | `[x]` = Completed | `[~]` = Deferred
@@ -43,8 +43,8 @@
 | ------- | ------------------------------------------------- | ------ | ----------------------------------------------------------------- |
 | F-002.1 | Root layout with TamaguiProvider                  | [x]    | Wraps entire app in theme + font provider                         |
 | F-002.2 | Tab navigator (Home, History, Insights, Settings) | [x]    | Bottom tab bar with icons, themed colors                          |
-| F-002.3 | Auth stack (Welcome, Sign-In)                     | [x]    | Welcome, Login, Signup screens wired + routes linked from Welcome |
-| F-002.4 | Auth guard (redirect logic)                       | [x]    | Root layout checks auth state + index redirect to Welcome         |
+| F-002.3 | Auth stack (Welcome, Sign-In)                     | [x]    | Welcome always available; Login/Signup gated by `EXPO_PUBLIC_AUTH_ENABLED` |
+| F-002.4 | Auth guard (redirect logic)                       | [x]    | Guard enabled only when `EXPO_PUBLIC_AUTH_ENABLED=true`           |
 | F-002.5 | Expense modal stack (Add, Edit)                   | [x]    | Modal presentation, themed header                                 |
 | F-002.6 | Deep linking scheme                               | [x]    | `expensetracker://` scheme configured in app.json                 |
 | F-002.7 | 404/Not Found screen                              | [x]    | Graceful fallback for unknown routes                              |
@@ -166,7 +166,7 @@
 | F-030.5 | **Insights Screen** - charts and analytics                      | [x]    | `(tabs)/insights.tsx` - breakdown + trend data from DB                                     |
 | F-030.6 | **Settings Screen** - app configuration                         | [x]    | Theme toggle, currency picker, account info, sign-out                                      |
 | F-030.7 | **Welcome Screen** - onboarding                                 | [x]    | `(auth)/welcome.tsx` - Landing hero + CTA                                                 |
-| F-030.8 | **Sign-In Screen** - Google auth                                | [x]    | `(auth)/login.tsx` + `(auth)/signup.tsx` - styled for light/dark themes                   |
+| F-030.8 | **Sign-In Screen** - Google auth                                | [x]    | Feature-flagged via `EXPO_PUBLIC_AUTH_ENABLED`; UI remains wired for future enablement   |
 
 ---
 
@@ -198,16 +198,18 @@
 
 ### F-060: Authentication
 
+> **Note:** Auth is currently feature-flagged off via `EXPO_PUBLIC_AUTH_ENABLED=false` (guest mode). Set to `true` to enable the items below.
+
 | #       | Feature                                  | Status | Details                                                       |
 | ------- | ---------------------------------------- | ------ | ------------------------------------------------------------- |
-| F-060.1 | Google Sign-In via Firebase              | [x]    | Native Google Sign-In + Firebase Auth                         |
+| F-060.1 | Google Sign-In via Firebase              | [x]    | Native Google Sign-In + Firebase Auth (flag-gated)            |
 | F-060.2 | Token stored in SecureStore              | [x]    | SecureStore-backed Firebase persistence + ID token stored     |
 | F-060.3 | Sign-in success -> redirect to Home      | [x]    | Auth guard routes to `(tabs)`                                 |
 | F-060.4 | Sign-in cancelled -> stay on auth screen | [x]    | Google sign-in cancellation handled without alerts            |
 | F-060.5 | Sign-out -> clear session, stay on auth  | [x]    | Sign-out wired in Settings                                    |
 | F-060.6 | Auth state persistence across restarts   | [x]    | Firebase Auth persistence via SecureStore                     |
 | F-060.7 | Account switch confirmation              | [x]    | Settings action prompts before switching accounts             |
-| F-060.8 | Guest mode (optional)                    | [~]    | Deferred - skippable for MVP                                  |
+| F-060.8 | Guest mode (optional)                    | [~]    | Feature-flagged via `EXPO_PUBLIC_AUTH_ENABLED=false`          |
 
 ---
 

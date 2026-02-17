@@ -7,7 +7,6 @@ import { Stack, SplashScreen } from 'expo-router';
 import { TamaguiProvider } from '@tamagui/core';
 import { PortalProvider } from '@tamagui/portal';
 import { StatusBar } from 'expo-status-bar';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import config from '../theme/tamagui.config';
 import { useSettingsStore, useAuthStore } from '../store';
@@ -31,11 +30,6 @@ export default function RootLayout() {
 
   // Initialize listeners and DB on app start.
   useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-      offlineAccess: true,
-    });
-
     const unsubscribe = initialize();
 
     const initDb = async () => {

@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "1053558915497-hjlsvtfbknde58svba8mvgdcoobk57cj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ifham.expensetracker",
+            "certificate_hash": "1f206f66b3933217379f289d4e499956a8f44aed"
+          }
+        },
+        {
           "client_id": "1053558915497-rogskiiol5b4rc0rhhnaun0l2fgjgdt2.apps.googleusercontent.com",
           "client_type": 3
         }
