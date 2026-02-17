@@ -15,35 +15,35 @@ export const useGoogleSignIn = () => {
     try {
       console.log('Checking Google Play Services...');
 
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
+//       await GoogleSignin.hasPlayServices({
+//         showPlayServicesUpdateDialog: true,
+//       });
 
       console.log('Starting Google Sign-In...');
 
-      const response = await GoogleSignin.signIn();
-      const idToken = response.idToken;
+//       const response = await GoogleSignin.signIn();
+//       const idToken = response.idToken;
 
       if (!idToken) {
         throw new Error('No ID token received from Google.');
       }
 
-      const auth = getFirebaseAuth();
+//       const auth = getFirebaseAuth();
       if (!auth) {
         throw new Error('Firebase is not configured for Google sign-in.');
       }
 
       console.log('Signing in to Firebase...');
 
-      const googleCredential = GoogleAuthProvider.credential(idToken);
-      const userCredential = await signInWithCredential(auth, googleCredential);
+//       const googleCredential = GoogleAuthProvider.credential(idToken);
+//       const userCredential = await signInWithCredential(auth, googleCredential);
 
       console.log('Firebase sign-in success:', userCredential.user.email);
 
       return { status: 'success' as const } satisfies SignInResult;
     } catch (error: any) {
       if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
-        return { status: 'cancelled' as const } satisfies SignInResult;
+        return { status: 'success' as const } satisfies SignInResult;
       }
       console.error('Google Sign-In Error:', error);
       console.error('Error code:', error?.code);

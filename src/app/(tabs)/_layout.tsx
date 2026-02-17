@@ -1,37 +1,42 @@
-/**
- * Tab Layout — Bottom tab navigator
- *
- * 4 tabs: Home, History, Insights, Settings
- */
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { useTheme } from 'tamagui';
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect } from 'react';
-import { BackHandler } from 'react-native';
-import { triggerHaptic } from '../../services/haptics';
+import { useAuthStore } from '../../store';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
-const renderTabIcon =
-  (icon: IconName, iconFocused: IconName) =>
-  ({ color, focused, size }: { color: string; focused: boolean; size: number }) => (
-    <Ionicons name={focused ? iconFocused : icon} size={size} color={color} />
-  );
+interface TabConfig {
+  name: string;
+  title: string;
+  icon: IconName;
+  iconFocused: IconName;
+}
+
+const tabs: TabConfig[] = [
+  { name: 'index', title: 'Home', icon: 'home-outline', iconFocused: 'home' },
+  { name: 'history', title: 'History', icon: 'list-outline', iconFocused: 'list' },
+  { name: 'insights', title: 'Insights', icon: 'pie-chart-outline', iconFocused: 'pie-chart' },
+  { name: 'settings', title: 'Settings', icon: 'settings-outline', iconFocused: 'settings' },
+];
 
 export default function TabLayout() {
   const theme = useTheme();
+  const { user, loading } = useAuthStore();
 
-  // Prevent going back from the tabs navigator
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
-    return () => backHandler.remove();
-  }, []);
+  if (loading) {
+    // We are still checking the user's authentication state.
+    // You can show a loading indicator here if you want.
+    return null;
+  }
 
+  if (!user) {
+    // The user is not signed in, so redirect them to the login screen.
+    return <Redirect href="/(auth)/login" />;
+  }
+
+  // The user is signed in, so render the main application tabs.
   return (
     <Tabs
-      screenListeners={{
-        tabPress: () => triggerHaptic('selection'),
-      }}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.tabBarActive?.val,
@@ -51,40 +56,30 @@ export default function TabLayout() {
         },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: renderTabIcon('home-outline', 'home'),
-        }}
-      />
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: 'History',
-          tabBarIcon: renderTabIcon('list-outline', 'list'),
-        }}
-      />
-      <Tabs.Screen
-        name="insights"
-        options={{
-          title: 'Insights',
-          tabBarIcon: renderTabIcon('pie-chart-outline', 'pie-chart'),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: renderTabIcon('settings-outline', 'settings'),
-        }}
-      />
-      <Tabs.Screen
-        name="categories"
-        options={{
-          href: null,
-        }}
-      />
+      {tabs.map((tab) => (
+        <Tabs.Screen
+          key={tab.name}
+          name={tab.name}
+          options={{
+            title: tab.title,
+            tabBarIcon: ({
+              color,
+              focused,
+              size,
+            }: {
+              color: string;
+              focused: boolean;
+              size: number;
+            }) => (
+              <Ionicons
+                name={focused ? tab.iconFocused : tab.icon}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+      ))}
     </Tabs>
   );
 }

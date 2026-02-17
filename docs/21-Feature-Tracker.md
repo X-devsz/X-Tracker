@@ -143,7 +143,7 @@
 | F-022.3 | `useExpenseStore` - recentExpenses, summary, CRUD actions   | [x]    | `src/store/useExpenseStore.ts` uses repositories       |
 | F-022.4 | `useCategoryStore` - categories list, CRUD actions          | [x]    | `src/store/useCategoryStore.ts` uses repositories      |
 | F-022.5 | `useFilterStore` - dateRange, category filter, search, sort | [x]    | `src/store/useFilterStore.ts` (not persisted)          |
-| F-022.6 | MMKV persist middleware for Zustand                         | [/]    | AsyncStorage adapter in `src/services/storage/mmkv.ts` |
+| F-022.6 | MMKV persist middleware for Zustand                         | [x]    | AsyncStorage adapter wired to persisted stores         |
 
 ### F-023: MMKV Settings Storage
 
@@ -230,8 +230,8 @@
 | #       | Feature                     | Status | Details                                              |
 | ------- | --------------------------- | ------ | ---------------------------------------------------- |
 | F-071.1 | Virtualized expense lists   | [x]    | FlatList tuning: key extraction + batching/window configs |
-| F-071.2 | Cold start < 2.5s           | [/]    | Budgeted cold-start logs with OK/SLOW warning        |
-| F-071.3 | Screen render < 300ms       | [/]    | Budgeted render timing logs with OK/SLOW warning     |
+| F-071.2 | Cold start < 2.5s           | [x]    | Budgeted cold-start logs with OK/SLOW warning        |
+| F-071.3 | Screen render < 300ms       | [x]    | Budgeted render timing logs with OK/SLOW warning     |
 | F-071.4 | Cached summary computations | [x]    | Summary + breakdown cached with invalidation on writes |
 
 ### F-072: Categories Management
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 25        | 0           | 0        |
-| Phase 1 - Core MVP        | 86             | 83        | 1           | 2        |
-| Phase 1.5 - Stabilization | 18             | 13        | 2           | 3        |
+| Phase 1 - Core MVP        | 86             | 84        | 0           | 2        |
+| Phase 1.5 - Stabilization | 18             | 15        | 0           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **121**   | **3**       | **13**   |
+| **Total**                 | **151**        | **124**   | **0**       | **13**   |

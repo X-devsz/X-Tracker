@@ -5,9 +5,13 @@ node_modules/
 
 # Expo
 .expo/
+.expo-shared/
 dist/
 web-build/
 expo-env.d.ts
+
+# Tamagui
+.tamagui/
 
 # Native
 .kotlin/
@@ -17,8 +21,11 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
-google-services.json
-GoogleService-Info.plist
+
+# Native build artifacts
+*.apk
+*.aab
+*.ipa
 
 # Metro
 .metro-health-check*
@@ -27,14 +34,29 @@ GoogleService-Info.plist
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+pnpm-debug.*
+*.log
+.eslintcache
+
+# IDE/editor
+.idea/
+.vscode/
+*.iml
 
 # macOS
 .DS_Store
 *.pem
 
+# Windows
+Thumbs.db
+Desktop.ini
+
 # local env files
 .env
 .env*.local
+
+# local config
+kotlin/new.properties
 
 # typescript
 *.tsbuildinfo
