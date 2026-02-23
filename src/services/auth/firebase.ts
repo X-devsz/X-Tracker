@@ -1,8 +1,8 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { getApps, initializeApp } from 'firebase/app';
 import { getAuth, getReactNativePersistence, initializeAuth } from 'firebase/auth';
+import { secureAuthStorage } from './secureStore';
 
 type FirebaseConfig = {
   apiKey: string;
@@ -64,7 +64,7 @@ const createAuth = (app: ReturnType<typeof initializeApp>) => {
 
   try {
     return initializeAuth(app, {
-      persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+      persistence: getReactNativePersistence(secureAuthStorage),
     });
   } catch (error) {
     return getAuth(app);

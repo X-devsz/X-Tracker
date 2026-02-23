@@ -1,6 +1,7 @@
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { getFirebaseAuth } from './firebase';
+import { setAuthToken } from './secureStore';
 import type { AuthUser } from './types';
 
 const mapUser = (user: User): AuthUser => ({
@@ -17,7 +18,16 @@ export const subscribeToAuthState = (onChange: (user: AuthUser | null) => void) 
   }
 
   return onAuthStateChanged(auth, (user) => {
-    onChange(user ? mapUser(user) : null);
+    void (async () => {
+      if (user) {
+        const token = await user.getIdToken();
+        await setAuthToken(token);
+        onChange(mapUser(user));
+      } else {
+        await setAuthToken(null);
+        onChange(null);
+      }
+    })();
   });
 };
 
@@ -28,4 +38,5 @@ export const signOutUser = async () => {
   }
 
   await signOut(auth);
+  await setAuthToken(null);
 };

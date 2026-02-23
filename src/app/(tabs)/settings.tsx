@@ -25,6 +25,7 @@ import {
   exportExpensesXlsx,
   filterExpensesByQuery,
 } from '../../services/export/expenses';
+import { useRouter } from 'expo-router';
 
 const themeOptions: { value: ThemeMode; label: string; iconName: string }[] = [
   { value: 'system', label: 'System', iconName: 'desktop-outline' },
@@ -39,6 +40,7 @@ const getInitials = (email?: string | null) => {
 };
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const theme = useTheme();
   const { themeMode, setThemeMode, currency, setCurrency } = useSettingsStore();
   const { dateRange, categoryId, searchQuery } = useFilterStore();
@@ -84,6 +86,24 @@ export default function SettingsScreen() {
         },
       },
     ]);
+  };
+
+  const handleSwitchAccount = () => {
+    Alert.alert(
+      'Switch account',
+      'This will sign you out so you can sign in with another account.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Continue',
+          style: 'destructive',
+          onPress: () => {
+            signOut();
+            router.replace('/(auth)/login');
+          },
+        },
+      ],
+    );
   };
 
   const handleExport = async () => {
@@ -211,6 +231,14 @@ export default function SettingsScreen() {
                   initials={getInitials(user.email)}
                 />
               ),
+            },
+            {
+              id: 'switch',
+              label: 'Switch account',
+              description: 'Sign in with a different account',
+              iconName: 'swap-horizontal-outline',
+              type: 'action',
+              onPress: handleSwitchAccount,
             },
             {
               id: 'signout',
