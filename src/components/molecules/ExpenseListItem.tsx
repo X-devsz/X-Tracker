@@ -55,7 +55,7 @@ export function ExpenseListItem({
             </Text>
             <Text color="$textSecondary" fontSize={12} numberOfLines={1}>
               {category}
-              {note ? ` • ${note}` : ''}
+              {note ? ` - ${note}` : ''}
             </Text>
           </YStack>
         </XStack>

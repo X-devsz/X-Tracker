@@ -13,6 +13,14 @@ const AmountContainer = styled(YStack, {
   gap: 8,
   animation: 'fast',
   pressStyle: { borderColor: '$borderFocused', backgroundColor: '$surfaceHover' },
+  variants: {
+    error: {
+      true: {
+        borderColor: '$borderError',
+        pressStyle: { borderColor: '$borderError', backgroundColor: '$surfaceHover' },
+      },
+    },
+  } as const,
 });
 
 const AmountField = styled(AppInput, {
@@ -82,7 +90,7 @@ export function AmountInput({
       <Text color="$textSecondary" fontSize={12} fontWeight="600">
         {label}
       </Text>
-      <AmountContainer>
+      <AmountContainer error={Boolean(error)}>
         <XStack alignItems="center" gap={8}>
           <Text color="$textSecondary" fontSize={16} fontWeight="600">
             {currencySymbol}
