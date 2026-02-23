@@ -101,9 +101,9 @@
 
 | #       | Feature                                            | Status | Details                                   |
 | ------- | -------------------------------------------------- | ------ | ----------------------------------------- |
-| F-013.1 | `ScreenContainer` - safe area + scrollable wrapper | [x]    | ScreenContainer template with insets + padding controls |
+| F-013.1 | `ScreenContainer` - safe area + scrollable wrapper | [x]    | ScreenContainer template used across tab screens        |
 | F-013.2 | `AuthLayout` - centered auth screen layout         | [x]    | AuthTemplate used across auth screens     |
-| F-013.3 | `ModalLayout` - modal screen layout                | [x]    | ModalLayout with header actions + scrollable content |
+| F-013.3 | `ModalLayout` - modal screen layout                | [x]    | ModalLayout with header actions used in add expense modal |
 
 ---
 

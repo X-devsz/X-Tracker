@@ -1,112 +1,79 @@
 /**
- * Insights Screen — Charts and analytics
+ * Insights Screen - Charts and analytics
  */
-import { styled, Text, YStack, XStack } from 'tamagui';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from 'tamagui';
+import { Text, XStack, YStack } from 'tamagui';
+import { categoryColors } from '../../theme';
+import {
+  AppBadge,
+  AppCard,
+  CategoryBreakdown,
+  ScreenContainer,
+  SpendingTrendChart,
+} from '../../components';
 
-const ChartPlaceholder = styled(YStack, {
-  backgroundColor: '$cardBackground',
-  borderRadius: 16,
-  borderWidth: 1,
-  borderColor: '$cardBorder',
-  padding: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: 200,
-  gap: 12,
-  animation: 'medium',
-  enterStyle: { opacity: 0, y: 10 },
-  shadowColor: '#0B1220',
-  shadowOpacity: 0.08,
-  shadowRadius: 10,
-  shadowOffset: { width: 0, height: 6 },
-  elevation: 4,
-});
+const breakdownData = [
+  { label: 'Food', value: 420, color: categoryColors.food },
+  { label: 'Transport', value: 180, color: categoryColors.transport },
+  { label: 'Shopping', value: 260, color: categoryColors.shopping },
+];
 
-const StatRow = styled(XStack, {
-  backgroundColor: '$cardBackground',
-  borderRadius: 12,
-  borderWidth: 1,
-  borderColor: '$cardBorder',
-  padding: 16,
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  animation: 'fast',
-  enterStyle: { opacity: 0, y: 6 },
-  pressStyle: { scale: 0.985, backgroundColor: '$surfaceHover' },
-});
+const trendData = [
+  { value: 120, label: 'Jan' },
+  { value: 180, label: 'Feb' },
+  { value: 160, label: 'Mar' },
+  { value: 260, label: 'Apr' },
+  { value: 220, label: 'May' },
+  { value: 300, label: 'Jun' },
+];
+
+const topCategories = [
+  { label: 'Food', total: 420, color: categoryColors.food },
+  { label: 'Shopping', total: 260, color: categoryColors.shopping },
+  { label: 'Transport', total: 180, color: categoryColors.transport },
+];
 
 export default function InsightsScreen() {
-  const insets = useSafeAreaInsets();
-  const theme = useTheme();
-
   return (
-    <YStack
-      flex={1}
-      backgroundColor="$background"
-      paddingTop={insets.top + 16}
-      paddingHorizontal={16}
-      gap={20}
-    >
-      {/* Header */}
+    <ScreenContainer gap={20}>
       <Text color="$textPrimary" fontSize={24} fontWeight="700">
         Insights
       </Text>
 
-      {/* Category Breakdown Chart */}
-      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <Text color="$textPrimary" fontSize={17} fontWeight="600">
-          Category Breakdown
-        </Text>
-        <ChartPlaceholder>
-          <Ionicons name="pie-chart-outline" size={48} color={theme.textTertiary?.val} />
-          <Text color="$textSecondary" fontSize={13} textAlign="center">
-            Add expenses to see category breakdown
-          </Text>
-        </ChartPlaceholder>
-      </YStack>
+      <CategoryBreakdown data={breakdownData} />
 
-      {/* Spending Trend */}
-      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <Text color="$textPrimary" fontSize={17} fontWeight="600">
-          Spending Trend
-        </Text>
-        <ChartPlaceholder>
-          <Ionicons name="trending-up" size={48} color={theme.textTertiary?.val} />
-          <Text color="$textSecondary" fontSize={13} textAlign="center">
-            Track your spending over time
-          </Text>
-        </ChartPlaceholder>
-      </YStack>
+      <SpendingTrendChart data={trendData} />
 
-      {/* Top Categories */}
-      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
+      <YStack gap={12}>
         <Text color="$textPrimary" fontSize={17} fontWeight="600">
           Top Categories
         </Text>
-        <YStack gap={8}>
-          {['Food', 'Transport', 'Shopping'].map((cat, i) => (
-            <StatRow key={cat}>
-              <XStack alignItems="center" gap={12}>
-                <YStack
-                  width={36}
-                  height={36}
-                  borderRadius={12}
-                  backgroundColor="$primaryLight"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Text fontSize={15}>{['🍕', '🚗', '🛍️'][i]}</Text>
-                </YStack>
-                <Text color="$textPrimary" fontSize={15} fontWeight="500">{cat}</Text>
+        <YStack gap={10}>
+          {topCategories.map((category) => (
+            <AppCard key={category.label} elevated padding={16}>
+              <XStack alignItems="center" justifyContent="space-between">
+                <XStack alignItems="center" gap={10}>
+                  <YStack
+                    width={36}
+                    height={36}
+                    borderRadius={12}
+                    backgroundColor={`${category.color}20`}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Text color="$textPrimary" fontSize={14} fontWeight="600">
+                      {category.label.slice(0, 1)}
+                    </Text>
+                  </YStack>
+                  <Text color="$textPrimary" fontSize={15} fontWeight="600">
+                    {category.label}
+                  </Text>
+                </XStack>
+                <AppBadge label={`$${category.total}`} tone="neutral" />
               </XStack>
-              <Text color="$textSecondary" fontSize={15} fontWeight="600">₹0</Text>
-            </StatRow>
+            </AppCard>
           ))}
         </YStack>
       </YStack>
-    </YStack>
+    </ScreenContainer>
   );
 }

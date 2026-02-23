@@ -33,6 +33,7 @@ export interface SettingsRow {
   label: string;
   description?: string;
   iconName?: IconName;
+  tone?: 'default' | 'danger';
   type?: 'toggle' | 'navigation' | 'action';
   value?: boolean;
   detail?: string;
@@ -60,6 +61,9 @@ export function SettingsGroup({ title, rows }: SettingsGroupProps) {
         {rows.map((row, index) => {
           const isToggle = row.type === 'toggle';
           const isNavigation = row.type === 'navigation';
+          const labelColor = row.tone === 'danger' ? '$danger' : '$textPrimary';
+          const iconColor =
+            row.tone === 'danger' ? theme.danger?.val : theme.textSecondary?.val;
 
           return (
             <YStack key={row.id}>
@@ -69,11 +73,11 @@ export function SettingsGroup({ title, rows }: SettingsGroupProps) {
                     <Ionicons
                       name={row.iconName}
                       size={18}
-                      color={theme.textSecondary?.val}
+                      color={iconColor}
                     />
                   ) : null}
                   <RowText>
-                    <Text color="$textPrimary" fontSize={15} fontWeight="600">
+                    <Text color={labelColor} fontSize={15} fontWeight="600">
                       {row.label}
                     </Text>
                     {row.description ? (
