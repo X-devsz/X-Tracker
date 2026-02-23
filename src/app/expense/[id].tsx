@@ -1,20 +1,21 @@
 /**
- * Add Expense Screen - Modal form
+ * Edit Expense Screen - Modal form with pre-filled data
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { CategoryOption } from '../../components/molecules/CategoryPicker';
 import { AppSpinner, ErrorCard, ExpenseForm, ModalLayout } from '../../components';
 import { useCategoryStore, useExpenseStore, useSettingsStore } from '../../store';
 import { resolveCategoryColor, resolveCategoryIcon } from '../../utils/categories';
 import { getCurrencySymbol, parseAmountToMinor } from '../../utils/formatters';
 
-export default function AddExpenseScreen() {
+export default function EditExpenseScreen() {
   const router = useRouter();
-  const { currency } = useSettingsStore();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { currency: defaultCurrency } = useSettingsStore();
   const { categories, isLoading, error, fetchCategories } = useCategoryStore();
-  const { createExpense } = useExpenseStore();
+  const { getExpenseById, updateExpense } = useExpenseStore();
   const [amount, setAmount] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -27,8 +28,15 @@ export default function AddExpenseScreen() {
     category?: string;
     date?: string;
   }>({});
+  const [expenseCurrency, setExpenseCurrency] = useState(defaultCurrency);
+  const [isLoadingExpense, setIsLoadingExpense] = useState(true);
+  const [expenseError, setExpenseError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
 
-  const currencySymbol = useMemo(() => getCurrencySymbol(currency), [currency]);
+  const currencySymbol = useMemo(
+    () => getCurrencySymbol(expenseCurrency),
+    [expenseCurrency],
+  );
 
   useEffect(() => {
     fetchCategories();
@@ -51,6 +59,48 @@ export default function AddExpenseScreen() {
     }
   }, [categoryOptions, selectedCategoryId]);
 
+  useEffect(() => {
+    let isActive = true;
+    const loadExpense = async () => {
+      if (!id || Array.isArray(id)) {
+        setExpenseError('Invalid expense.');
+        setIsLoadingExpense(false);
+        return;
+      }
+      setIsLoadingExpense(true);
+      setExpenseError(null);
+      try {
+        const expense = await getExpenseById(id);
+        if (!expense) {
+          setExpenseError('Expense not found.');
+          return;
+        }
+        if (!isActive) return;
+        setAmount((expense.amountMinor / 100).toFixed(2));
+        setSelectedCategoryId(expense.categoryId);
+        setDate(expense.occurredAt);
+        setNote(expense.note ?? '');
+        setMerchant(expense.merchant ?? '');
+        setPaymentMethod(expense.paymentMethod ?? '');
+        setExpenseCurrency(expense.currency ?? defaultCurrency);
+      } catch (err) {
+        if (isActive) {
+          setExpenseError(err instanceof Error ? err.message : 'Unable to load expense.');
+        }
+      } finally {
+        if (isActive) {
+          setIsLoadingExpense(false);
+        }
+      }
+    };
+
+    loadExpense();
+
+    return () => {
+      isActive = false;
+    };
+  }, [id, getExpenseById, defaultCurrency, reloadToken]);
+
   const handleClose = useCallback(() => {
     if (router.canGoBack()) {
       router.back();
@@ -60,6 +110,7 @@ export default function AddExpenseScreen() {
   }, [router]);
 
   const handleSubmit = useCallback(async () => {
+    if (!id || Array.isArray(id)) return;
     const nextErrors: { amount?: string; category?: string; date?: string } = {};
     const amountMinor = parseAmountToMinor(amount);
 
@@ -80,9 +131,9 @@ export default function AddExpenseScreen() {
 
     setIsSubmitting(true);
     try {
-      await createExpense({
+      await updateExpense(id, {
         amountMinor,
-        currency,
+        currency: expenseCurrency,
         categoryId: selectedCategoryId!,
         occurredAt: date!,
         note: note.trim() ? note.trim() : undefined,
@@ -92,31 +143,39 @@ export default function AddExpenseScreen() {
       handleClose();
     } catch (err) {
       Alert.alert(
-        'Save failed',
-        err instanceof Error ? err.message : 'Unable to save expense.',
+        'Update failed',
+        err instanceof Error ? err.message : 'Unable to update expense.',
       );
     } finally {
       setIsSubmitting(false);
     }
   }, [
+    id,
     amount,
     selectedCategoryId,
     date,
     note,
     merchant,
     paymentMethod,
-    createExpense,
-    currency,
+    updateExpense,
+    expenseCurrency,
     handleClose,
   ]);
 
   return (
     <ModalLayout
-      title="Add Expense"
-      subtitle="Log your spending quickly"
+      title="Edit Expense"
+      subtitle="Update your expense"
       onClose={handleClose}
     >
-      {isLoading && categoryOptions.length === 0 ? (
+      {isLoadingExpense ? (
+        <AppSpinner size="large" />
+      ) : expenseError ? (
+        <ErrorCard
+          message={expenseError}
+          onRetry={() => setReloadToken((value) => value + 1)}
+        />
+      ) : isLoading && categoryOptions.length === 0 ? (
         <AppSpinner size="large" />
       ) : error && categoryOptions.length === 0 ? (
         <ErrorCard message={error} onRetry={fetchCategories} />
@@ -137,7 +196,7 @@ export default function AddExpenseScreen() {
           onPaymentMethodChange={setPaymentMethod}
           currencySymbol={currencySymbol}
           onSubmit={handleSubmit}
-          submitLabel="Save Expense"
+          submitLabel="Update Expense"
           isSubmitting={isSubmitting}
           errors={formErrors}
         />

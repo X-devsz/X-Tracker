@@ -159,12 +159,12 @@
 
 | #       | Feature                                                         | Status | Details                                                                                   |
 | ------- | --------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------- |
-| F-030.1 | **Home Screen** - monthly total, recent expenses, quick add FAB | [/]    | `(tabs)/index.tsx` - dashboard layout + header icon buttons; data wiring pending          |
-| F-030.2 | **Add Expense Screen** - full expense form (modal)              | [/]    | `expense/add.tsx` - styled placeholder form + animated CTA; data wiring pending           |
-| F-030.3 | **Edit Expense Screen** - pre-filled form (modal)               | [ ]    | `expense/[id].tsx` - same form, load existing data, update action                         |
-| F-030.4 | **History Screen** - filtered expense list                      | [/]    | `(tabs)/history.tsx` - filter chips + swipeable demo rows; data wiring/pagination pending |
-| F-030.5 | **Insights Screen** - charts and analytics                      | [ ]    | `(tabs)/insights.tsx` - CategoryBreakdown (pie) + SpendingTrend (line)                    |
-| F-030.6 | **Settings Screen** - app configuration                         | [/]    | Theme toggle, currency, account info, sign-out                                            |
+| F-030.1 | **Home Screen** - monthly total, recent expenses, quick add FAB | [x]    | `(tabs)/index.tsx` - dashboard uses stores for summary, recent list, quick stats, FAB      |
+| F-030.2 | **Add Expense Screen** - full expense form (modal)              | [x]    | `expense/add.tsx` - ExpenseForm wired to categories + create action                        |
+| F-030.3 | **Edit Expense Screen** - pre-filled form (modal)               | [x]    | `expense/[id].tsx` - loads expense, pre-fills form, updates on save                        |
+| F-030.4 | **History Screen** - filtered expense list                      | [x]    | `(tabs)/history.tsx` - filters + search + swipe edit/delete + refresh                       |
+| F-030.5 | **Insights Screen** - charts and analytics                      | [x]    | `(tabs)/insights.tsx` - breakdown + trend data from DB                                     |
+| F-030.6 | **Settings Screen** - app configuration                         | [x]    | Theme toggle, currency picker, account info, sign-out                                      |
 | F-030.7 | **Welcome Screen** - onboarding                                 | [x]    | `(auth)/welcome.tsx` - Landing hero + CTA                                                 |
 | F-030.8 | **Sign-In Screen** - Google auth                                | [x]    | `(auth)/login.tsx` + `(auth)/signup.tsx` - styled for light/dark themes                   |
 
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 60        | 8           | 2        |
+| Phase 1 - Core MVP        | 86             | 66        | 4           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **82**    | **10**      | **13**   |
+| **Total**                 | **151**        | **88**    | **6**       | **13**   |
