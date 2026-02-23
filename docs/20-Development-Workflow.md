@@ -1,6 +1,6 @@
 # Development Workflow — Commands, EAS Builds & CI/CD Pipeline
 
-**Last updated:** 2026-02-11  
+**Last updated:** 2026-02-17  
 **Build system:** Expo + EAS Build | **CI:** GitHub Actions (recommended)
 
 ---
@@ -136,6 +136,21 @@ eas build --profile production --platform all
 # Submit to stores
 eas submit --profile production --platform android
 eas submit --profile production --platform ios
+```
+
+### 3.4 Native Dependency Changes (Dev Client Rebuild)
+
+If you add or update a native module (example: `react-native-pager-view` for swipeable tabs),
+you must rebuild and reinstall the dev client. Otherwise you'll see errors like:
+`Can't find ViewManager 'RNCViewPager'`.
+
+```bash
+# EAS dev client rebuild
+eas build --profile development --platform android
+
+# Local rebuild (if using expo run)
+npx expo prebuild --clean
+npx expo run:android
 ```
 
 ---
@@ -279,7 +294,27 @@ style: fix lint warnings in theme
 const apiKey = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 ```
 
-### 6.3 EAS Secrets (Production)
+### 6.3 Feature Flags (Public env)
+
+```text
+# Toggle Firebase auth UI + guards
+EXPO_PUBLIC_AUTH_ENABLED=false
+```
+
+```json
+// eas.json (per-profile env overrides for dev/preview)
+{
+  "build": {
+    "development": {
+      "env": {
+        "EXPO_PUBLIC_AUTH_ENABLED": "false"
+      }
+    }
+  }
+}
+```
+
+### 6.4 EAS Secrets (Production)
 
 ```bash
 # Set secrets for EAS builds

@@ -1,122 +1,163 @@
 /**
- * Add Expense Screen — Modal form
- *
- * Placeholder styled layout.
+ * Add Expense Screen - Modal form
  */
-import { styled, Text, YStack, XStack } from 'tamagui';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from 'tamagui';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
-
-const FormField = styled(YStack, {
-  gap: 4,
-  animation: 'fast',
-  enterStyle: { opacity: 0, y: 8 },
-});
-
-const MockInput = styled(XStack, {
-  backgroundColor: '$inputBackground',
-  borderRadius: 12,
-  borderWidth: 1,
-  borderColor: '$inputBorder',
-  height: 48,
-  paddingHorizontal: 16,
-  alignItems: 'center',
-  animation: 'fast',
-  pressStyle: { borderColor: '$borderFocused', backgroundColor: '$surfaceHover' },
-});
+import type { CategoryOption } from '../../components/molecules/CategoryPicker';
+import { AppSpinner, ErrorCard, ExpenseForm, ModalLayout, useAlertDialog } from '../../components';
+import { useCategoryStore, useExpenseStore, useSettingsStore } from '../../store';
+import { settingsStorage } from '../../services/storage/mmkv';
+import { validateExpenseInput } from '../../domain/validators/expense.validator';
+import { resolveCategoryColor, resolveCategoryIcon } from '../../utils/categories';
+import { getCurrencySymbol, parseAmountToMinor } from '../../utils/formatters';
+import { haptics } from '../../services/haptics';
 
 export default function AddExpenseScreen() {
-  const theme = useTheme();
   const router = useRouter();
+  const { alertDialog, showAlert } = useAlertDialog();
+  const { currency } = useSettingsStore();
+  const { categories, isLoading, error, fetchCategories } = useCategoryStore();
+  const { createExpense } = useExpenseStore();
+  const [amount, setAmount] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [note, setNote] = useState('');
+  const [merchant, setMerchant] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState<{
+    amount?: string;
+    category?: string;
+    date?: string;
+  }>({});
+
+  const currencySymbol = useMemo(() => getCurrencySymbol(currency), [currency]);
+
+  useEffect(() => {
+    fetchCategories(false);
+  }, [fetchCategories]);
+
+  const categoryOptions = useMemo<CategoryOption[]>(
+    () =>
+      categories.map((category) => ({
+        id: category.id,
+        label: category.name,
+        iconName: resolveCategoryIcon(category.icon) as CategoryOption['iconName'],
+        color: resolveCategoryColor(category.colorToken),
+      })),
+    [categories],
+  );
+
+  useEffect(() => {
+    let isActive = true;
+    const selectDefault = async () => {
+      if (selectedCategoryId || categoryOptions.length === 0) {
+        return;
+      }
+
+      const lastUsed = await settingsStorage.getLastUsedCategory();
+      if (!isActive) return;
+      if (lastUsed && categoryOptions.some((category) => category.id === lastUsed)) {
+        setSelectedCategoryId(lastUsed);
+        return;
+      }
+      setSelectedCategoryId(categoryOptions[0]?.id);
+    };
+
+    selectDefault();
+
+    return () => {
+      isActive = false;
+    };
+  }, [categoryOptions, selectedCategoryId]);
+
+  const handleClose = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)');
+  }, [router]);
+
+  const handleSubmit = useCallback(async () => {
+    const amountMinor = parseAmountToMinor(amount);
+    const nextErrors = validateExpenseInput({
+      amountMinor,
+      categoryId: selectedCategoryId,
+      occurredAt: date ?? null,
+    });
+
+    setFormErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await createExpense({
+        amountMinor,
+        currency,
+        categoryId: selectedCategoryId!,
+        occurredAt: date!,
+        note: note.trim() ? note.trim() : undefined,
+        merchant: merchant.trim() ? merchant.trim() : undefined,
+        paymentMethod: paymentMethod.trim() ? paymentMethod.trim() : undefined,
+      });
+      haptics.success();
+      handleClose();
+    } catch (err) {
+      showAlert(
+        'Save failed',
+        err instanceof Error ? err.message : 'Unable to save expense.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [
+    amount,
+    selectedCategoryId,
+    date,
+    note,
+    merchant,
+    paymentMethod,
+    createExpense,
+    currency,
+    handleClose,
+  ]);
 
   return (
-    <YStack
-      flex={1}
-      backgroundColor="$background"
-      padding={16}
-      gap={20}
+    <ModalLayout
+      title="Add Expense"
+      subtitle="Log your spending quickly"
+      onClose={handleClose}
     >
-      {/* Amount */}
-      <YStack alignItems="center" gap={8} paddingVertical={24} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <Text color="$textSecondary" fontSize={13} fontWeight="500">
-          Amount
-        </Text>
-        <Text color="$textPrimary" fontSize={34} fontWeight="700">
-          ₹0.00
-        </Text>
-      </YStack>
-
-      {/* Form Fields */}
-      <YStack gap={16} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <FormField>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500">
-            Category
-          </Text>
-          <MockInput>
-            <Ionicons name="grid-outline" size={18} color={theme.textTertiary?.val} />
-            <Text color="$textTertiary" fontSize={15} marginLeft={12}>
-              Select category
-            </Text>
-          </MockInput>
-        </FormField>
-
-        <FormField>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500">
-            Date
-          </Text>
-          <MockInput>
-            <Ionicons name="calendar-outline" size={18} color={theme.textTertiary?.val} />
-            <Text color="$textPrimary" fontSize={15} marginLeft={12}>
-              Today
-            </Text>
-          </MockInput>
-        </FormField>
-
-        <FormField>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500">
-            Note (optional)
-          </Text>
-          <MockInput>
-            <Ionicons name="create-outline" size={18} color={theme.textTertiary?.val} />
-            <Text color="$textTertiary" fontSize={15} marginLeft={12}>
-              Add a note...
-            </Text>
-          </MockInput>
-        </FormField>
-
-        <FormField>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500">
-            Merchant (optional)
-          </Text>
-          <MockInput>
-            <Ionicons name="storefront-outline" size={18} color={theme.textTertiary?.val} />
-            <Text color="$textTertiary" fontSize={15} marginLeft={12}>
-              Where did you spend?
-            </Text>
-          </MockInput>
-        </FormField>
-      </YStack>
-
-      {/* Save Button */}
-      <YStack flex={1} justifyContent="flex-end" paddingBottom={20}>
-        <XStack
-          backgroundColor="$primary"
-          borderRadius={12}
-          height={52}
-          alignItems="center"
-          justifyContent="center"
-          gap={8}
-          animation="bouncy"
-          pressStyle={{ scale: 0.98 }}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="checkmark" size={20} color={theme.textInverse?.val} />
-          <Text color="$textInverse" fontSize={15} fontWeight="600">
-            Save Expense
-          </Text>
-        </XStack>
-      </YStack>
-    </YStack>
+      {alertDialog}
+      {isLoading && categoryOptions.length === 0 ? (
+        <AppSpinner />
+      ) : error && categoryOptions.length === 0 ? (
+        <ErrorCard message={error} onRetry={fetchCategories} />
+      ) : (
+        <ExpenseForm
+          amount={amount}
+          onAmountChange={setAmount}
+          categories={categoryOptions}
+          selectedCategoryId={selectedCategoryId}
+          onCategorySelect={(category) => setSelectedCategoryId(category.id)}
+          date={date}
+          onDateChange={setDate}
+          note={note}
+          onNoteChange={setNote}
+          merchant={merchant}
+          onMerchantChange={setMerchant}
+          paymentMethod={paymentMethod}
+          onPaymentMethodChange={setPaymentMethod}
+          currencySymbol={currencySymbol}
+          onSubmit={handleSubmit}
+          submitLabel="Save Expense"
+          isSubmitting={isSubmitting}
+          errors={formErrors}
+        />
+      )}
+    </ModalLayout>
   );
 }

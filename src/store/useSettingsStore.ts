@@ -31,7 +31,7 @@ export const useSettingsStore = create<SettingsStore>()(
     (set) => ({
       // Defaults (used until persisted state is hydrated)
       themeMode: 'system',
-      currency: 'INR',
+      currency: 'LKR',
       hasOnboarded: false,
 
       setThemeMode: (mode) => set({ themeMode: mode }),

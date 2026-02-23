@@ -1,10 +1,14 @@
-import { styled } from 'tamagui';
-import { TextInput } from 'react-native';
+import { Input, styled } from 'tamagui';
+import { fontSize, space } from '@/theme';
 
-export const AppInput = styled(TextInput, {
+export const AppInput = styled(Input, {
   flex: 1,
-  height: 48,
-  fontSize: 14,
+  minWidth: space[0],
+  height: '100%',
+  fontFamily: '$body',
+  fontSize: fontSize.md,
   color: '$textPrimary',
-  paddingHorizontal: 0,
+  paddingHorizontal: space[0],
+  paddingVertical: space[0],
+  unstyled: true,
 });

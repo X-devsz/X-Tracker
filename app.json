@@ -22,9 +22,7 @@
       "googleServicesFile": "./google-services.json",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "permissions": [
-        "android.permission.INTERNET"
-      ]
+      "permissions": ["android.permission.INTERNET"]
     },
     "ios": {
       "bundleIdentifier": "com.ifham.expensetracker",
@@ -35,17 +33,11 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": [
-      [
-        "expo-router",
-        {
-          "root": "src/app"
-        }
-      ],
-      "@react-native-google-signin/google-signin",
-      "expo-sqlite",
-      "expo-web-browser",
-      "expo-secure-store"
-    ]
+    "plugins": [["expo-router"], "@react-native-google-signin/google-signin", "expo-secure-store"],
+    "extra": {
+      "eas": {
+        "projectId": "78e952fc-6b81-4273-9e59-0bb7720124dc"
+      }
+    }
   }
 }

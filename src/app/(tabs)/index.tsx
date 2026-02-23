@@ -1,214 +1,333 @@
 /**
- * Home Screen — Dashboard
+ * Home Screen - Dashboard
  *
- * Placeholder with themed styling. Will show monthly summary + recent expenses.
+ * Overview with monthly summary and recent expenses.
  */
-import { styled, Text, YStack, XStack } from 'tamagui';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useCallback, useEffect, useMemo, useState, type ComponentProps } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from 'tamagui';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import { subDays } from 'date-fns';
+import { Text, XStack, YStack, useTheme } from 'tamagui';
+import {
+  AppCard,
+  AppIconButton,
+  AppSkeleton,
+  EmptyState,
+  ErrorCard,
+  ExpenseListItem,
+  MonthlySummaryCard,
+  QuickAddFAB,
+  ScreenLayout,
+} from '../../components';
+import { useCategoryStore, useExpenseStore, useSettingsStore } from '../../store';
+import { expensesRepo } from '../../repositories';
+import { resolveCategoryColor, resolveCategoryIcon } from '../../utils/categories';
+import {
+  formatAmountMinor,
+  formatExpenseDate,
+  getCurrencySymbol,
+} from '../../utils/formatters';
+import { useScreenRenderTimer } from '../../services/performance';
 
-const SummaryCard = styled(YStack, {
-  backgroundColor: "$primary",
-  borderRadius: 16,
-  borderWidth: 1,
-  borderColor: "rgba(255,255,255,0.15)",
-  padding: 20,
-  gap: 8,
-  animation: "medium",
-  enterStyle: { opacity: 0, y: 12 },
-  pressStyle: { scale: 0.985 },
-  shadowColor: "#0B1220",
-  shadowOpacity: 0.25,
-  shadowRadius: 18,
-  shadowOffset: { width: 0, height: 10 },
-  elevation: 8,
-});
-
-const QuickStatCard = styled(YStack, {
-  backgroundColor: "$cardBackground",
-  borderRadius: 12,
-  borderWidth: 1,
-  borderColor: "$cardBorder",
-  padding: 16,
-  flex: 1,
-  gap: 4,
-  animation: "fast",
-  enterStyle: { opacity: 0, y: 8 },
-  hoverStyle: { borderColor: "$primary", backgroundColor: "$surface" },
-  pressStyle: { scale: 0.98, backgroundColor: "$surfaceHover" },
-  shadowColor: "#0B1220",
-  shadowOpacity: 0.08,
-  shadowRadius: 10,
-  shadowOffset: { width: 0, height: 6 },
-  elevation: 4,
-});
-
-const IconButton = styled(XStack, {
-  width: 44,
-  height: 44,
-  borderRadius: 12,
-  alignItems: "center",
-  justifyContent: "center",
-  animation: "fast",
-  pressStyle: { scale: 0.96 },
-  hoverStyle: { opacity: 0.9 },
-  variants: {
-    tone: {
-      surface: {
-        backgroundColor: "$surface",
-        borderWidth: 1,
-        borderColor: "$border",
-      },
-      primary: {
-        backgroundColor: "$primary",
-      },
-      soft: {
-        backgroundColor: "$primaryLight",
-      },
-    },
-  } as const,
-});
+type IconName = keyof typeof Ionicons.glyphMap;
+type StatCard = {
+  id: string;
+  label: string;
+  value: string;
+  icon: IconName;
+  backgroundColor: ComponentProps<typeof XStack>['backgroundColor'];
+  iconColor: 'success' | 'warning';
+};
 
 export default function HomeScreen() {
-  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const router = useRouter();
+  const { currency } = useSettingsStore();
+  const { categories, fetchCategories } = useCategoryStore();
+  const {
+    recentExpenses,
+    monthlySummary,
+    summaryQuery,
+    isLoadingRecent,
+    isLoadingSummary,
+    error,
+    fetchRecent,
+    fetchMonthlySummary,
+  } = useExpenseStore();
+  const [changePercent, setChangePercent] = useState<number | undefined>(undefined);
+  const [changeLabel, setChangeLabel] = useState('vs last month');
+
+  const currencySymbol = useMemo(() => getCurrencySymbol(currency), [currency]);
+  const isSummaryLoading = isLoadingSummary && !monthlySummary;
+  const isRecentLoading = isLoadingRecent && recentExpenses.length === 0;
+  const isStatsLoading = isLoadingSummary || categories.length === 0;
+  const isRefreshing = isLoadingSummary || isLoadingRecent;
+  const isRenderReady = !isLoadingSummary && !isLoadingRecent;
+
+  const quickStats = useMemo<StatCard[]>(
+    () => [
+      {
+        id: 'transactions',
+        label: 'Transactions',
+        value: `${monthlySummary?.count ?? 0}`,
+        icon: 'arrow-down',
+        backgroundColor: '$successLight',
+        iconColor: 'success',
+      },
+      {
+        id: 'categories',
+        label: 'Categories',
+        value: `${categories.length}`,
+        icon: 'layers',
+        backgroundColor: '$warningLight',
+        iconColor: 'warning',
+      },
+    ],
+    [monthlySummary?.count, categories.length],
+  );
+
+  const recentItems = useMemo(
+    () =>
+      recentExpenses.slice(0, 4).map((expense) => {
+        const color = resolveCategoryColor(expense.categoryColorToken);
+        return {
+          id: expense.id,
+          title: expense.merchant ?? expense.categoryName ?? 'Expense',
+          category: expense.categoryName ?? 'Uncategorized',
+          amount: formatAmountMinor(expense.amountMinor),
+          date: formatExpenseDate(expense.occurredAt),
+          note: expense.note ?? undefined,
+          currencySymbol,
+          iconName: resolveCategoryIcon(
+            expense.categoryIcon,
+            'receipt-outline',
+          ) as IconName,
+          iconColor: color,
+          iconBackgroundColor: `${color}20`,
+        };
+      }),
+    [recentExpenses, currencySymbol],
+  );
+
+  const refreshDashboard = useCallback(() => {
+    const endDate = new Date();
+    const startDate = subDays(endDate, 30);
+    fetchRecent({ startDate, endDate });
+    fetchMonthlySummary(endDate.getFullYear(), endDate.getMonth() + 1);
+    fetchCategories(false);
+  }, [fetchRecent, fetchMonthlySummary, fetchCategories]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshDashboard();
+    }, [refreshDashboard]),
+  );
+
+  useEffect(() => {
+    let isActive = true;
+    if (!monthlySummary) {
+      setChangePercent(undefined);
+      return;
+    }
+
+    const { year, month } = summaryQuery;
+    const previousDate = new Date(year, month - 2, 1);
+    const prevYear = previousDate.getFullYear();
+    const prevMonth = previousDate.getMonth() + 1;
+
+    expensesRepo.getMonthlySummary(prevYear, prevMonth).then((prev) => {
+      if (!isActive) return;
+      if (prev.totalMinor === 0) {
+        setChangePercent(0);
+        setChangeLabel('no previous data');
+        return;
+      }
+      const diff = monthlySummary.totalMinor - prev.totalMinor;
+      setChangePercent((diff / prev.totalMinor) * 100);
+      setChangeLabel('vs last month');
+    });
+
+    return () => {
+      isActive = false;
+    };
+  }, [monthlySummary, summaryQuery]);
+
+  useScreenRenderTimer('Home', isRenderReady);
 
   return (
-    <YStack
-      flex={1}
-      backgroundColor="$background"
-      paddingTop={insets.top + 16}
-      paddingHorizontal={16}
-      gap={20}
-    >
-      {/* Header */}
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500">
-            Welcome back
-          </Text>
-          <Text color="$textPrimary" fontSize={24} fontWeight="700">
-            Dashboard
-          </Text>
-        </YStack>
-        <XStack gap={10} alignItems="center">
-          <IconButton tone="primary" onPress={() => router.push("/expense/add")}>
-            <Ionicons name="add" size={22} color={theme.textInverse?.val} />
-          </IconButton>
-          <IconButton tone="soft">
-            <Ionicons name="person" size={20} color={theme.primary?.val} />
-          </IconButton>
-        </XStack>
-      </XStack>
-
-      {/* Monthly Summary Card */}
-      <SummaryCard>
-        <Text color="$textInverse" fontSize={13} fontWeight="500" opacity={0.8}>
-          Total Spent This Month
-        </Text>
-        <Text color="$textInverse" fontSize={34} fontWeight="700">
-          ₹0.00
-        </Text>
-        <XStack gap={4} alignItems="center">
-          <Ionicons
-            name="trending-up"
-            size={14}
-            color="rgba(255,255,255,0.7)"
-          />
-          <Text color="$textInverse" fontSize={11} opacity={0.7}>
-            No expenses yet
-          </Text>
-        </XStack>
-      </SummaryCard>
-
-      {/* Quick Stats */}
-      <XStack gap={12} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <QuickStatCard>
-          <XStack
-            width={36}
-            height={36}
-            borderRadius={12}
-            backgroundColor="$successLight"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Ionicons name="arrow-down" size={18} color={theme.success?.val} />
-          </XStack>
-          <Text color="$textSecondary" fontSize={11}>
-            Transactions
-          </Text>
-          <Text color="$textPrimary" fontSize={20} fontWeight="700">
-            0
-          </Text>
-        </QuickStatCard>
-        <QuickStatCard>
-          <XStack
-            width={36}
-            height={36}
-            borderRadius={12}
-            backgroundColor="$warningLight"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Ionicons name="layers" size={18} color={theme.warning?.val} />
-          </XStack>
-          <Text color="$textSecondary" fontSize={11}>
-            Categories
-          </Text>
-          <Text color="$textPrimary" fontSize={20} fontWeight="700">
-            8
-          </Text>
-        </QuickStatCard>
-      </XStack>
-
-      {/* Recent Expenses Placeholder */}
-      <YStack gap={12} flex={1} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text color="$textPrimary" fontSize={17} fontWeight="600">
-            Recent Expenses
-          </Text>
-          <Text color="$primary" fontSize={13} fontWeight="500">
-            See All
-          </Text>
-        </XStack>
-
-        {/* Empty State */}
-        <YStack
-          flex={1}
-          alignItems="center"
-          justifyContent="center"
-          gap={16}
-          paddingVertical={32}
-          animation="medium"
-          enterStyle={{ opacity: 0, y: 12 }}
-        >
-          <YStack
-            width={80}
-            height={80}
-            borderRadius={9999}
-            backgroundColor="$primaryLight"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Ionicons
-              name="receipt-outline"
-              size={36}
-              color={theme.primary?.val}
+    <YStack flex={1} backgroundColor="$background">
+      <ScreenLayout
+        gap={20}
+        refreshing={isRefreshing}
+        onRefresh={refreshDashboard}
+        header={(
+          <XStack justifyContent="space-between" alignItems="center">
+            <YStack>
+              <Text color="$textSecondary" fontSize={13} fontWeight="500">
+                Welcome back
+              </Text>
+              <Text color="$textPrimary" fontSize={24} fontWeight="700">
+                Dashboard
+              </Text>
+            </YStack>
+            <AppIconButton
+              tone="soft"
+              icon={<Ionicons name="person" size={20} color={theme.primary?.val} />}
             />
-          </YStack>
-          <YStack alignItems="center" gap={4}>
+          </XStack>
+        )}
+      >
+        <MonthlySummaryCard
+          amount={formatAmountMinor(monthlySummary?.totalMinor ?? 0)}
+          currencySymbol={currencySymbol}
+          changePercent={changePercent}
+          changeLabel={changeLabel}
+          isLoading={isSummaryLoading}
+        />
+
+        {isStatsLoading ? (
+          <XStack gap={12}>
+            {Array.from({ length: 2 }).map((_, index) => (
+              <AppCard
+                key={`stat-skeleton-${index}`}
+                elevated
+                flex={1}
+                padding={16}
+                gap={6}
+              >
+                <AppSkeleton width={36} height={36} borderRadius={12} />
+                <AppSkeleton width="60%" height={10} borderRadius={6} />
+                <AppSkeleton width="50%" height={18} borderRadius={8} />
+              </AppCard>
+            ))}
+          </XStack>
+        ) : (
+          <XStack gap={12}>
+            {quickStats.map((stat) => {
+              const iconColor =
+                stat.iconColor === 'success' ? theme.success?.val : theme.warning?.val;
+
+              return (
+                <AppCard
+                  key={stat.id}
+                  elevated
+                  flex={1}
+                  padding={16}
+                  gap={6}
+                >
+                  <XStack
+                    width={36}
+                    height={36}
+                    borderRadius={12}
+                    backgroundColor={stat.backgroundColor}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Ionicons
+                      name={stat.icon as keyof typeof Ionicons.glyphMap}
+                      size={18}
+                      color={iconColor}
+                    />
+                  </XStack>
+                  <Text color="$textSecondary" fontSize={11}>
+                    {stat.label}
+                  </Text>
+                  <Text color="$textPrimary" fontSize={20} fontWeight="700">
+                    {stat.value}
+                  </Text>
+                </AppCard>
+              );
+            })}
+          </XStack>
+        )}
+
+        <YStack gap={12}>
+          <XStack justifyContent="space-between" alignItems="center">
             <Text color="$textPrimary" fontSize={17} fontWeight="600">
-              No expenses yet
+              Recent Expenses
             </Text>
-            <Text color="$textSecondary" fontSize={13} textAlign="center">
-              Tap the + button to add your first expense
+            <Text
+              color="$primary"
+              fontSize={13}
+              fontWeight="500"
+              onPress={() => router.push('/(tabs)/history')}
+            >
+              See All
             </Text>
-          </YStack>
+          </XStack>
+
+          {isRecentLoading ? (
+            <YStack gap={12}>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <AppCard key={`recent-skeleton-${index}`} padding={16}>
+                  <XStack alignItems="center" justifyContent="space-between" gap={12}>
+                    <XStack alignItems="center" gap={12} flex={1}>
+                      <AppSkeleton width={44} height={44} borderRadius={14} />
+                      <YStack gap={6} flex={1}>
+                        <AppSkeleton height={12} width="60%" borderRadius={6} />
+                        <AppSkeleton height={10} width="40%" borderRadius={6} />
+                      </YStack>
+                    </XStack>
+                    <YStack alignItems="flex-end" gap={6}>
+                      <AppSkeleton height={12} width={60} borderRadius={6} />
+                      <AppSkeleton height={10} width={48} borderRadius={6} />
+                    </YStack>
+                  </XStack>
+                </AppCard>
+              ))}
+            </YStack>
+          ) : error && recentExpenses.length === 0 ? (
+            <ErrorCard
+              message={error}
+              onRetry={refreshDashboard}
+            />
+          ) : recentItems.length === 0 ? (
+            <EmptyState
+              icon={
+                <YStack
+                  width={80}
+                  height={80}
+                  borderRadius={9999}
+                  backgroundColor="$primaryLight"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Ionicons
+                    name="receipt-outline"
+                    size={36}
+                    color={theme.primary?.val}
+                  />
+                </YStack>
+              }
+              title="No expenses yet"
+              description="Tap the button below to add your first expense."
+              actionLabel="Add expense"
+              onAction={() => router.push('/expense/add')}
+            />
+          ) : (
+            <YStack gap={12}>
+              {recentItems.map((item) => (
+                <ExpenseListItem
+                  key={item.id}
+                  title={item.title}
+                  category={item.category}
+                  amount={item.amount}
+                  date={item.date}
+                  note={item.note}
+                  currencySymbol={item.currencySymbol}
+                  iconName={item.iconName}
+                  iconColor={item.iconColor}
+                  iconBackgroundColor={item.iconBackgroundColor}
+                  onPress={() => router.push(`/expense/${item.id}`)}
+                />
+              ))}
+            </YStack>
+          )}
         </YStack>
-      </YStack>
+      </ScreenLayout>
+
+      <QuickAddFAB onPress={() => router.push('/expense/add')} />
     </YStack>
   );
 }

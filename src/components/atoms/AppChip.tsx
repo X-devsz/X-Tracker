@@ -1,5 +1,6 @@
 import { styled, Text, XStack } from 'tamagui';
 import type { ComponentProps, ReactNode } from 'react';
+import { triggerHaptic, type HapticFeedbackType } from '../../services/haptics';
 
 const ChipContainer = styled(XStack, {
   backgroundColor: '$surface',
@@ -25,11 +26,34 @@ const ChipContainer = styled(XStack, {
 interface AppChipProps extends ComponentProps<typeof ChipContainer> {
   label: string;
   icon?: ReactNode;
+  haptic?: HapticFeedbackType;
 }
 
-export function AppChip({ label, icon, active, ...props }: AppChipProps) {
+export function AppChip({
+  label,
+  icon,
+  active,
+  haptic = 'selection',
+  onPress,
+  disabled,
+  ...props
+}: AppChipProps) {
+  const handlePress = onPress
+    ? (...args: Parameters<NonNullable<typeof onPress>>) => {
+        if (!disabled) {
+          triggerHaptic(haptic);
+        }
+        onPress(...args);
+      }
+    : undefined;
+
   return (
-    <ChipContainer active={active} {...props}>
+    <ChipContainer
+      active={active}
+      onPress={handlePress}
+      disabled={disabled}
+      {...props}
+    >
       {icon}
       <Text
         color={active ? '$primary' : '$textSecondary'}

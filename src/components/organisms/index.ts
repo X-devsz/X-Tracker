@@ -1,2 +1,13 @@
 export { AuthForm } from './AuthForm';
+export { CategoryBreakdown } from './CategoryBreakdown';
+export { ExpenseForm } from './ExpenseForm';
+export { ExpenseList } from './ExpenseList';
+export { FilterBar } from './FilterBar';
 export { LandingHero } from './LandingHero';
+export { MonthlySummaryCard } from './MonthlySummaryCard';
+export { QuickAddFAB } from './QuickAddFAB';
+export { SettingsGroup } from './SettingsGroup';
+export { SpendingTrendChart } from './SpendingTrendChart';
+export { AppAlertDialog, useAlertDialog } from './AppAlertDialog';
+export { AppDialog } from './AppDialog';
+export { AppToast } from './AppToast';

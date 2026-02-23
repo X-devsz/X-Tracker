@@ -3,99 +3,81 @@ import '../matchMediaPolyfill';
 
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
-import { Stack, useRouter, useSegments, SplashScreen, useRootNavigationState } from 'expo-router';
-import { TamaguiProvider } from 'tamagui';
+import { Stack, SplashScreen } from 'expo-router';
+import { TamaguiProvider } from '@tamagui/core';
+import { PortalProvider } from '@tamagui/portal';
+import { ToastProvider, ToastViewport } from '@tamagui/toast';
 import { StatusBar } from 'expo-status-bar';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { enGB, registerTranslation } from 'react-native-paper-dates';
 import config from '../theme/tamagui.config';
 import { useSettingsStore, useAuthStore } from '../store';
+import { runMigrations } from '../db/client';
+import { seedDefaultCategories } from '../db/seed';
+import { AppToast } from '../components/organisms';
 
-// Keep splash screen visible while the app loads
+// ARCHITECTURE REFACTORED: This is the root layout.
+// Its only job is to set up providers and render the navigator.
+// It contains NO navigation logic.
+
+registerTranslation('en-GB', enGB);
+
 SplashScreen.preventAutoHideAsync();
-
-// Configure Google Sign-In immediately on app start
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-  offlineAccess: true,
-});
-
-/**
- * A custom hook to protect routes based on authentication state.
- */
-function useProtectedRoute(user: any, loading: boolean) {
-  const segments = useSegments();
-  const router = useRouter();
-  const rootNavigationState = useRootNavigationState();
-
-  useEffect(() => {
-    const isNavigationReady = rootNavigationState?.key != null;
-
-    // Don't navigate until navigation is ready and auth is loaded
-    if (!isNavigationReady || loading) {
-      return;
-    }
-
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (!user && !inAuthGroup) {
-      // User is not signed in and not in the auth group, so redirect to login.
-      router.replace('/(auth)/login');
-    } else if (user && inAuthGroup) {
-      // User is signed in but in the auth group, so redirect to the main app.
-      router.replace('/(tabs)');
-    }
-  }, [user, segments, loading, rootNavigationState?.key, router]);
-}
 
 export default function RootLayout() {
   const systemColorScheme = useColorScheme();
-  const { theme: userTheme } = useSettingsStore();
-  const { user, loading, initialize } = useAuthStore();
-  const rootNavigationState = useRootNavigationState();
+  const { themeMode } = useSettingsStore();
+  const { loading, initialize } = useAuthStore();
 
-  const activeTheme = userTheme === 'system'
+  const activeTheme = themeMode === 'system'
     ? (systemColorScheme || 'light')
-    : userTheme;
+    : themeMode;
 
-  // Initialize the authentication listener once
+  // Initialize listeners and DB on app start.
   useEffect(() => {
     const unsubscribe = initialize();
+
+    const initDb = async () => {
+      try {
+        await runMigrations();
+        await seedDefaultCategories();
+      } catch (error) {
+        console.error('[DB] Initialization failed:', error);
+      }
+    };
+    initDb();
+
     return unsubscribe;
   }, [initialize]);
 
-  // Use the protected route hook to handle navigation
-  useProtectedRoute(user, loading);
-
-  // Hide the splash screen once navigation is ready and auth is loaded
+  // Hide the splash screen once auth is no longer loading.
   useEffect(() => {
-    const isNavigationReady = rootNavigationState?.key != null;
-    if (!loading && isNavigationReady) {
+    if (!loading) {
       SplashScreen.hideAsync();
     }
-  }, [loading, rootNavigationState?.key]);
+  }, [loading]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <TamaguiProvider config={config} defaultTheme={activeTheme}>
-        <StatusBar style={activeTheme === 'dark' ? 'light' : 'dark'} />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: 'transparent' },
-          }}
-        >
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="expense"
-            options={{
-              presentation: 'modal',
-              headerShown: false,
-            }}
-          />
-        </Stack>
-      </TamaguiProvider>
+      <PaperProvider>
+        <TamaguiProvider config={config} defaultTheme={activeTheme}>
+          <PortalProvider shouldAddRootHost>
+            <ToastProvider swipeDirection="up" duration={3000}>
+              <StatusBar style={activeTheme === 'dark' ? 'light' : 'dark'} />
+              <Stack screenOptions={{ headerShown: false }} />
+              <AppToast />
+              <ToastViewport
+                top={60}
+                left={0}
+                right={0}
+                flexDirection="column"
+                alignItems="center"
+              />
+            </ToastProvider>
+          </PortalProvider>
+        </TamaguiProvider>
+      </PaperProvider>
     </GestureHandlerRootView>
   );
 }

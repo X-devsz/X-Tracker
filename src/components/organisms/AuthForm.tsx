@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Text, XStack, YStack, useTheme } from 'tamagui';
-import { AppButton, TextLink } from '../atoms';
-import { AuthField, AuthFooter, OrDivider, SocialButtonRow } from '../molecules';
+import { useState } from 'react';
+import { XStack, YStack } from 'tamagui';
+import { AppButton, AppCheckbox, TextLink } from '@/components/atoms';
+import { AuthField, AuthFooter, OrDivider, SocialButtonRow } from '@/components/molecules';
 
 type AuthVariant = 'login' | 'signup';
 
@@ -18,8 +19,8 @@ export function AuthForm({
   onFooterPress,
   onGooglePress,
 }: AuthFormProps) {
-  const theme = useTheme();
   const isLogin = variant === 'login';
+  const [rememberMe, setRememberMe] = useState(true);
 
   const fields = isLogin
     ? [
@@ -79,21 +80,12 @@ export function AuthForm({
 
       {isLogin ? (
         <XStack justifyContent="space-between" alignItems="center">
-          <XStack alignItems="center" gap={8}>
-            <YStack
-              width={16}
-              height={16}
-              borderRadius={4}
-              backgroundColor="$primary"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Ionicons name="checkmark" size={12} color={theme.textInverse?.val} />
-            </YStack>
-            <Text color="$textSecondary" fontSize={12}>
-              Remember me
-            </Text>
-          </XStack>
+          <AppCheckbox
+            id="remember-me"
+            label="Remember me"
+            checked={rememberMe}
+            onCheckedChange={(next) => setRememberMe(next === true)}
+          />
           <TextLink fontSize={12}>Forgot password?</TextLink>
         </XStack>
       ) : null}

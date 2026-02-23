@@ -1,57 +1,86 @@
 /**
- * Settings Screen — App configuration
+ * Settings Screen - App configuration
  *
  * Theme toggle, currency, account info.
+ * Uses Tamagui AlertDialog (via useAlertDialog) instead of RN Alert.alert,
+ * and Tamagui Toast (via useToastController) for success/info notifications.
  */
-import { styled, Text, YStack, XStack } from 'tamagui';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from 'tamagui';
-import { Alert, Pressable } from 'react-native';
-import { useSettingsStore, useAuthStore, type ThemeMode } from '../../store';
+import { Text, useTheme } from 'tamagui';
+import { useToastController } from '@tamagui/toast';
+import {
+  useAuthStore,
+  useFilterStore,
+  useSettingsStore,
+  type ThemeMode,
+} from '../../store';
 import { useGoogleSignIn } from '../../services/auth';
+import { AppAvatar, AppSelect, ScreenLayout, SettingsGroup, useAlertDialog } from '../../components';
+import { expensesRepo } from '../../repositories';
+import {
+  SUPPORTED_CURRENCY_CODES,
+  formatCurrency,
+  getCurrencySymbol,
+} from '../../utils/formatters';
+import {
+  exportExpensesXlsx,
+  filterExpensesByQuery,
+} from '../../services/export/expenses';
+import { useRouter } from 'expo-router';
 
-const SettingsCard = styled(YStack, {
-  backgroundColor: '$cardBackground',
-  borderRadius: 16,
-  borderWidth: 1,
-  borderColor: '$cardBorder',
-  overflow: 'hidden',
-  animation: 'fast',
-  enterStyle: { opacity: 0, y: 8 },
-  shadowColor: '#0B1220',
-  shadowOpacity: 0.08,
-  shadowRadius: 10,
-  shadowOffset: { width: 0, height: 6 },
-  elevation: 4,
-});
-
-const SettingsRow = styled(XStack, {
-  paddingHorizontal: 16,
-  paddingVertical: 16,
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  borderBottomWidth: 1,
-  borderBottomColor: '$border',
-  hoverStyle: { backgroundColor: '$surfaceHover' },
-  pressStyle: { backgroundColor: '$surfacePressed' },
-});
-
-const themeOptions: { value: ThemeMode; label: string; icon: string }[] = [
-  { value: 'light', label: 'Light', icon: '☀️' },
-  { value: 'dark', label: 'Dark', icon: '🌙' },
-  { value: 'system', label: 'System', icon: '📱' },
+const themeOptions: { value: ThemeMode; label: string; iconName: string }[] = [
+  { value: 'system', label: 'System', iconName: 'desktop-outline' },
+  { value: 'light', label: 'Light', iconName: 'sunny-outline' },
+  { value: 'dark', label: 'Dark', iconName: 'moon-outline' },
 ];
 
+const getInitials = (email?: string | null) => {
+  if (!email) return 'U';
+  const handle = email.split('@')[0] ?? '';
+  return handle.slice(0, 2).toUpperCase();
+};
+
 export default function SettingsScreen() {
-  const insets = useSafeAreaInsets();
+  const router = useRouter();
   const theme = useTheme();
-  const { themeMode, setThemeMode, currency } = useSettingsStore();
+  const toast = useToastController();
+  const { alertDialog, showAlert } = useAlertDialog();
+  const { themeMode, setThemeMode, currency, setCurrency } = useSettingsStore();
+  const { dateRange, categoryId, searchQuery } = useFilterStore();
   const { user } = useAuthStore();
   const { signOut } = useGoogleSignIn();
+  const iconColor = theme.textSecondary?.val ?? '#6B7280';
+  const [isExporting, setIsExporting] = useState(false);
+
+  const themeItems = themeOptions.map((option) => ({
+    value: option.value,
+    label: option.label,
+    icon: (
+      <Ionicons
+        name={option.iconName as keyof typeof Ionicons.glyphMap}
+        size={16}
+        color={iconColor}
+      />
+    ),
+  }));
+
+  const currencyItems = SUPPORTED_CURRENCY_CODES.map((code) => {
+    const symbol = getCurrencySymbol(code).trim();
+    return {
+      value: code,
+      label: code,
+      description: formatCurrency(123400, code),
+      icon: (
+        <Text color="$textSecondary" fontSize={12}>
+          {symbol}
+        </Text>
+      ),
+    };
+  });
 
   const handleSignOut = () => {
-    Alert.alert('Sign out', 'Are you sure you want to sign out?', [
+    showAlert('Sign out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Sign out',
@@ -63,145 +92,189 @@ export default function SettingsScreen() {
     ]);
   };
 
+  const handleSwitchAccount = () => {
+    showAlert(
+      'Switch account',
+      'This will sign you out so you can sign in with another account.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Continue',
+          style: 'destructive',
+          onPress: () => {
+            signOut();
+            router.replace('/(auth)/login');
+          },
+        },
+      ],
+    );
+  };
+
+  const handleExport = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const expenses = await expensesRepo.listByDateRange(
+        dateRange.startDate,
+        dateRange.endDate,
+        categoryId ?? undefined,
+      );
+      const filtered = filterExpensesByQuery(expenses, searchQuery);
+
+      if (filtered.length === 0) {
+        toast.show('No expenses', {
+          message: 'No expenses match the current filters.',
+          customData: { variant: 'info' },
+        });
+        return;
+      }
+
+      const { shared } = await exportExpensesXlsx(filtered, currency);
+      if (!shared) {
+        toast.show('Export saved', {
+          message: 'File saved to your device.',
+          customData: { variant: 'success' },
+        });
+      }
+    } catch (error) {
+      showAlert(
+        'Export failed',
+        error instanceof Error ? error.message : 'Unable to export expenses.',
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
-    <YStack
-      flex={1}
-      backgroundColor="$background"
-      paddingTop={insets.top + 16}
-      paddingHorizontal={16}
+    <ScreenLayout
       gap={20}
+      header={(
+        <Text color="$textPrimary" fontSize={24} fontWeight="700">
+          Settings
+        </Text>
+      )}
     >
-      {/* Header */}
-      <Text color="$textPrimary" fontSize={24} fontWeight="700">
-        Settings
-      </Text>
+      {alertDialog}
 
-      {/* Appearance */}
-      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <Text color="$textSecondary" fontSize={13} fontWeight="500" paddingLeft={4}>
-          APPEARANCE
-        </Text>
-        <SettingsCard>
-          <SettingsRow>
-            <XStack alignItems="center" gap={12}>
-              <Ionicons name="color-palette-outline" size={22} color={theme.primary?.val} />
-              <Text color="$textPrimary" fontSize={15} fontWeight="500">
-                Theme
-              </Text>
-            </XStack>
-            <XStack gap={8}>
-              {themeOptions.map((opt) => (
-                <Pressable key={opt.value} onPress={() => setThemeMode(opt.value)}>
-                  <XStack
-                    paddingHorizontal={12}
-                    paddingVertical={8}
-                    borderRadius={12}
-                    backgroundColor={themeMode === opt.value ? '$primaryLight' : '$surface'}
-                    borderWidth={1}
-                    borderColor={themeMode === opt.value ? '$primary' : '$border'}
-                    gap={4}
-                    alignItems="center"
-                    animation="fast"
-                    pressStyle={{ scale: 0.96 }}
-                  >
-                    <Text fontSize={11}>{opt.icon}</Text>
-                    <Text
-                      color={themeMode === opt.value ? '$primary' : '$textSecondary'}
-                      fontSize={11}
-                      fontWeight="500"
-                    >
-                      {opt.label}
-                    </Text>
-                  </XStack>
-                </Pressable>
-              ))}
-            </XStack>
-          </SettingsRow>
-          <SettingsRow borderBottomWidth={0}>
-            <XStack alignItems="center" gap={12}>
-              <Ionicons name="cash-outline" size={22} color={theme.success?.val} />
-              <Text color="$textPrimary" fontSize={15} fontWeight="500">
-                Currency
-              </Text>
-            </XStack>
-            <Text color="$textSecondary" fontSize={15}>{currency}</Text>
-          </SettingsRow>
-        </SettingsCard>
-      </YStack>
+      <SettingsGroup
+        title="APPEARANCE"
+        rows={[
+          {
+            id: 'theme',
+            label: 'Theme',
+            description: 'Match your device or pick a mode',
+            iconName: 'color-palette-outline',
+            rightElement: (
+              <AppSelect
+                id="theme-select"
+                value={themeMode}
+                items={themeItems}
+                onValueChange={(value) => setThemeMode(value as ThemeMode)}
+                width={160}
+              />
+            ),
+          },
+          {
+            id: 'currency',
+            label: 'Currency',
+            description: 'Default currency for new expenses',
+            iconName: 'cash-outline',
+            rightElement: (
+              <AppSelect
+                id="currency-select"
+                value={currency}
+                items={currencyItems}
+                onValueChange={setCurrency}
+                width={190}
+              />
+            ),
+          },
+        ]}
+      />
 
-      {/* Data */}
-      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <Text color="$textSecondary" fontSize={13} fontWeight="500" paddingLeft={4}>
-          DATA
-        </Text>
-        <SettingsCard>
-          <SettingsRow>
-            <XStack alignItems="center" gap={12}>
-              <Ionicons name="download-outline" size={22} color={theme.primary?.val} />
-              <Text color="$textPrimary" fontSize={15} fontWeight="500">
-                Export CSV
-              </Text>
-            </XStack>
-            <Ionicons name="chevron-forward" size={18} color={theme.textTertiary?.val} />
-          </SettingsRow>
-          <SettingsRow borderBottomWidth={0}>
-            <XStack alignItems="center" gap={12}>
-              <Ionicons name="trash-outline" size={22} color={theme.danger?.val} />
-              <Text color="$danger" fontSize={15} fontWeight="500">
-                Clear All Data
-              </Text>
-            </XStack>
-            <Ionicons name="chevron-forward" size={18} color={theme.textTertiary?.val} />
-          </SettingsRow>
-        </SettingsCard>
-      </YStack>
+      <SettingsGroup
+        title="DATA"
+        rows={[
+          {
+            id: 'categories',
+            label: 'Manage Categories',
+            description: 'Create, rename, archive, reorder',
+            iconName: 'list-outline',
+            type: 'navigation',
+            onPress: () => router.push('/categories'),
+          },
+          {
+            id: 'export',
+            label: 'Export Excel',
+            description: 'Download your expense history (.xlsx)',
+            iconName: 'download-outline',
+            type: 'action',
+            onPress: handleExport,
+            detail: isExporting ? 'Exporting...' : undefined,
+          },
+          {
+            id: 'clear',
+            label: 'Clear All Data',
+            description: 'Remove all local expenses',
+            iconName: 'trash-outline',
+            tone: 'danger',
+            type: 'action',
+            onPress: () => {},
+          },
+        ]}
+      />
 
-      {/* About */}
-      <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-        <Text color="$textSecondary" fontSize={13} fontWeight="500" paddingLeft={4}>
-          ABOUT
-        </Text>
-        <SettingsCard>
-          <SettingsRow borderBottomWidth={0}>
-            <XStack alignItems="center" gap={12}>
-              <Ionicons name="information-circle-outline" size={22} color={theme.textSecondary?.val} />
-              <Text color="$textPrimary" fontSize={15} fontWeight="500">
-                Version
-              </Text>
-            </XStack>
-            <Text color="$textSecondary" fontSize={15}>1.0.0</Text>
-          </SettingsRow>
-        </SettingsCard>
-      </YStack>
+      <SettingsGroup
+        title="ABOUT"
+        rows={[
+          {
+            id: 'version',
+            label: 'Version',
+            description: 'Current app build',
+            iconName: 'information-circle-outline',
+            type: 'navigation',
+            detail: '1.0.0',
+          },
+        ]}
+      />
 
       {user ? (
-        <YStack gap={8} animation="medium" enterStyle={{ opacity: 0, y: 10 }}>
-          <Text color="$textSecondary" fontSize={13} fontWeight="500" paddingLeft={4}>
-            ACCOUNT
-          </Text>
-          <SettingsCard>
-            <SettingsRow>
-              <XStack alignItems="center" gap={12}>
-                <Ionicons name="person-circle-outline" size={22} color={theme.primary?.val} />
-                <Text color="$textPrimary" fontSize={15} fontWeight="500">
-                  Signed in
-                </Text>
-              </XStack>
-              <Text color="$textSecondary" fontSize={13}>{user.email ?? 'Google account'}</Text>
-            </SettingsRow>
-            <Pressable onPress={handleSignOut}>
-              <SettingsRow borderBottomWidth={0}>
-                <XStack alignItems="center" gap={12}>
-                  <Ionicons name="log-out-outline" size={22} color={theme.danger?.val} />
-                  <Text color="$danger" fontSize={15} fontWeight="500">
-                    Sign out
-                  </Text>
-                </XStack>
-              </SettingsRow>
-            </Pressable>
-          </SettingsCard>
-        </YStack>
+        <SettingsGroup
+          title="ACCOUNT"
+          rows={[
+            {
+              id: 'account',
+              label: 'Signed in',
+              description: user.email ?? 'Google account',
+              iconName: 'person-circle-outline',
+              rightElement: (
+                <AppAvatar
+                  size="sm"
+                  initials={getInitials(user.email)}
+                />
+              ),
+            },
+            {
+              id: 'switch',
+              label: 'Switch account',
+              description: 'Sign in with a different account',
+              iconName: 'swap-horizontal-outline',
+              type: 'action',
+              onPress: handleSwitchAccount,
+            },
+            {
+              id: 'signout',
+              label: 'Sign out',
+              description: 'Disconnect this account',
+              iconName: 'log-out-outline',
+              tone: 'danger',
+              type: 'action',
+              onPress: handleSignOut,
+            },
+          ]}
+        />
       ) : null}
-    </YStack>
+    </ScreenLayout>
   );
 }
