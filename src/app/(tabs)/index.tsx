@@ -28,6 +28,7 @@ import {
   formatExpenseDate,
   getCurrencySymbol,
 } from '../../utils/formatters';
+import { useScreenRenderTimer } from '../../services/performance';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 type StatCard = {
@@ -62,6 +63,7 @@ export default function HomeScreen() {
   const isRecentLoading = isLoadingRecent && recentExpenses.length === 0;
   const isStatsLoading = isLoadingSummary || categories.length === 0;
   const isRefreshing = isLoadingSummary || isLoadingRecent;
+  const isRenderReady = !isLoadingSummary && !isLoadingRecent;
 
   const quickStats = useMemo<StatCard[]>(
     () => [
@@ -150,6 +152,8 @@ export default function HomeScreen() {
       isActive = false;
     };
   }, [monthlySummary, summaryQuery]);
+
+  useScreenRenderTimer('Home', isRenderReady);
 
   return (
     <YStack flex={1} backgroundColor="$background">

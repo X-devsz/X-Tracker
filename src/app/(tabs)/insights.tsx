@@ -19,6 +19,7 @@ import { expensesRepo } from '../../repositories';
 import { useExpenseStore, useSettingsStore } from '../../store';
 import { resolveCategoryColor } from '../../utils/categories';
 import { formatCurrency, formatMonthLabel } from '../../utils/formatters';
+import { useScreenRenderTimer } from '../../services/performance';
 
 export default function InsightsScreen() {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function InsightsScreen() {
   const [trendData, setTrendData] = useState<{ value: number; label: string }[]>([]);
   const [isLoadingTrend, setIsLoadingTrend] = useState(false);
   const [trendError, setTrendError] = useState<string | null>(null);
+  const isRenderReady = !isLoadingBreakdown && !isLoadingTrend;
 
   const refreshBreakdown = useCallback(() => {
     const now = new Date();
@@ -79,6 +81,8 @@ export default function InsightsScreen() {
   useEffect(() => {
     loadTrend();
   }, [loadTrend]);
+
+  useScreenRenderTimer('Insights', isRenderReady);
 
   const breakdownData = useMemo(
     () =>
