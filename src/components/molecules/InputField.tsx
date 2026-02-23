@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
 import { Text, XStack, YStack, styled, useTheme } from 'tamagui';
-import { AppInput } from '../atoms';
+import { AppInput, AppTextArea } from '@/components/atoms';
 
 const fieldShellBase = {
   backgroundColor: '$surface',
@@ -49,11 +49,19 @@ export function InputField({ label, error, multiline, ...props }: InputFieldProp
         {label}
       </Text>
       <Shell error={Boolean(error)}>
-        <AppInput
-          placeholderTextColor={placeholderColor}
-          multiline={multiline}
-          {...props}
-        />
+        {multiline ? (
+          <AppTextArea
+            placeholderTextColor={placeholderColor}
+            multiline={multiline}
+            {...props}
+          />
+        ) : (
+          <AppInput
+            placeholderTextColor={placeholderColor}
+            multiline={multiline}
+            {...props}
+          />
+        )}
       </Shell>
       {error ? (
         <Text color="$danger" fontSize={12}>

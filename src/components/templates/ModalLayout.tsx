@@ -77,6 +77,8 @@ export function ModalLayout({
       <AppDivider />
       {scrollable ? (
         <ScrollView
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
             paddingHorizontal: contentPadding,
             paddingTop: contentPadding,

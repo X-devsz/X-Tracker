@@ -2,11 +2,13 @@
  * Settings Screen - App configuration
  *
  * Theme toggle, currency, account info.
+ * Uses Tamagui AlertDialog (via useAlertDialog) instead of RN Alert.alert,
+ * and Tamagui Toast (via useToastController) for success/info notifications.
  */
-import { Alert } from 'react-native';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, useTheme } from 'tamagui';
+import { useToastController } from '@tamagui/toast';
 import {
   useAuthStore,
   useFilterStore,
@@ -14,7 +16,7 @@ import {
   type ThemeMode,
 } from '../../store';
 import { useGoogleSignIn } from '../../services/auth';
-import { AppAvatar, AppSelect, ScreenContainer, SettingsGroup } from '../../components';
+import { AppAvatar, AppSelect, ScreenLayout, SettingsGroup, useAlertDialog } from '../../components';
 import { expensesRepo } from '../../repositories';
 import {
   SUPPORTED_CURRENCY_CODES,
@@ -42,6 +44,8 @@ const getInitials = (email?: string | null) => {
 export default function SettingsScreen() {
   const router = useRouter();
   const theme = useTheme();
+  const toast = useToastController();
+  const { alertDialog, showAlert } = useAlertDialog();
   const { themeMode, setThemeMode, currency, setCurrency } = useSettingsStore();
   const { dateRange, categoryId, searchQuery } = useFilterStore();
   const { user } = useAuthStore();
@@ -76,7 +80,7 @@ export default function SettingsScreen() {
   });
 
   const handleSignOut = () => {
-    Alert.alert('Sign out', 'Are you sure you want to sign out?', [
+    showAlert('Sign out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Sign out',
@@ -89,7 +93,7 @@ export default function SettingsScreen() {
   };
 
   const handleSwitchAccount = () => {
-    Alert.alert(
+    showAlert(
       'Switch account',
       'This will sign you out so you can sign in with another account.',
       [
@@ -118,16 +122,22 @@ export default function SettingsScreen() {
       const filtered = filterExpensesByQuery(expenses, searchQuery);
 
       if (filtered.length === 0) {
-        Alert.alert('No expenses', 'No expenses match the current filters.');
+        toast.show('No expenses', {
+          message: 'No expenses match the current filters.',
+          customData: { variant: 'info' },
+        });
         return;
       }
 
       const { shared } = await exportExpensesXlsx(filtered, currency);
       if (!shared) {
-        Alert.alert('Export saved', 'CSV saved to your device.');
+        toast.show('Export saved', {
+          message: 'File saved to your device.',
+          customData: { variant: 'success' },
+        });
       }
     } catch (error) {
-      Alert.alert(
+      showAlert(
         'Export failed',
         error instanceof Error ? error.message : 'Unable to export expenses.',
       );
@@ -137,10 +147,15 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScreenContainer gap={20}>
-      <Text color="$textPrimary" fontSize={24} fontWeight="700">
-        Settings
-      </Text>
+    <ScreenLayout
+      gap={20}
+      header={(
+        <Text color="$textPrimary" fontSize={24} fontWeight="700">
+          Settings
+        </Text>
+      )}
+    >
+      {alertDialog}
 
       <SettingsGroup
         title="APPEARANCE"
@@ -187,7 +202,7 @@ export default function SettingsScreen() {
             description: 'Create, rename, archive, reorder',
             iconName: 'list-outline',
             type: 'navigation',
-            onPress: () => router.push('/(tabs)/categories'),
+            onPress: () => router.push('/categories'),
           },
           {
             id: 'export',
@@ -260,6 +275,6 @@ export default function SettingsScreen() {
           ]}
         />
       ) : null}
-    </ScreenContainer>
+    </ScreenLayout>
   );
 }

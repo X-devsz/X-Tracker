@@ -12,7 +12,7 @@ import {
   CategoryBreakdown,
   EmptyState,
   ErrorCard,
-  ScreenContainer,
+  ScreenLayout,
   SpendingTrendChart,
 } from '../../components';
 import { expensesRepo } from '../../repositories';
@@ -110,11 +110,14 @@ export default function InsightsScreen() {
   );
 
   return (
-    <ScreenContainer gap={20}>
-      <Text color="$textPrimary" fontSize={24} fontWeight="700">
-        Insights
-      </Text>
-
+    <ScreenLayout
+      gap={20}
+      header={(
+        <Text color="$textPrimary" fontSize={24} fontWeight="700">
+          Insights
+        </Text>
+      )}
+    >
       {isLoadingBreakdown && breakdownData.length === 0 ? (
         <AppCard>
           <YStack gap={16}>
@@ -220,6 +223,6 @@ export default function InsightsScreen() {
           )}
         </YStack>
       </YStack>
-    </ScreenContainer>
+    </ScreenLayout>
   );
 }

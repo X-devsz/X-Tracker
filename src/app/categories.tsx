@@ -2,7 +2,8 @@
  * Categories Screen - Manage custom categories
  */
 import { useEffect, useMemo, useState, type ComponentProps } from 'react';
-import { Alert, Switch } from 'react-native';
+import { Switch as TamaguiSwitch } from '@tamagui/switch';
+import { useToastController } from '@tamagui/toast';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, XStack, YStack, styled, useTheme } from 'tamagui';
 import {
@@ -10,12 +11,13 @@ import {
   AppCard,
   AppIconButton,
   InputField,
-  ScreenContainer,
-} from '../../components';
-import { useCategoryStore } from '../../store';
-import { categoryColors } from '../../theme';
-import { resolveCategoryIcon } from '../../utils/categories';
-import { triggerHaptic } from '../../services/haptics';
+  ScreenLayout,
+  useAlertDialog,
+} from '../components';
+import { useCategoryStore } from '../store';
+import { categoryColors } from '../theme';
+import { resolveCategoryIcon } from '../utils/categories';
+import { triggerHaptic } from '../services/haptics';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 type CategoryColorToken = keyof typeof categoryColors;
@@ -78,6 +80,8 @@ const resolveTint = (color: string) =>
 
 export default function CategoriesScreen() {
   const theme = useTheme();
+  const toast = useToastController();
+  const { alertDialog, showAlert } = useAlertDialog();
   const {
     categories,
     isLoading,
@@ -136,7 +140,7 @@ export default function CategoriesScreen() {
       }
       handleReset();
     } catch (submitError) {
-      Alert.alert(
+      showAlert(
         'Save failed',
         submitError instanceof Error ? submitError.message : 'Unable to save category.',
       );
@@ -153,7 +157,7 @@ export default function CategoriesScreen() {
   };
 
   const handleArchive = (categoryId: string) => {
-    Alert.alert('Archive category', 'This category will be hidden from pickers.', [
+    showAlert('Archive category', 'This category will be hidden from pickers.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Archive',
@@ -177,11 +181,15 @@ export default function CategoriesScreen() {
   const isSubmitDisabled = name.trim().length === 0;
 
   return (
-    <ScreenContainer gap={20}>
-      <Text color="$textPrimary" fontSize={24} fontWeight="700">
-        Categories
-      </Text>
-
+    <ScreenLayout
+      gap={20}
+      header={(
+        <Text color="$textPrimary" fontSize={24} fontWeight="700">
+          Categories
+        </Text>
+      )}
+    >
+      {alertDialog}
       <AppCard elevated>
         <YStack gap={16}>
           <Text color="$textPrimary" fontSize={16} fontWeight="600">
@@ -266,18 +274,18 @@ export default function CategoriesScreen() {
           <Text color="$textSecondary" fontSize={12}>
             Show archived
           </Text>
-          <Switch
-            value={showArchived}
-            onValueChange={(value) => {
+          <TamaguiSwitch
+            id="show-archived-switch"
+            size="$3"
+            checked={showArchived}
+            onCheckedChange={(value: boolean) => {
               triggerHaptic('selection');
               setShowArchived(value);
             }}
-            trackColor={{
-              false: theme.border?.val ?? '#DDD',
-              true: theme.primary?.val ?? '#6366F1',
-            }}
-            thumbColor="#FFFFFF"
-          />
+            backgroundColor={showArchived ? '$primary' : '$border'}
+          >
+            <TamaguiSwitch.Thumb backgroundColor="white" />
+          </TamaguiSwitch>
         </XStack>
       </XStack>
 
@@ -329,7 +337,9 @@ export default function CategoriesScreen() {
                   />
                   <AppIconButton
                     tone="surface"
-                    icon={<Ionicons name="chevron-down" size={16} color={theme.textSecondary?.val} />}
+                    icon={
+                      <Ionicons name="chevron-down" size={16} color={theme.textSecondary?.val} />
+                    }
                     onPress={() => moveCategory(category.id, 'down')}
                     disabled={index === activeCategories.length - 1 || isLoading}
                   />
@@ -398,6 +408,6 @@ export default function CategoriesScreen() {
           })}
         </YStack>
       ) : null}
-    </ScreenContainer>
+    </ScreenLayout>
   );
 }

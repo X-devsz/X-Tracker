@@ -2,10 +2,9 @@
  * Login Screen
  */
 import { Ionicons } from '@expo/vector-icons';
-import { Alert } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { XStack, useTheme } from 'tamagui';
-import { AppIconButton, AuthForm, AuthTemplate, SectionHeader } from '../../components';
+import { AppIconButton, AuthForm, AuthTemplate, SectionHeader, useAlertDialog } from '../../components';
 import { useGoogleSignIn } from '../../services/auth';
 import { useAuthStore } from '../../store';
 import { AUTH_ENABLED } from '../../config/featureFlags';
@@ -13,6 +12,7 @@ import { AUTH_ENABLED } from '../../config/featureFlags';
 export default function LoginScreen() {
   const router = useRouter();
   const theme = useTheme();
+  const { alertDialog, showAlert } = useAlertDialog();
   const { signInWithGoogle } = useGoogleSignIn();
   const { user } = useAuthStore();
 
@@ -23,7 +23,7 @@ export default function LoginScreen() {
 
   const confirmAccountSwitch = () =>
     new Promise<boolean>((resolve) => {
-      Alert.alert(
+      showAlert(
         'Switch account?',
         'You are already signed in. Continue to switch accounts?',
         [
@@ -43,6 +43,7 @@ export default function LoginScreen() {
 
   return (
     <AuthTemplate>
+      {alertDialog}
       <XStack>
         <AppIconButton
           tone="surface"
@@ -75,7 +76,7 @@ export default function LoginScreen() {
           } catch (error) {
             const message =
               error instanceof Error ? error.message : 'Unable to sign in with Google.';
-            Alert.alert('Google sign-in failed', message);
+            showAlert('Google sign-in failed', message);
           }
         }}
         onFooterPress={() => router.push('/(auth)/signup')}

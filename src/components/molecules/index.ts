@@ -3,6 +3,7 @@ export { AppSelect } from './AppSelect';
 export { AuthField } from './AuthField';
 export { AuthFooter } from './AuthFooter';
 export { CategoryPicker } from './CategoryPicker';
+export { DateRangeSelector } from './DateRangeSelector';
 export { DateSelector } from './DateSelector';
 export { EmptyState } from './EmptyState';
 export { ErrorCard } from './ErrorCard';
