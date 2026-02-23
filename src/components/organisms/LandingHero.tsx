@@ -83,7 +83,7 @@ export function LandingHero({ onStart }: LandingHeroProps) {
         </Text>
         <AppButton
           label="Start now"
-          tone="soft"
+          tone="secondary"
           icon={<Ionicons name="arrow-forward" size={18} color={theme.primary?.val} />}
           onPress={onStart}
         />

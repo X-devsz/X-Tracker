@@ -10,290 +10,311 @@
 ## Phase 0 - Project Foundation
 
 ### F-000: Project Setup & Configuration
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-000.1 | Expo project created with TypeScript | [x] | SDK 54, `expo-router` entry point |
-| F-000.2 | All packages installed | [x] | Tamagui, Drizzle, Zustand, Firebase, Charts, AsyncStorage, Reanimated |
-| F-000.3 | Path aliases configured (`@/*`) | [x] | `tsconfig.json` + metro resolver |
-| F-000.4 | Babel config (Tamagui + Reanimated plugins) | [x] | `babel.config.js` |
-| F-000.5 | Tamagui root config | [x] | `tamagui.config.ts` imports from `src/theme/` |
-| F-000.6 | EAS build config | [ ] | `eas.json` with dev/preview/prod profiles |
-| F-000.7 | ESLint + Prettier config | [ ] | Consistent code formatting |
-| F-000.8 | Atomic folder structure created | [x] | `src/components` (atoms, molecules, organisms, templates) + exports |
-| F-000.9 | Custom dev client path | [x] | Google Sign-In plugin enabled + prebuild script added |
+
+| #       | Feature                                     | Status | Details                                                               |
+| ------- | ------------------------------------------- | ------ | --------------------------------------------------------------------- |
+| F-000.1 | Expo project created with TypeScript        | [x]    | SDK 54, `expo-router` entry point                                     |
+| F-000.2 | All packages installed                      | [x]    | Tamagui, Drizzle, Zustand, Firebase, Charts, AsyncStorage, Reanimated |
+| F-000.3 | Path aliases configured (`@/*`)             | [x]    | `tsconfig.json` + metro resolver                                      |
+| F-000.4 | Babel config (Tamagui + Reanimated plugins) | [x]    | `babel.config.js`                                                     |
+| F-000.5 | Tamagui root config                         | [x]    | `tamagui.config.ts` imports from `src/theme/`                         |
+| F-000.6 | EAS build config                            | [ ]    | `eas.json` with dev/preview/prod profiles                             |
+| F-000.7 | ESLint + Prettier config                    | [ ]    | Consistent code formatting                                            |
+| F-000.8 | Atomic folder structure created             | [x]    | `src/components` (atoms, molecules, organisms, templates) + exports   |
+| F-000.9 | Custom dev client path                      | [x]    | Google Sign-In plugin enabled + prebuild script added                 |
 
 ### F-001: Theme & Design System
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-001.1 | Color palette defined (light mode) | [x] | Semantic tokens: background, surface, text, primary, danger, success |
-| F-001.2 | Color palette defined (dark mode) | [x] | Full dark semantic tokens matching light structure |
-| F-001.3 | Category colors defined | [x] | 8 distinct colors for expense categories |
-| F-001.4 | Spacing scale (4px base) | [x] | 0, xs(4), sm(8), md(12), lg(16), xl(20), 2xl(24), 3xl(32) |
-| F-001.5 | Typography system (Inter font) | [x] | h1-h4, body, bodySm, label, caption, amount, button variants |
-| F-001.6 | Border radius scale | [x] | xs(4), sm(8), md(12), lg(16), xl(24), full(9999) |
-| F-001.7 | Shadow presets (sm, md, lg) | [/] | Shadows applied in key screens; tokenized presets pending |
-| F-001.8 | Animation presets | [x] | fast, medium, slow, bouncy configs used for section entrances + press feedback |
-| F-001.9 | Theme toggle (light/dark/system) | [x] | Persisted in AsyncStorage, reads system preference as default |
+
+| #       | Feature                            | Status | Details                                                                        |
+| ------- | ---------------------------------- | ------ | ------------------------------------------------------------------------------ |
+| F-001.1 | Color palette defined (light mode) | [x]    | Semantic tokens: background, surface, text, primary, danger, success           |
+| F-001.2 | Color palette defined (dark mode)  | [x]    | Full dark semantic tokens matching light structure                             |
+| F-001.3 | Category colors defined            | [x]    | 8 distinct colors for expense categories                                       |
+| F-001.4 | Spacing scale (4px base)           | [x]    | 0, xs(4), sm(8), md(12), lg(16), xl(20), 2xl(24), 3xl(32)                      |
+| F-001.5 | Typography system (Inter font)     | [x]    | h1-h4, body, bodySm, label, caption, amount, button variants                   |
+| F-001.6 | Border radius scale                | [x]    | xs(4), sm(8), md(12), lg(16), xl(24), full(9999)                               |
+| F-001.7 | Shadow presets (sm, md, lg)        | [/]    | Shadows applied in key screens; tokenized presets pending                      |
+| F-001.8 | Animation presets                  | [x]    | fast, medium, slow, bouncy configs used for section entrances + press feedback |
+| F-001.9 | Theme toggle (light/dark/system)   | [x]    | Persisted in AsyncStorage, reads system preference as default                  |
 
 ### F-002: Navigation & Routing
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-002.1 | Root layout with TamaguiProvider | [x] | Wraps entire app in theme + font provider |
-| F-002.2 | Tab navigator (Home, History, Insights, Settings) | [x] | Bottom tab bar with icons, themed colors |
-| F-002.3 | Auth stack (Welcome, Sign-In) | [x] | Welcome, Login, Signup screens wired + routes linked from Welcome |
-| F-002.4 | Auth guard (redirect logic) | [x] | Root layout checks auth state + index redirect to Welcome |
-| F-002.5 | Expense modal stack (Add, Edit) | [x] | Modal presentation, themed header |
-| F-002.6 | Deep linking scheme | [x] | `expensetracker://` scheme configured in app.json |
-| F-002.7 | 404/Not Found screen | [x] | Graceful fallback for unknown routes |
+
+| #       | Feature                                           | Status | Details                                                           |
+| ------- | ------------------------------------------------- | ------ | ----------------------------------------------------------------- |
+| F-002.1 | Root layout with TamaguiProvider                  | [x]    | Wraps entire app in theme + font provider                         |
+| F-002.2 | Tab navigator (Home, History, Insights, Settings) | [x]    | Bottom tab bar with icons, themed colors                          |
+| F-002.3 | Auth stack (Welcome, Sign-In)                     | [x]    | Welcome, Login, Signup screens wired + routes linked from Welcome |
+| F-002.4 | Auth guard (redirect logic)                       | [x]    | Root layout checks auth state + index redirect to Welcome         |
+| F-002.5 | Expense modal stack (Add, Edit)                   | [x]    | Modal presentation, themed header                                 |
+| F-002.6 | Deep linking scheme                               | [x]    | `expensetracker://` scheme configured in app.json                 |
+| F-002.7 | 404/Not Found screen                              | [x]    | Graceful fallback for unknown routes                              |
 
 ---
 
 ## Phase 1 - Core MVP
 
 ### F-010: Atom Components
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-010.1 | `Button` - primary, secondary, danger, ghost variants | [/] | AppButton with primary/soft/surface/outline tones + animated CTA/press feedback |
-| F-010.2 | `Text` - all typography variants | [ ] | h1-h4, body, label, caption, amount |
-| F-010.3 | `Input` - text input with label + error | [/] | Base AppInput + labeled AuthField wrapper |
-| F-010.4 | `Card` - elevated, pressable variants | [/] | Card styling in screens; reusable component pending |
-| F-010.5 | `Icon` - vector icon wrapper | [/] | AppIconButton built + Home header styling; generic icon wrapper pending |
-| F-010.6 | `Badge` - success, danger, warning variants | [ ] | Small label chips for percentages |
-| F-010.7 | `Chip` - selectable filter chips | [ ] | Active/inactive states |
-| F-010.8 | `Divider` - horizontal/vertical separator | [/] | OrDivider built for auth screens |
-| F-010.9 | `Spinner` - loading indicator | [ ] | Themed color |
-| F-010.10 | `Avatar` - user profile image | [ ] | Fallback initials |
+
+| #        | Feature                                               | Status | Details                                                                         |
+| -------- | ----------------------------------------------------- | ------ | ------------------------------------------------------------------------------- |
+| F-010.1  | `Button` - primary, secondary, danger, ghost variants | [x]    | AppButton with primary/secondary/danger/ghost tones + animated CTA/press feedback |
+| F-010.2  | `Text` - all typography variants                      | [x]    | AppText variants added (h1-h4, body, label, caption, amount)                    |
+| F-010.3  | `Input` - text input with label + error               | [/]    | Base AppInput + labeled AuthField wrapper                                       |
+| F-010.4  | `Card` - elevated, pressable variants                 | [x]    | AppCard atom added with elevated + pressable variants                           |
+| F-010.5  | `Icon` - vector icon wrapper                          | [x]    | AppIcon atom added alongside AppIconButton                                      |
+| F-010.6  | `Badge` - success, danger, warning variants           | [x]    | AppBadge atom with tone variants                                                |
+| F-010.7  | `Chip` - selectable filter chips                      | [x]    | AppChip atom with active/inactive states                                        |
+| F-010.8  | `Divider` - horizontal/vertical separator             | [x]    | AppDivider atom added + OrDivider remains for auth screens                      |
+| F-010.9  | `Spinner` - loading indicator                         | [x]    | AppSpinner atom with themed color default                                       |
+| F-010.10 | `Avatar` - user profile image                         | [x]    | AppAvatar atom with fallback initials                                           |
 
 ### F-011: Molecule Components
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-011.1 | `AmountInput` - currency symbol + large number input | [ ] | Decimal keypad, formatted display |
-| F-011.2 | `CategoryPicker` - grid/list of category options | [ ] | Icons + colors, favorites at top |
-| F-011.3 | `DateSelector` - quick presets (Today, Yesterday) + picker | [ ] | Platform-native date picker |
-| F-011.4 | `ExpenseListItem` - single expense row | [/] | Swipeable demo row in History; full data wiring pending |
-| F-011.5 | `SearchBar` - debounced text search | [ ] | Clear button, themed styling |
-| F-011.6 | `FilterChip` - category/date filter chips | [ ] | Active/deselect states |
-| F-011.7 | `EmptyState` - icon + title + description + CTA | [ ] | Used on history, insights when no data |
-| F-011.8 | `ErrorCard` - error message + retry button | [ ] | Used when data loading fails |
-| F-011.9 | `SnackBar` - temporary toast notification | [ ] | Undo delete, success confirmation |
-| F-011.10 | Auth molecules | [x] | AuthField, SectionHeader, SocialButtonRow, AuthFooter |
+
+| #        | Feature                                                    | Status | Details                                                 |
+| -------- | ---------------------------------------------------------- | ------ | ------------------------------------------------------- |
+| F-011.1  | `AmountInput` - currency symbol + large number input       | [x]    | AmountInput molecule with decimal keypad + formatted display |
+| F-011.2  | `CategoryPicker` - grid/list of category options           | [x]    | CategoryPicker grid with icons, colors, favorites ordering |
+| F-011.3  | `DateSelector` - quick presets (Today, Yesterday) + picker | [x]    | DateSelector with presets and picker trigger            |
+| F-011.4  | `ExpenseListItem` - single expense row                     | [x]    | ExpenseListItem molecule with icon, category, amount, date, note |
+| F-011.5  | `SearchBar` - debounced text search                        | [x]    | SearchBar with debounce + clear action                  |
+| F-011.6  | `FilterChip` - category/date filter chips                  | [x]    | FilterChip molecule with active/inactive states         |
+| F-011.7  | `EmptyState` - icon + title + description + CTA            | [x]    | EmptyState molecule with CTA support                    |
+| F-011.8  | `ErrorCard` - error message + retry button                 | [x]    | ErrorCard molecule with retry action                    |
+| F-011.9  | `SnackBar` - temporary toast notification                  | [x]    | SnackBar molecule with action + dismiss                 |
+| F-011.10 | Auth molecules                                             | [x]    | AuthField, SectionHeader, SocialButtonRow, AuthFooter   |
 
 ### F-012: Organism Components
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-012.1 | `MonthlySummaryCard` - total spent + change % | [ ] | Prominent display on Home |
-| F-012.2 | `ExpenseList` - virtualized list of expense items | [ ] | Uses `FlashList` or `FlatList`, handles loading/empty/error |
-| F-012.3 | `ExpenseForm` - full add/edit expense form | [ ] | Amount, category, date, note, merchant, payment method |
-| F-012.4 | `CategoryBreakdown` - pie/donut chart | [ ] | Uses gifted-charts, themed colors |
-| F-012.5 | `SpendingTrendChart` - line/bar chart | [ ] | Monthly trend by category or total |
-| F-012.6 | `QuickAddFAB` - floating action button | [ ] | Opens expense/add modal |
-| F-012.7 | `FilterBar` - combined date + category filter row | [ ] | Horizontal scrollable chips |
-| F-012.8 | `SettingsGroup` - grouped settings rows | [ ] | Toggle, picker, navigation rows |
-| F-012.9 | Auth landing components | [x] | LandingHero + AuthForm built with atomic components |
+
+| #       | Feature                                           | Status | Details                                                     |
+| ------- | ------------------------------------------------- | ------ | ----------------------------------------------------------- |
+| F-012.1 | `MonthlySummaryCard` - total spent + change %     | [ ]    | Prominent display on Home                                   |
+| F-012.2 | `ExpenseList` - virtualized list of expense items | [ ]    | Uses `FlashList` or `FlatList`, handles loading/empty/error |
+| F-012.3 | `ExpenseForm` - full add/edit expense form        | [ ]    | Amount, category, date, note, merchant, payment method      |
+| F-012.4 | `CategoryBreakdown` - pie/donut chart             | [ ]    | Uses gifted-charts, themed colors                           |
+| F-012.5 | `SpendingTrendChart` - line/bar chart             | [ ]    | Monthly trend by category or total                          |
+| F-012.6 | `QuickAddFAB` - floating action button            | [ ]    | Opens expense/add modal                                     |
+| F-012.7 | `FilterBar` - combined date + category filter row | [ ]    | Horizontal scrollable chips                                 |
+| F-012.8 | `SettingsGroup` - grouped settings rows           | [ ]    | Toggle, picker, navigation rows                             |
+| F-012.9 | Auth landing components                           | [x]    | LandingHero + AuthForm built with atomic components         |
 
 ### F-013: Template Components
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-013.1 | `ScreenContainer` - safe area + scrollable wrapper | [ ] | Handles insets, background color, padding |
-| F-013.2 | `AuthLayout` - centered auth screen layout | [x] | AuthTemplate used across auth screens |
-| F-013.3 | `ModalLayout` - modal screen layout | [ ] | Header with close/back, content area |
+
+| #       | Feature                                            | Status | Details                                   |
+| ------- | -------------------------------------------------- | ------ | ----------------------------------------- |
+| F-013.1 | `ScreenContainer` - safe area + scrollable wrapper | [ ]    | Handles insets, background color, padding |
+| F-013.2 | `AuthLayout` - centered auth screen layout         | [x]    | AuthTemplate used across auth screens     |
+| F-013.3 | `ModalLayout` - modal screen layout                | [ ]    | Header with close/back, content area      |
 
 ---
 
 ### F-020: Database & Data Layer
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-020.1 | SQLite database connection (`expo-sqlite`) | [ ] | `src/db/client.ts` - Drizzle instance |
-| F-020.2 | Categories schema (Drizzle) | [ ] | id, name, icon, colorToken, sortOrder, isArchived, timestamps, soft delete |
-| F-020.3 | Expenses schema (Drizzle) | [ ] | id, amountMinor, currency, categoryId (FK), occurredAt, note, merchant, paymentMethod, timestamps, soft delete |
-| F-020.4 | Accounts schema (optional) | [~] | Deferred to post-MVP |
-| F-020.5 | Migration framework | [ ] | `drizzle-kit generate`, versioned SQL files |
-| F-020.6 | Seed default categories | [ ] | 8 categories: Food, Transport, Shopping, Bills, Health, Entertainment, Education, Other |
-| F-020.7 | Database initialization on app start | [ ] | Run migrations + seed in root layout |
-| F-020.8 | Indexes for query performance | [ ] | `occurredAt`, `categoryId`, `deletedAt` |
+
+| #       | Feature                                    | Status | Details                                                                                                        |
+| ------- | ------------------------------------------ | ------ | -------------------------------------------------------------------------------------------------------------- |
+| F-020.1 | SQLite database connection (`expo-sqlite`) | [ ]    | `src/db/client.ts` - Drizzle instance                                                                          |
+| F-020.2 | Categories schema (Drizzle)                | [ ]    | id, name, icon, colorToken, sortOrder, isArchived, timestamps, soft delete                                     |
+| F-020.3 | Expenses schema (Drizzle)                  | [ ]    | id, amountMinor, currency, categoryId (FK), occurredAt, note, merchant, paymentMethod, timestamps, soft delete |
+| F-020.4 | Accounts schema (optional)                 | [~]    | Deferred to post-MVP                                                                                           |
+| F-020.5 | Migration framework                        | [ ]    | `drizzle-kit generate`, versioned SQL files                                                                    |
+| F-020.6 | Seed default categories                    | [ ]    | 8 categories: Food, Transport, Shopping, Bills, Health, Entertainment, Education, Other                        |
+| F-020.7 | Database initialization on app start       | [ ]    | Run migrations + seed in root layout                                                                           |
+| F-020.8 | Indexes for query performance              | [ ]    | `occurredAt`, `categoryId`, `deletedAt`                                                                        |
 
 ### F-021: Repository Layer
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-021.1 | `expensesRepo.create()` | [ ] | UUID, timestamps, validates amount > 0 |
-| F-021.2 | `expensesRepo.update()` | [ ] | Updates `updatedAt`, partial update |
-| F-021.3 | `expensesRepo.softDelete()` | [ ] | Sets `deletedAt`, keeps data |
-| F-021.4 | `expensesRepo.restore()` | [ ] | Clears `deletedAt` for undo |
-| F-021.5 | `expensesRepo.getById()` | [ ] | Joins category, excludes soft-deleted |
-| F-021.6 | `expensesRepo.listByDateRange()` | [ ] | Filter by date range + optional category, ordered by date DESC |
-| F-021.7 | `expensesRepo.getMonthlySummary()` | [ ] | SUM(amountMinor), COUNT, for a given month |
-| F-021.8 | `expensesRepo.getCategoryBreakdown()` | [ ] | GROUP BY category, SUM + COUNT + percentage |
-| F-021.9 | `categoriesRepo` (full CRUD) | [ ] | Create, update, archive, list active, list all |
+
+| #       | Feature                               | Status | Details                                                        |
+| ------- | ------------------------------------- | ------ | -------------------------------------------------------------- |
+| F-021.1 | `expensesRepo.create()`               | [ ]    | UUID, timestamps, validates amount > 0                         |
+| F-021.2 | `expensesRepo.update()`               | [ ]    | Updates `updatedAt`, partial update                            |
+| F-021.3 | `expensesRepo.softDelete()`           | [ ]    | Sets `deletedAt`, keeps data                                   |
+| F-021.4 | `expensesRepo.restore()`              | [ ]    | Clears `deletedAt` for undo                                    |
+| F-021.5 | `expensesRepo.getById()`              | [ ]    | Joins category, excludes soft-deleted                          |
+| F-021.6 | `expensesRepo.listByDateRange()`      | [ ]    | Filter by date range + optional category, ordered by date DESC |
+| F-021.7 | `expensesRepo.getMonthlySummary()`    | [ ]    | SUM(amountMinor), COUNT, for a given month                     |
+| F-021.8 | `expensesRepo.getCategoryBreakdown()` | [ ]    | GROUP BY category, SUM + COUNT + percentage                    |
+| F-021.9 | `categoriesRepo` (full CRUD)          | [ ]    | Create, update, archive, list active, list all                 |
 
 ### F-022: State Management (Zustand Stores)
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-022.1 | `useSettingsStore` - theme, currency, onboarding | [x] | Persisted to AsyncStorage |
-| F-022.2 | `useAuthStore` - user, isAuthenticated, isLoading | [x] | Persisted to AsyncStorage |
-| F-022.3 | `useExpenseStore` - recentExpenses, summary, CRUD actions | [ ] | Reads from SQLite repos |
-| F-022.4 | `useCategoryStore` - categories list, CRUD actions | [ ] | Reads from SQLite repos |
-| F-022.5 | `useFilterStore` - dateRange, category filter, search, sort | [ ] | Not persisted (reset on app restart) |
-| F-022.6 | MMKV persist middleware for Zustand | [/] | AsyncStorage adapter in `src/services/storage/mmkv.ts` |
+
+| #       | Feature                                                     | Status | Details                                                |
+| ------- | ----------------------------------------------------------- | ------ | ------------------------------------------------------ |
+| F-022.1 | `useSettingsStore` - theme, currency, onboarding            | [x]    | Persisted to AsyncStorage                              |
+| F-022.2 | `useAuthStore` - user, isAuthenticated, isLoading           | [x]    | Persisted to AsyncStorage                              |
+| F-022.3 | `useExpenseStore` - recentExpenses, summary, CRUD actions   | [ ]    | Reads from SQLite repos                                |
+| F-022.4 | `useCategoryStore` - categories list, CRUD actions          | [ ]    | Reads from SQLite repos                                |
+| F-022.5 | `useFilterStore` - dateRange, category filter, search, sort | [ ]    | Not persisted (reset on app restart)                   |
+| F-022.6 | MMKV persist middleware for Zustand                         | [/]    | AsyncStorage adapter in `src/services/storage/mmkv.ts` |
 
 ### F-023: MMKV Settings Storage
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-023.1 | MMKV instance created | [/] | AsyncStorage adapter in `src/services/storage/mmkv.ts` |
-| F-023.2 | Typed storage keys | [ ] | Theme mode, currency, onboarded flag, last used category |
-| F-023.3 | Settings getters/setters | [ ] | Type-safe wrappers for each setting |
+
+| #       | Feature                  | Status | Details                                                  |
+| ------- | ------------------------ | ------ | -------------------------------------------------------- |
+| F-023.1 | MMKV instance created    | [/]    | AsyncStorage adapter in `src/services/storage/mmkv.ts`   |
+| F-023.2 | Typed storage keys       | [ ]    | Theme mode, currency, onboarded flag, last used category |
+| F-023.3 | Settings getters/setters | [ ]    | Type-safe wrappers for each setting                      |
 
 ---
 
 ### F-030: Screens (MVP)
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-030.1 | **Home Screen** - monthly total, recent expenses, quick add FAB | [/] | `(tabs)/index.tsx` - dashboard layout + header icon buttons; data wiring pending |
-| F-030.2 | **Add Expense Screen** - full expense form (modal) | [/] | `expense/add.tsx` - styled placeholder form + animated CTA; data wiring pending |
-| F-030.3 | **Edit Expense Screen** - pre-filled form (modal) | [ ] | `expense/[id].tsx` - same form, load existing data, update action |
-| F-030.4 | **History Screen** - filtered expense list | [/] | `(tabs)/history.tsx` - filter chips + swipeable demo rows; data wiring/pagination pending |
-| F-030.5 | **Insights Screen** - charts and analytics | [ ] | `(tabs)/insights.tsx` - CategoryBreakdown (pie) + SpendingTrend (line) |
-| F-030.6 | **Settings Screen** - app configuration | [/] | Theme toggle, currency, account info, sign-out |
-| F-030.7 | **Welcome Screen** - onboarding | [x] | `(auth)/welcome.tsx` - Landing hero + CTA |
-| F-030.8 | **Sign-In Screen** - Google auth | [x] | `(auth)/login.tsx` + `(auth)/signup.tsx` - styled for light/dark themes |
+
+| #       | Feature                                                         | Status | Details                                                                                   |
+| ------- | --------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------- |
+| F-030.1 | **Home Screen** - monthly total, recent expenses, quick add FAB | [/]    | `(tabs)/index.tsx` - dashboard layout + header icon buttons; data wiring pending          |
+| F-030.2 | **Add Expense Screen** - full expense form (modal)              | [/]    | `expense/add.tsx` - styled placeholder form + animated CTA; data wiring pending           |
+| F-030.3 | **Edit Expense Screen** - pre-filled form (modal)               | [ ]    | `expense/[id].tsx` - same form, load existing data, update action                         |
+| F-030.4 | **History Screen** - filtered expense list                      | [/]    | `(tabs)/history.tsx` - filter chips + swipeable demo rows; data wiring/pagination pending |
+| F-030.5 | **Insights Screen** - charts and analytics                      | [ ]    | `(tabs)/insights.tsx` - CategoryBreakdown (pie) + SpendingTrend (line)                    |
+| F-030.6 | **Settings Screen** - app configuration                         | [/]    | Theme toggle, currency, account info, sign-out                                            |
+| F-030.7 | **Welcome Screen** - onboarding                                 | [x]    | `(auth)/welcome.tsx` - Landing hero + CTA                                                 |
+| F-030.8 | **Sign-In Screen** - Google auth                                | [x]    | `(auth)/login.tsx` + `(auth)/signup.tsx` - styled for light/dark themes                   |
 
 ---
 
 ### F-040: Core Business Logic
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-040.1 | Amount stored as integer minor units (cents) | [ ] | Never use floats; `amountMinor: 1050` = $10.50 |
-| F-040.2 | Amount display formatting (locale-aware) | [ ] | `formatCurrency(amountMinor, currencyCode)` |
-| F-040.3 | Date formatting helpers | [ ] | Relative dates ("Today", "Yesterday"), date ranges |
-| F-040.4 | Expense validation (amount > 0, category required) | [ ] | `src/domain/validators/expense.validator.ts` |
-| F-040.5 | Category validation (name required, unique) | [ ] | `src/domain/validators/category.validator.ts` |
-| F-040.6 | Soft delete with undo (snackbar for 5-10s) | [ ] | Delete -> snackbar -> timer -> permanent if not undone |
-| F-040.7 | Default last-used category pre-selection | [ ] | Read from MMKV, update on each save |
+
+| #       | Feature                                            | Status | Details                                                |
+| ------- | -------------------------------------------------- | ------ | ------------------------------------------------------ |
+| F-040.1 | Amount stored as integer minor units (cents)       | [ ]    | Never use floats; `amountMinor: 1050` = $10.50         |
+| F-040.2 | Amount display formatting (locale-aware)           | [ ]    | `formatCurrency(amountMinor, currencyCode)`            |
+| F-040.3 | Date formatting helpers                            | [ ]    | Relative dates ("Today", "Yesterday"), date ranges     |
+| F-040.4 | Expense validation (amount > 0, category required) | [ ]    | `src/domain/validators/expense.validator.ts`           |
+| F-040.5 | Category validation (name required, unique)        | [ ]    | `src/domain/validators/category.validator.ts`          |
+| F-040.6 | Soft delete with undo (snackbar for 5-10s)         | [ ]    | Delete -> snackbar -> timer -> permanent if not undone |
+| F-040.7 | Default last-used category pre-selection           | [ ]    | Read from MMKV, update on each save                    |
 
 ---
 
 ### F-050: Export
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-050.1 | CSV generation (papaparse) | [ ] | Stable columns: date, amount, category, merchant, note, payment method |
-| F-050.2 | File write (expo-file-system) | [ ] | Save to app documents directory |
-| F-050.3 | Share sheet (expo-sharing) | [ ] | System share dialog with CSV file |
-| F-050.4 | Export handles empty dataset | [ ] | Show message instead of empty file |
-| F-050.5 | Export matches displayed totals | [ ] | Same filters applied as current view |
+
+| #       | Feature                         | Status | Details                                                                |
+| ------- | ------------------------------- | ------ | ---------------------------------------------------------------------- |
+| F-050.1 | CSV generation (papaparse)      | [ ]    | Stable columns: date, amount, category, merchant, note, payment method |
+| F-050.2 | File write (expo-file-system)   | [ ]    | Save to app documents directory                                        |
+| F-050.3 | Share sheet (expo-sharing)      | [ ]    | System share dialog with CSV file                                      |
+| F-050.4 | Export handles empty dataset    | [ ]    | Show message instead of empty file                                     |
+| F-050.5 | Export matches displayed totals | [ ]    | Same filters applied as current view                                   |
 
 ---
 
 ### F-060: Authentication
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-060.1 | Google Sign-In via Firebase | [x] | Native Google Sign-In + Firebase Auth |
-| F-060.2 | Token stored in SecureStore | [ ] | Never in SQLite or MMKV |
-| F-060.3 | Sign-in success -> redirect to Home | [x] | Auth guard routes to `(tabs)` |
-| F-060.4 | Sign-in cancelled -> stay on auth screen | [/] | Default behavior; add explicit handling |
-| F-060.5 | Sign-out -> clear session, stay on auth | [x] | Sign-out wired in Settings |
-| F-060.6 | Auth state persistence across restarts | [/] | Firebase Auth persistence via AsyncStorage (needs validation) |
-| F-060.7 | Account switch confirmation | [ ] | Alert dialog before switching users |
-| F-060.8 | Guest mode (optional) | [~] | Deferred - skippable for MVP |
+
+| #       | Feature                                  | Status | Details                                                       |
+| ------- | ---------------------------------------- | ------ | ------------------------------------------------------------- |
+| F-060.1 | Google Sign-In via Firebase              | [x]    | Native Google Sign-In + Firebase Auth                         |
+| F-060.2 | Token stored in SecureStore              | [ ]    | Never in SQLite or MMKV                                       |
+| F-060.3 | Sign-in success -> redirect to Home      | [x]    | Auth guard routes to `(tabs)`                                 |
+| F-060.4 | Sign-in cancelled -> stay on auth screen | [/]    | Default behavior; add explicit handling                       |
+| F-060.5 | Sign-out -> clear session, stay on auth  | [x]    | Sign-out wired in Settings                                    |
+| F-060.6 | Auth state persistence across restarts   | [/]    | Firebase Auth persistence via AsyncStorage (needs validation) |
+| F-060.7 | Account switch confirmation              | [ ]    | Alert dialog before switching users                           |
+| F-060.8 | Guest mode (optional)                    | [~]    | Deferred - skippable for MVP                                  |
 
 ---
 
 ## Phase 1.5 - Stabilization
 
 ### F-070: UX Polish
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-070.1 | Loading skeletons on all data screens | [ ] | Skeleton cards for Home, History, Insights |
-| F-070.2 | Empty states on all screens | [ ] | Meaningful message + CTA |
-| F-070.3 | Error states with retry | [ ] | ErrorCard component on data failure |
-| F-070.4 | Undo delete snackbar | [ ] | 5-second timer, restore on tap |
-| F-070.5 | Pull-to-refresh on lists | [ ] | Home + History |
-| F-070.6 | Swipe-to-delete on expense items | [/] | Gesture handler root + swipe UI; edit/delete handlers pending |
-| F-070.7 | Haptic feedback on key actions | [ ] | Add expense, delete, category select |
+
+| #       | Feature                               | Status | Details                                                       |
+| ------- | ------------------------------------- | ------ | ------------------------------------------------------------- |
+| F-070.1 | Loading skeletons on all data screens | [ ]    | Skeleton cards for Home, History, Insights                    |
+| F-070.2 | Empty states on all screens           | [ ]    | Meaningful message + CTA                                      |
+| F-070.3 | Error states with retry               | [ ]    | ErrorCard component on data failure                           |
+| F-070.4 | Undo delete snackbar                  | [ ]    | 5-second timer, restore on tap                                |
+| F-070.5 | Pull-to-refresh on lists              | [ ]    | Home + History                                                |
+| F-070.6 | Swipe-to-delete on expense items      | [/]    | Gesture handler root + swipe UI; edit/delete handlers pending |
+| F-070.7 | Haptic feedback on key actions        | [ ]    | Add expense, delete, category select                          |
 
 ### F-071: Performance
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-071.1 | Virtualized expense lists | [ ] | `FlashList` or `FlatList` with proper key extraction |
-| F-071.2 | Cold start < 2.5s | [ ] | Measure on mid-range device |
-| F-071.3 | Screen render < 300ms | [ ] | After data load |
-| F-071.4 | Cached summary computations | [ ] | Avoid re-querying monthly totals on every render |
+
+| #       | Feature                     | Status | Details                                              |
+| ------- | --------------------------- | ------ | ---------------------------------------------------- |
+| F-071.1 | Virtualized expense lists   | [ ]    | `FlashList` or `FlatList` with proper key extraction |
+| F-071.2 | Cold start < 2.5s           | [ ]    | Measure on mid-range device                          |
+| F-071.3 | Screen render < 300ms       | [ ]    | After data load                                      |
+| F-071.4 | Cached summary computations | [ ]    | Avoid re-querying monthly totals on every render     |
 
 ### F-072: Categories Management
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-072.1 | Create custom category | [ ] | Name + icon + color picker |
-| F-072.2 | Rename category | [ ] | Updates all related views |
-| F-072.3 | Archive category | [ ] | Hidden from picker, preserved in history |
-| F-072.4 | Reorder categories | [ ] | Drag or manual sort order |
+
+| #       | Feature                | Status | Details                                  |
+| ------- | ---------------------- | ------ | ---------------------------------------- |
+| F-072.1 | Create custom category | [ ]    | Name + icon + color picker               |
+| F-072.2 | Rename category        | [ ]    | Updates all related views                |
+| F-072.3 | Archive category       | [ ]    | Hidden from picker, preserved in history |
+| F-072.4 | Reorder categories     | [ ]    | Drag or manual sort order                |
 
 ### F-073: Budgets (Optional Post-MVP)
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-073.1 | Set monthly budget per category | [~] | Deferred |
-| F-073.2 | Budget progress bar on Insights | [~] | Deferred |
-| F-073.3 | Budget exceeded notification | [~] | Deferred |
+
+| #       | Feature                         | Status | Details  |
+| ------- | ------------------------------- | ------ | -------- |
+| F-073.1 | Set monthly budget per category | [~]    | Deferred |
+| F-073.2 | Budget progress bar on Insights | [~]    | Deferred |
+| F-073.3 | Budget exceeded notification    | [~]    | Deferred |
 
 ---
 
 ## Phase 2 - Cloud Sync
 
 ### F-080: Sync Infrastructure
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-080.1 | Sync metadata columns in schema | [~] | `clientId`, `version`, `syncState`, `serverUpdatedAt` |
-| F-080.2 | Sync worker (background push) | [~] | Mark records PENDING -> push -> SYNCED |
-| F-080.3 | Conflict resolution (last-write-wins) | [~] | Define before implementation |
-| F-080.4 | Multi-device read/write | [~] | Verify correctness with 2 devices |
+
+| #       | Feature                               | Status | Details                                               |
+| ------- | ------------------------------------- | ------ | ----------------------------------------------------- |
+| F-080.1 | Sync metadata columns in schema       | [~]    | `clientId`, `version`, `syncState`, `serverUpdatedAt` |
+| F-080.2 | Sync worker (background push)         | [~]    | Mark records PENDING -> push -> SYNCED                |
+| F-080.3 | Conflict resolution (last-write-wins) | [~]    | Define before implementation                          |
+| F-080.4 | Multi-device read/write               | [~]    | Verify correctness with 2 devices                     |
 
 ### F-081: Cloud Features
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-081.1 | Encrypted backup to cloud | [~] | Firebase Storage or custom API |
-| F-081.2 | Restore from backup | [~] | Download + apply + conflict resolution |
-| F-081.3 | Account deletion (GDPR-ready) | [~] | Delete cloud + local data |
-| F-081.4 | Receipt image storage | [~] | Private bucket + presigned URLs |
+
+| #       | Feature                       | Status | Details                                |
+| ------- | ----------------------------- | ------ | -------------------------------------- |
+| F-081.1 | Encrypted backup to cloud     | [~]    | Firebase Storage or custom API         |
+| F-081.2 | Restore from backup           | [~]    | Download + apply + conflict resolution |
+| F-081.3 | Account deletion (GDPR-ready) | [~]    | Delete cloud + local data              |
+| F-081.4 | Receipt image storage         | [~]    | Private bucket + presigned URLs        |
 
 ---
 
 ## Quality Gates
 
 ### F-090: Testing
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-090.1 | Unit tests: amount parsing/formatting | [ ] | Domain level |
-| F-090.2 | Unit tests: summary computation | [ ] | Correct totals, empty data, edge cases |
-| F-090.3 | Unit tests: category CRUD behavior | [ ] | Create, rename, archive, soft delete |
-| F-090.4 | Integration tests: SQLite repositories | [ ] | Insert/update/delete/query |
-| F-090.5 | Integration tests: DB migrations | [ ] | Fresh DB -> latest version |
-| F-090.6 | E2E smoke: add expense -> appears in history + summary | [ ] | End-to-end flow |
-| F-090.7 | E2E smoke: export CSV produces correct file | [ ] | Columns, totals, encoding |
+
+| #       | Feature                                                | Status | Details                                |
+| ------- | ------------------------------------------------------ | ------ | -------------------------------------- |
+| F-090.1 | Unit tests: amount parsing/formatting                  | [ ]    | Domain level                           |
+| F-090.2 | Unit tests: summary computation                        | [ ]    | Correct totals, empty data, edge cases |
+| F-090.3 | Unit tests: category CRUD behavior                     | [ ]    | Create, rename, archive, soft delete   |
+| F-090.4 | Integration tests: SQLite repositories                 | [ ]    | Insert/update/delete/query             |
+| F-090.5 | Integration tests: DB migrations                       | [ ]    | Fresh DB -> latest version             |
+| F-090.6 | E2E smoke: add expense -> appears in history + summary | [ ]    | End-to-end flow                        |
+| F-090.7 | E2E smoke: export CSV produces correct file            | [ ]    | Columns, totals, encoding              |
 
 ### F-091: Security & Privacy
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-091.1 | Tokens only in SecureStore | [ ] | Verified not in SQLite or logs |
-| F-091.2 | No PII in structured logs | [ ] | Redact notes, merchant names |
-| F-091.3 | Parameterized SQL queries (no injection) | [ ] | Drizzle ORM handles this |
-| F-091.4 | npm audit clean (no high/critical) | [ ] | CI pipeline check |
+
+| #       | Feature                                  | Status | Details                        |
+| ------- | ---------------------------------------- | ------ | ------------------------------ |
+| F-091.1 | Tokens only in SecureStore               | [ ]    | Verified not in SQLite or logs |
+| F-091.2 | No PII in structured logs                | [ ]    | Redact notes, merchant names   |
+| F-091.3 | Parameterized SQL queries (no injection) | [ ]    | Drizzle ORM handles this       |
+| F-091.4 | npm audit clean (no high/critical)       | [ ]    | CI pipeline check              |
 
 ### F-092: Observability
-| # | Feature | Status | Details |
-|---|---|---|---|
-| F-092.1 | Crash reporting configured | [ ] | Sentry or Firebase Crashlytics |
-| F-092.2 | Structured logs for key actions | [ ] | expense_created, export_done, db_migration |
-| F-092.3 | Cold start time measurement | [ ] | Track and optimize |
+
+| #       | Feature                         | Status | Details                                    |
+| ------- | ------------------------------- | ------ | ------------------------------------------ |
+| F-092.1 | Crash reporting configured      | [ ]    | Sentry or Firebase Crashlytics             |
+| F-092.2 | Structured logs for key actions | [ ]    | expense_created, export_done, db_migration |
+| F-092.3 | Cold start time measurement     | [ ]    | Track and optimize                         |
 
 ---
 
 ## Summary Counts
 
-| Phase | Total Features | Completed | In Progress | Deferred |
-|---|---|---|---|---|
-| Phase 0 - Foundation | 25 | 22 | 1 | 0 |
-| Phase 1 - Core MVP | 86 | 10 | 14 | 2 |
-| Phase 1.5 - Stabilization | 18 | 0 | 1 | 3 |
-| Phase 2 - Cloud Sync | 8 | 0 | 0 | 8 |
-| Quality Gates | 14 | 0 | 0 | 0 |
-| **Total** | **151** | **32** | **16** | **13** |
-
-
-
+| Phase                     | Total Features | Completed | In Progress | Deferred |
+| ------------------------- | -------------- | --------- | ----------- | -------- |
+| Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
+| Phase 1 - Core MVP        | 86             | 28        | 9           | 2        |
+| Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
+| Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
+| Quality Gates             | 14             | 0         | 0           | 0        |
+| **Total**                 | **151**        | **50**    | **11**      | **13**   |
