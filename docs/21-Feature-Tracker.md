@@ -101,9 +101,9 @@
 
 | #       | Feature                                            | Status | Details                                   |
 | ------- | -------------------------------------------------- | ------ | ----------------------------------------- |
-| F-013.1 | `ScreenContainer` - safe area + scrollable wrapper | [ ]    | Handles insets, background color, padding |
+| F-013.1 | `ScreenContainer` - safe area + scrollable wrapper | [x]    | ScreenContainer template with insets + padding controls |
 | F-013.2 | `AuthLayout` - centered auth screen layout         | [x]    | AuthTemplate used across auth screens     |
-| F-013.3 | `ModalLayout` - modal screen layout                | [ ]    | Header with close/back, content area      |
+| F-013.3 | `ModalLayout` - modal screen layout                | [x]    | ModalLayout with header actions + scrollable content |
 
 ---
 
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 36        | 9           | 2        |
+| Phase 1 - Core MVP        | 86             | 38        | 9           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **58**    | **11**      | **13**   |
+| **Total**                 | **151**        | **60**    | **11**      | **13**   |
