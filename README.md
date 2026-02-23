@@ -163,7 +163,39 @@ git clone https://github.com/your-username/expense-tracker.git
 cd expense-tracker
 ```
 
-### 2. Install Dependencies
+### 2. Switch to the `dev` Branch & Create Your Feature Branch
+
+All development work starts from the `dev` branch — **never commit directly to `main`**.
+
+```bash
+# Switch to the dev branch
+git checkout dev
+git pull origin dev
+
+# Create your feature branch from dev
+git checkout -b feature/your-feature-name
+```
+
+**Branching strategy:**
+
+```
+main              ← Production releases only (protected)
+  └── dev         ← Integration branch (all development starts here)
+       ├── feature/add-receipt-upload
+       ├── feature/pos-printer-support
+       ├── fix/amount-rounding-bug
+       └── chore/update-dependencies
+```
+
+**Branch naming conventions:**
+- `feature/...` — New features (e.g., `feature/org-expense-groups`)
+- `fix/...` — Bug fixes (e.g., `fix/category-archive-crash`)
+- `chore/...` — Maintenance tasks (e.g., `chore/update-tamagui`)
+- `docs/...` — Documentation updates
+
+When your work is complete, open a **Pull Request** from your branch → `dev`. After review and merge, `dev` is periodically merged into `main` for production releases.
+
+### 3. Install Dependencies
 
 ```bash
 npm install --legacy-peer-deps
@@ -171,7 +203,7 @@ npm install --legacy-peer-deps
 
 > **Note:** `--legacy-peer-deps` is required due to ESLint peer dependency conflicts with some Tamagui packages.
 
-### 3. Firebase Setup (Optional — Auth is Feature-Flagged Off)
+### 4. Firebase Setup (Optional — Auth is Feature-Flagged Off)
 
 If you want to enable Google Sign-In:
 
@@ -183,7 +215,7 @@ If you want to enable Google Sign-In:
 
 > For development without auth, skip this step entirely — the app works in guest mode by default.
 
-### 4. Environment Configuration
+### 5. Environment Configuration
 
 Create a `.env` file in the project root:
 
@@ -197,7 +229,7 @@ EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 EXPO_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
 ```
 
-### 5. Start Development Server
+### 6. Start Development Server
 
 ```bash
 # Standard start
@@ -207,7 +239,7 @@ npx expo start
 npx expo start --clear
 ```
 
-### 6. Run on Device
+### 7. Run on Device
 
 **With Expo Go** (limited — some native modules won't work):
 ```bash
