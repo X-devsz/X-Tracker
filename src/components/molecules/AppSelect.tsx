@@ -13,7 +13,7 @@ import {
 } from 'tamagui';
 import { LinearGradient } from 'tamagui/linear-gradient';
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons';
-import { triggerHaptic } from '../../services/haptics';
+import { triggerHaptic } from '@/services/haptics';
 
 export interface AppSelectItem {
   value: string;
@@ -102,6 +102,7 @@ export function AppSelect({
         value={value}
         onValueChange={handleValueChange}
         disablePreventBodyScroll
+        native={native}
         {...props}
         renderValue={getItemLabel}
       >

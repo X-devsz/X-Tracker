@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
-import { format, isToday, isYesterday, subDays } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { useState } from 'react';
 import { DatePickerModal } from 'react-native-paper-dates';
 import { Text, XStack, YStack, styled, useTheme } from 'tamagui';
-import { AppChip } from '../atoms';
+import { formatDateRange } from '../../utils/formatters';
 
 const DateField = styled(XStack, {
   backgroundColor: '$surface',
@@ -19,43 +19,34 @@ const DateField = styled(XStack, {
   pressStyle: { scale: 0.98, borderColor: '$borderFocused', backgroundColor: '$surfaceHover' },
 });
 
-interface DatePreset {
-  label: string;
-  date: Date;
+interface DateRangeValue {
+  startDate: Date;
+  endDate: Date;
 }
 
-interface DateSelectorProps {
+interface DateRangeSelectorProps {
   label?: string;
-  value?: Date;
-  onChange?: (date: Date) => void;
+  value?: DateRangeValue;
+  onChange?: (range: DateRangeValue) => void;
   onOpenPicker?: () => void;
-  showPresets?: boolean;
-  presets?: DatePreset[];
 }
 
-const getDisplayLabel = (value?: Date) => {
-  if (!value) return 'Select date';
-  if (isToday(value)) return 'Today';
-  if (isYesterday(value)) return 'Yesterday';
-  return format(value, 'MMM d, yyyy');
+const getDisplayLabel = (value?: DateRangeValue) => {
+  if (!value) return 'Select range';
+  if (isSameDay(value.startDate, value.endDate)) {
+    return format(value.startDate, 'MMM d, yyyy');
+  }
+  return formatDateRange(value.startDate, value.endDate);
 };
 
-export function DateSelector({
-  label = 'Date',
+export function DateRangeSelector({
+  label = 'Date range',
   value,
   onChange,
   onOpenPicker,
-  showPresets = true,
-  presets,
-}: DateSelectorProps) {
+}: DateRangeSelectorProps) {
   const theme = useTheme();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const fallbackPresets = [
-    { label: 'Today', date: new Date() },
-    { label: 'Yesterday', date: subDays(new Date(), 1) },
-  ];
-  const displayPresets = presets ?? fallbackPresets;
-  const resolvedValue = value ?? new Date();
 
   const handleOpenPicker = () => {
     if (onOpenPicker) {
@@ -69,10 +60,16 @@ export function DateSelector({
     setIsPickerOpen(false);
   };
 
-  const handleConfirm = ({ date }: { date: Date | undefined }) => {
+  const handleConfirm = ({
+    startDate,
+    endDate,
+  }: {
+    startDate?: Date;
+    endDate?: Date;
+  }) => {
     setIsPickerOpen(false);
-    if (date) {
-      onChange?.(date);
+    if (startDate && endDate) {
+      onChange?.({ startDate, endDate });
     }
   };
 
@@ -82,7 +79,7 @@ export function DateSelector({
         {label}
       </Text>
       <DateField onPress={handleOpenPicker}>
-        <XStack alignItems="center" gap={8}>
+        <XStack alignItems="center" gap={8} flex={1}>
           <Ionicons name="calendar-outline" size={18} color={theme.textTertiary?.val} />
           <Text color={value ? '$textPrimary' : '$textTertiary'} fontSize={14}>
             {getDisplayLabel(value)}
@@ -93,24 +90,13 @@ export function DateSelector({
       {!onOpenPicker ? (
         <DatePickerModal
           locale="en-GB"
-          mode="single"
+          mode="range"
           visible={isPickerOpen}
-          date={resolvedValue}
+          startDate={value?.startDate}
+          endDate={value?.endDate}
           onConfirm={handleConfirm}
           onDismiss={handleDismiss}
         />
-      ) : null}
-      {showPresets ? (
-        <XStack gap={8} flexWrap="wrap">
-          {displayPresets.map((preset) => (
-            <AppChip
-              key={preset.label}
-              label={preset.label}
-              active={Boolean(value && format(preset.date, 'yyyy-MM-dd') === format(value, 'yyyy-MM-dd'))}
-              onPress={() => onChange?.(preset.date)}
-            />
-          ))}
-        </XStack>
       ) : null}
     </YStack>
   );

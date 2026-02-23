@@ -138,6 +138,21 @@ eas submit --profile production --platform android
 eas submit --profile production --platform ios
 ```
 
+### 3.4 Native Dependency Changes (Dev Client Rebuild)
+
+If you add or update a native module (example: `react-native-pager-view` for swipeable tabs),
+you must rebuild and reinstall the dev client. Otherwise you'll see errors like:
+`Can't find ViewManager 'RNCViewPager'`.
+
+```bash
+# EAS dev client rebuild
+eas build --profile development --platform android
+
+# Local rebuild (if using expo run)
+npx expo prebuild --clean
+npx expo run:android
+```
+
 ---
 
 ## 4) CI/CD Pipeline — GitHub Actions

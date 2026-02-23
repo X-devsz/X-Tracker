@@ -1,12 +1,16 @@
-import { ActivityIndicator } from 'react-native';
+import { Spinner } from 'tamagui';
 import type { ComponentProps } from 'react';
-import { useTheme } from 'tamagui';
 
-type AppSpinnerProps = ComponentProps<typeof ActivityIndicator>;
+/**
+ * AppSpinner — Tamagui Spinner wrapper
+ * Replaces React Native ActivityIndicator with Tamagui Spinner.
+ * Uses $color tokens and Tamagui animation driver for consistent theming.
+ */
 
-export function AppSpinner({ color, size = 'small', ...props }: AppSpinnerProps) {
-  const theme = useTheme();
-  const resolvedColor = color ?? theme.primary?.val;
+type AppSpinnerProps = ComponentProps<typeof Spinner>;
 
-  return <ActivityIndicator color={resolvedColor} size={size} {...props} />;
+export function AppSpinner({ color = '$primary', size = 'small', ...props }: AppSpinnerProps) {
+  return <Spinner color={color} size={size} {...props} />;
 }
+
+AppSpinner.displayName = 'AppSpinner';

@@ -18,7 +18,7 @@ import {
   ExpenseListItem,
   MonthlySummaryCard,
   QuickAddFAB,
-  ScreenContainer,
+  ScreenLayout,
 } from '../../components';
 import { useCategoryStore, useExpenseStore, useSettingsStore } from '../../store';
 import { expensesRepo } from '../../repositories';
@@ -157,22 +157,27 @@ export default function HomeScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$background">
-      <ScreenContainer gap={20} refreshing={isRefreshing} onRefresh={refreshDashboard}>
-        <XStack justifyContent="space-between" alignItems="center">
-          <YStack>
-            <Text color="$textSecondary" fontSize={13} fontWeight="500">
-              Welcome back
-            </Text>
-            <Text color="$textPrimary" fontSize={24} fontWeight="700">
-              Dashboard
-            </Text>
-          </YStack>
-          <AppIconButton
-            tone="soft"
-            icon={<Ionicons name="person" size={20} color={theme.primary?.val} />}
-          />
-        </XStack>
-
+      <ScreenLayout
+        gap={20}
+        refreshing={isRefreshing}
+        onRefresh={refreshDashboard}
+        header={(
+          <XStack justifyContent="space-between" alignItems="center">
+            <YStack>
+              <Text color="$textSecondary" fontSize={13} fontWeight="500">
+                Welcome back
+              </Text>
+              <Text color="$textPrimary" fontSize={24} fontWeight="700">
+                Dashboard
+              </Text>
+            </YStack>
+            <AppIconButton
+              tone="soft"
+              icon={<Ionicons name="person" size={20} color={theme.primary?.val} />}
+            />
+          </XStack>
+        )}
+      >
         <MonthlySummaryCard
           amount={formatAmountMinor(monthlySummary?.totalMinor ?? 0)}
           currencySymbol={currencySymbol}
@@ -320,7 +325,7 @@ export default function HomeScreen() {
             </YStack>
           )}
         </YStack>
-      </ScreenContainer>
+      </ScreenLayout>
 
       <QuickAddFAB onPress={() => router.push('/expense/add')} />
     </YStack>

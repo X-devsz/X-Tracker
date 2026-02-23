@@ -1,6 +1,11 @@
 import { ScrollView } from 'react-native';
 import { Text, XStack, YStack } from 'tamagui';
-import { DateSelector, FilterChip } from '../molecules';
+import { DateRangeSelector, DateSelector, FilterChip } from '../molecules';
+
+interface DateRangeValue {
+  startDate: Date;
+  endDate: Date;
+}
 
 export interface FilterOption {
   id: string;
@@ -13,6 +18,8 @@ interface FilterBarProps {
   date?: Date;
   onDateChange?: (date: Date) => void;
   onOpenDatePicker?: () => void;
+  dateRange?: DateRangeValue;
+  onRangeChange?: (range: DateRangeValue) => void;
   filters: FilterOption[];
   activeFilterId?: string;
   onFilterSelect?: (filter: FilterOption) => void;
@@ -23,6 +30,8 @@ export function FilterBar({
   date,
   onDateChange,
   onOpenDatePicker,
+  dateRange,
+  onRangeChange,
   filters,
   activeFilterId,
   onFilterSelect,
@@ -32,11 +41,18 @@ export function FilterBar({
       <Text color="$textSecondary" fontSize={12} fontWeight="600">
         {title}
       </Text>
-      <DateSelector
-        value={date}
-        onChange={onDateChange}
-        onOpenPicker={onOpenDatePicker}
-      />
+      {dateRange && onRangeChange ? (
+        <DateRangeSelector
+          value={dateRange}
+          onChange={onRangeChange}
+        />
+      ) : (
+        <DateSelector
+          value={date}
+          onChange={onDateChange}
+          onOpenPicker={onOpenDatePicker}
+        />
+      )}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <XStack gap={8}>
           {filters.map((filter) => (

@@ -1,9 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Switch } from 'react-native';
+import { Switch as TamaguiSwitch } from '@tamagui/switch';
+import { Label } from '@tamagui/label';
 import { Text, XStack, YStack, styled, useTheme } from 'tamagui';
 import type { ReactNode } from 'react';
-import { AppDivider } from '../atoms';
-import { triggerHaptic } from '../../services/haptics';
+import { AppDivider } from '@/components/atoms';
+import { triggerHaptic } from '@/services/haptics';
+
+/**
+ * SettingsGroup — Tamagui-upgraded organism
+ *
+ * Upgrades:
+ * - Switch: react-native Switch → @tamagui/switch (themed, animated)
+ * - Separator: AppDivider → @tamagui/separator
+ * - Label: text labels use @tamagui/label for accessibility binding
+ */
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -60,9 +70,9 @@ export function SettingsGroup({ title, rows }: SettingsGroupProps) {
   return (
     <YStack gap={12}>
       {title ? (
-        <Text color="$textSecondary" fontSize={12} fontWeight="600">
+        <Label color="$textSecondary" fontSize={12} fontWeight="600">
           {title}
-        </Text>
+        </Label>
       ) : null}
       <GroupContainer>
         {rows.map((row, index) => {
@@ -107,18 +117,18 @@ export function SettingsGroup({ title, rows }: SettingsGroupProps) {
                 {row.rightElement ? (
                   row.rightElement
                 ) : isToggle ? (
-                  <Switch
-                    value={Boolean(row.value)}
-                    onValueChange={(next) => {
+                  <TamaguiSwitch
+                    id={`switch-${row.id}`}
+                    size="$3"
+                    checked={Boolean(row.value)}
+                    onCheckedChange={(next: boolean) => {
                       triggerHaptic('selection');
                       row.onToggle?.(next);
                     }}
-                    trackColor={{
-                      false: theme.border?.val ?? '#DDD',
-                      true: theme.primary?.val ?? '#6366F1',
-                    }}
-                    thumbColor="#FFFFFF"
-                  />
+                    backgroundColor={row.value ? '$primary' : '$border'}
+                  >
+                    <TamaguiSwitch.Thumb backgroundColor="white" />
+                  </TamaguiSwitch>
                 ) : (
                   <XStack alignItems="center" gap={6}>
                     {row.detail ? (

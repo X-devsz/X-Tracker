@@ -1,6 +1,6 @@
 # Feature Tracker - Expense Tracker (End-to-End Development Checklist)
 
-**Last updated:** 2026-02-17  
+**Last updated:** 2026-02-23  
 **Purpose:** Comprehensive, trackable feature list extracted from all project docs. Designed to be given to an AI agent or developer so they understand exactly what each feature requires.
 
 > **Legend:** `[ ]` = Not started | `[/]` = In Progress | `[x]` = Completed | `[~]` = Deferred
@@ -45,9 +45,15 @@
 | F-002.2 | Tab navigator (Home, History, Insights, Settings) | [x]    | Bottom tab bar with icons, themed colors                          |
 | F-002.3 | Auth stack (Welcome, Sign-In)                     | [x]    | Welcome always available; Login/Signup gated by `EXPO_PUBLIC_AUTH_ENABLED` |
 | F-002.4 | Auth guard (redirect logic)                       | [x]    | Guard enabled only when `EXPO_PUBLIC_AUTH_ENABLED=true`           |
+
 | F-002.5 | Expense modal stack (Add, Edit)                   | [x]    | Modal presentation, themed header                                 |
 | F-002.6 | Deep linking scheme                               | [x]    | `expensetracker://` scheme configured in app.json                 |
 | F-002.7 | 404/Not Found screen                              | [x]    | Graceful fallback for unknown routes                              |
+
+> **Change Log:**
+> - `2026-02-21` - Switched to Expo Router `Tabs` for bottom navigation with ripple + haptic feedback.
+> - `2026-02-21` - Added animated tab icon bounce with active background highlight on selection.
+> - `2026-02-21` - Refined tab icon bounce to use spring timing for a smoother scale-up return.
 
 ---
 
@@ -67,6 +73,12 @@
 | F-010.8  | `Divider` - horizontal/vertical separator             | [x]    | AppDivider atom added + OrDivider remains for auth screens                      |
 | F-010.9  | `Spinner` - loading indicator                         | [x]    | AppSpinner atom with themed color default                                       |
 | F-010.10 | `Avatar` - user profile image                         | [x]    | AppAvatar atom with fallback initials                                           |
+
+> **Change Log:**
+> - `2026-02-23` - Refined `AppButton` to wrap Tamagui `Button` with icon-before/after support, loading state handling, and tokenized sizing.
+> - `2026-02-23` - Migrated `AppInput` to Tamagui `Input` and added `AppTextArea` + `AppCheckbox` atoms for form fields.
+> - `2026-02-23` - Upgraded `AppCard` to wrap Tamagui `Card` with themeable elevation and tokenized spacing.
+> - `2026-02-23` - Standardized `AppSpinner` usage to the small Tamagui size for loading states.
 
 ### F-011: Molecule Components
 
@@ -91,11 +103,16 @@
 | F-012.2 | `ExpenseList` - virtualized list of expense items | [x]    | ExpenseList with FlatList + loading/empty/error handling    |
 | F-012.3 | `ExpenseForm` - full add/edit expense form        | [x]    | ExpenseForm with amount, category, date, note, merchant, payment |
 | F-012.4 | `CategoryBreakdown` - pie/donut chart             | [x]    | CategoryBreakdown using gifted-charts PieChart              |
+
 | F-012.5 | `SpendingTrendChart` - line/bar chart             | [x]    | SpendingTrendChart using gifted-charts LineChart            |
 | F-012.6 | `QuickAddFAB` - floating action button            | [x]    | QuickAddFAB with floating variant                           |
 | F-012.7 | `FilterBar` - combined date + category filter row | [x]    | FilterBar with DateSelector + FilterChip row                |
 | F-012.8 | `SettingsGroup` - grouped settings rows           | [x]    | SettingsGroup with toggle/navigation rows                   |
 | F-012.9 | Auth landing components                           | [x]    | LandingHero + AuthForm built with atomic components         |
+
+> **Change Log:**
+> - `2026-02-21` - Added configurable item spacing + sticky header support for dense list layouts.
+> - `2026-02-23` - Added `AppDialog` (Tamagui `Dialog`) and aligned `AppAlertDialog` destructive actions with `AlertDialog.Destructive`.
 
 ### F-013: Template Components
 
@@ -164,9 +181,16 @@
 | F-030.3 | **Edit Expense Screen** - pre-filled form (modal)               | [x]    | `expense/[id].tsx` - loads expense, pre-fills form, updates on save                        |
 | F-030.4 | **History Screen** - filtered expense list                      | [x]    | `(tabs)/history.tsx` - filters + search + swipe edit/delete + refresh                       |
 | F-030.5 | **Insights Screen** - charts and analytics                      | [x]    | `(tabs)/insights.tsx` - breakdown + trend data from DB                                     |
+
 | F-030.6 | **Settings Screen** - app configuration                         | [x]    | Theme toggle, currency picker, account info, sign-out                                      |
 | F-030.7 | **Welcome Screen** - onboarding                                 | [x]    | `(auth)/welcome.tsx` - Landing hero + CTA                                                 |
 | F-030.8 | **Sign-In Screen** - Google auth                                | [x]    | Feature-flagged via `EXPO_PUBLIC_AUTH_ENABLED`; UI remains wired for future enablement   |
+
+> **Change Log:**
+> - `2026-02-21` - Consolidated filters into a sticky chip row + sheet, added search mode toggle, and densified list rows.
+> - `2026-02-21` - Collapsed History content padding and gap in search mode to remove reserved space under the header.
+> - `2026-02-21` - Restored filter chip header after search dismissal by syncing blur handling with list refresh.
+> - `2026-02-23` - Updated History swipe actions to trigger edit/delete flows immediately on swipe open.
 
 ---
 

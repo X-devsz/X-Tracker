@@ -1,16 +1,18 @@
-import { styled, YStack } from 'tamagui';
-import { shadows } from '../../theme';
+import { Card, styled, withStaticProperties } from 'tamagui';
+import { radius, shadows, space } from '@/theme';
 
-export const AppCard = styled(YStack, {
+const StyledCard = styled(Card, {
   backgroundColor: '$cardBackground',
-  borderRadius: 16,
+  borderRadius: radius.lg,
   borderWidth: 1,
   borderColor: '$cardBorder',
-  padding: 16,
-  gap: 8,
+  padding: space.lg,
+  gap: space.sm,
+  overflow: 'hidden',
   variants: {
     elevated: {
       true: {
+        elevate: true,
         ...shadows.sm,
       },
     },
@@ -23,4 +25,10 @@ export const AppCard = styled(YStack, {
       },
     },
   } as const,
+});
+
+export const AppCard = withStaticProperties(StyledCard, {
+  Header: Card.Header,
+  Footer: Card.Footer,
+  Background: Card.Background,
 });

@@ -2,10 +2,9 @@
  * Edit Expense Screen - Modal form with pre-filled data
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { CategoryOption } from '../../components/molecules/CategoryPicker';
-import { AppSpinner, ErrorCard, ExpenseForm, ModalLayout } from '../../components';
+import { AppSpinner, ErrorCard, ExpenseForm, ModalLayout, useAlertDialog } from '../../components';
 import { useCategoryStore, useExpenseStore, useSettingsStore } from '../../store';
 import { validateExpenseInput } from '../../domain/validators/expense.validator';
 import { resolveCategoryColor, resolveCategoryIcon } from '../../utils/categories';
@@ -13,6 +12,7 @@ import { getCurrencySymbol, parseAmountToMinor } from '../../utils/formatters';
 
 export default function EditExpenseScreen() {
   const router = useRouter();
+  const { alertDialog, showAlert } = useAlertDialog();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { currency: defaultCurrency } = useSettingsStore();
   const { categories, isLoading, error, fetchCategories } = useCategoryStore();
@@ -138,7 +138,7 @@ export default function EditExpenseScreen() {
       });
       handleClose();
     } catch (err) {
-      Alert.alert(
+      showAlert(
         'Update failed',
         err instanceof Error ? err.message : 'Unable to update expense.',
       );
@@ -164,15 +164,16 @@ export default function EditExpenseScreen() {
       subtitle="Update your expense"
       onClose={handleClose}
     >
+      {alertDialog}
       {isLoadingExpense ? (
-        <AppSpinner size="large" />
+        <AppSpinner />
       ) : expenseError ? (
         <ErrorCard
           message={expenseError}
           onRetry={() => setReloadToken((value) => value + 1)}
         />
       ) : isLoading && categoryOptions.length === 0 ? (
-        <AppSpinner size="large" />
+        <AppSpinner />
       ) : error && categoryOptions.length === 0 ? (
         <ErrorCard message={error} onRetry={fetchCategories} />
       ) : (

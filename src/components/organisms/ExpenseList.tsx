@@ -1,8 +1,9 @@
 import { FlatList, type ListRenderItem } from 'react-native';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { XStack, YStack } from 'tamagui';
-import { AppCard, AppSkeleton } from '../atoms';
-import { EmptyState, ErrorCard, ExpenseListItem } from '../molecules';
+import { AppCard, AppSkeleton } from '@/components/atoms';
+import { EmptyState, ErrorCard, ExpenseListItem } from '@/components/molecules';
+import { space } from '@/theme/tokens';
 
 export interface ExpenseListItemData {
   id: string;
@@ -33,6 +34,11 @@ interface ExpenseListProps {
   keyExtractor?: (item: ExpenseListItemData) => string;
   contentContainerStyle?: ComponentProps<typeof FlatList>['contentContainerStyle'];
   listStyle?: ComponentProps<typeof FlatList>['style'];
+  listHeader?: ReactNode;
+  listHeaderStyle?: ComponentProps<typeof FlatList>['ListHeaderComponentStyle'];
+  extraData?: ComponentProps<typeof FlatList>['extraData'];
+  itemSpacing?: number;
+  stickyHeaderIndices?: number[];
 }
 
 export function ExpenseList({
@@ -51,6 +57,11 @@ export function ExpenseList({
   keyExtractor,
   contentContainerStyle,
   listStyle,
+  listHeader,
+  listHeaderStyle,
+  extraData,
+  itemSpacing = space.md,
+  stickyHeaderIndices,
 }: ExpenseListProps) {
   if (isLoading && data.length === 0) {
     return (
@@ -112,7 +123,11 @@ export function ExpenseList({
       removeClippedSubviews
       contentContainerStyle={contentContainerStyle ?? { paddingBottom: 24 }}
       style={listStyle}
-      ItemSeparatorComponent={() => <YStack height={12} />}
+      ItemSeparatorComponent={() => <YStack height={itemSpacing} />}
+      ListHeaderComponent={listHeader ?? null}
+      ListHeaderComponentStyle={listHeaderStyle}
+      stickyHeaderIndices={stickyHeaderIndices}
+      extraData={extraData}
       refreshing={refreshing}
       onRefresh={onRefresh}
       ListEmptyComponent={
