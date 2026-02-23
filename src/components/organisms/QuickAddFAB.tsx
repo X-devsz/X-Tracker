@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, XStack, styled, useTheme } from 'tamagui';
 import type { ComponentProps } from 'react';
+import { triggerHaptic, type HapticFeedbackType } from '../../services/haptics';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -36,17 +37,29 @@ const FabContainer = styled(XStack, {
 interface QuickAddFABProps extends ComponentProps<typeof FabContainer> {
   label?: string;
   iconName?: IconName;
+  haptic?: HapticFeedbackType;
 }
 
 export function QuickAddFAB({
   label = 'Add Expense',
   iconName = 'add',
+  haptic = 'selection',
+  onPress,
+  disabled,
   ...props
 }: QuickAddFABProps) {
   const theme = useTheme();
+  const handlePress = onPress
+    ? (...args: Parameters<NonNullable<typeof onPress>>) => {
+        if (!disabled) {
+          triggerHaptic(haptic);
+        }
+        onPress(...args);
+      }
+    : undefined;
 
   return (
-    <FabContainer {...props}>
+    <FabContainer onPress={handlePress} disabled={disabled} {...props}>
       <Ionicons name={iconName} size={22} color={theme.textInverse?.val} />
       {label ? (
         <Text color="$textInverse" fontSize={14} fontWeight="600">

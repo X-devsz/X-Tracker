@@ -12,7 +12,7 @@ import { Text, XStack, YStack, useTheme } from 'tamagui';
 import {
   AppCard,
   AppIconButton,
-  AppSpinner,
+  AppSkeleton,
   EmptyState,
   ErrorCard,
   ExpenseListItem,
@@ -58,6 +58,10 @@ export default function HomeScreen() {
   const [changeLabel, setChangeLabel] = useState('vs last month');
 
   const currencySymbol = useMemo(() => getCurrencySymbol(currency), [currency]);
+  const isSummaryLoading = isLoadingSummary && !monthlySummary;
+  const isRecentLoading = isLoadingRecent && recentExpenses.length === 0;
+  const isStatsLoading = isLoadingSummary || categories.length === 0;
+  const isRefreshing = isLoadingSummary || isLoadingRecent;
 
   const quickStats = useMemo<StatCard[]>(
     () => [
@@ -149,7 +153,7 @@ export default function HomeScreen() {
 
   return (
     <YStack flex={1} backgroundColor="$background">
-      <ScreenContainer gap={20}>
+      <ScreenContainer gap={20} refreshing={isRefreshing} onRefresh={refreshDashboard}>
         <XStack justifyContent="space-between" alignItems="center">
           <YStack>
             <Text color="$textSecondary" fontSize={13} fontWeight="500">
@@ -170,46 +174,64 @@ export default function HomeScreen() {
           currencySymbol={currencySymbol}
           changePercent={changePercent}
           changeLabel={changeLabel}
-          isLoading={isLoadingSummary}
+          isLoading={isSummaryLoading}
         />
 
-        <XStack gap={12}>
-          {quickStats.map((stat) => {
-            const iconColor =
-              stat.iconColor === 'success' ? theme.success?.val : theme.warning?.val;
-
-            return (
+        {isStatsLoading ? (
+          <XStack gap={12}>
+            {Array.from({ length: 2 }).map((_, index) => (
               <AppCard
-                key={stat.id}
+                key={`stat-skeleton-${index}`}
                 elevated
                 flex={1}
                 padding={16}
                 gap={6}
               >
-                <XStack
-                  width={36}
-                  height={36}
-                  borderRadius={12}
-                  backgroundColor={stat.backgroundColor}
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Ionicons
-                    name={stat.icon as keyof typeof Ionicons.glyphMap}
-                    size={18}
-                    color={iconColor}
-                  />
-                </XStack>
-                <Text color="$textSecondary" fontSize={11}>
-                  {stat.label}
-                </Text>
-                <Text color="$textPrimary" fontSize={20} fontWeight="700">
-                  {stat.value}
-                </Text>
+                <AppSkeleton width={36} height={36} borderRadius={12} />
+                <AppSkeleton width="60%" height={10} borderRadius={6} />
+                <AppSkeleton width="50%" height={18} borderRadius={8} />
               </AppCard>
-            );
-          })}
-        </XStack>
+            ))}
+          </XStack>
+        ) : (
+          <XStack gap={12}>
+            {quickStats.map((stat) => {
+              const iconColor =
+                stat.iconColor === 'success' ? theme.success?.val : theme.warning?.val;
+
+              return (
+                <AppCard
+                  key={stat.id}
+                  elevated
+                  flex={1}
+                  padding={16}
+                  gap={6}
+                >
+                  <XStack
+                    width={36}
+                    height={36}
+                    borderRadius={12}
+                    backgroundColor={stat.backgroundColor}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Ionicons
+                      name={stat.icon as keyof typeof Ionicons.glyphMap}
+                      size={18}
+                      color={iconColor}
+                    />
+                  </XStack>
+                  <Text color="$textSecondary" fontSize={11}>
+                    {stat.label}
+                  </Text>
+                  <Text color="$textPrimary" fontSize={20} fontWeight="700">
+                    {stat.value}
+                  </Text>
+                </AppCard>
+              );
+            })}
+          </XStack>
+        )}
 
         <YStack gap={12}>
           <XStack justifyContent="space-between" alignItems="center">
@@ -226,9 +248,25 @@ export default function HomeScreen() {
             </Text>
           </XStack>
 
-          {isLoadingRecent && recentExpenses.length === 0 ? (
-            <YStack alignItems="center" paddingVertical={24}>
-              <AppSpinner size="large" />
+          {isRecentLoading ? (
+            <YStack gap={12}>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <AppCard key={`recent-skeleton-${index}`} padding={16}>
+                  <XStack alignItems="center" justifyContent="space-between" gap={12}>
+                    <XStack alignItems="center" gap={12} flex={1}>
+                      <AppSkeleton width={44} height={44} borderRadius={14} />
+                      <YStack gap={6} flex={1}>
+                        <AppSkeleton height={12} width="60%" borderRadius={6} />
+                        <AppSkeleton height={10} width="40%" borderRadius={6} />
+                      </YStack>
+                    </XStack>
+                    <YStack alignItems="flex-end" gap={6}>
+                      <AppSkeleton height={12} width={60} borderRadius={6} />
+                      <AppSkeleton height={10} width={48} borderRadius={6} />
+                    </YStack>
+                  </XStack>
+                </AppCard>
+              ))}
             </YStack>
           ) : error && recentExpenses.length === 0 ? (
             <ErrorCard

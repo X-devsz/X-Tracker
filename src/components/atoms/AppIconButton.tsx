@@ -1,5 +1,6 @@
 import { styled, XStack } from 'tamagui';
 import type { ComponentProps, ReactNode } from 'react';
+import { triggerHaptic, type HapticFeedbackType } from '../../services/haptics';
 
 const IconButton = styled(XStack, {
   width: 44,
@@ -31,8 +32,28 @@ const IconButton = styled(XStack, {
 
 interface AppIconButtonProps extends ComponentProps<typeof IconButton> {
   icon: ReactNode;
+  haptic?: HapticFeedbackType;
 }
 
-export function AppIconButton({ icon, ...props }: AppIconButtonProps) {
-  return <IconButton {...props}>{icon}</IconButton>;
+export function AppIconButton({
+  icon,
+  haptic = 'selection',
+  onPress,
+  disabled,
+  ...props
+}: AppIconButtonProps) {
+  const handlePress = onPress
+    ? (...args: Parameters<NonNullable<typeof onPress>>) => {
+        if (!disabled) {
+          triggerHaptic(haptic);
+        }
+        onPress(...args);
+      }
+    : undefined;
+
+  return (
+    <IconButton onPress={handlePress} disabled={disabled} {...props}>
+      {icon}
+    </IconButton>
+  );
 }

@@ -12,12 +12,16 @@ interface SpendingTrendChartProps {
   title?: string;
   data: TrendPoint[];
   subtitle?: string;
+  emptyActionLabel?: string;
+  onEmptyAction?: () => void;
 }
 
 export function SpendingTrendChart({
   title = 'Spending Trend',
   data,
   subtitle = 'Last 6 months',
+  emptyActionLabel,
+  onEmptyAction,
 }: SpendingTrendChartProps) {
   const theme = useTheme();
   const primaryColor = theme.primary?.val ?? '#6366F1';
@@ -28,6 +32,8 @@ export function SpendingTrendChart({
         <EmptyState
           title="No trend data yet"
           description="Add more expenses to unlock trend insights."
+          actionLabel={emptyActionLabel}
+          onAction={onEmptyAction}
         />
       </AppCard>
     );

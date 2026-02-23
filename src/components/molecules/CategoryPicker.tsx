@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, XStack, YStack, styled, useTheme } from 'tamagui';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
+import { triggerHaptic } from '../../services/haptics';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -62,6 +63,8 @@ export function CategoryPicker({
   onSelect,
 }: CategoryPickerProps) {
   const theme = useTheme();
+  const resolveBadgeColor = (color?: string) =>
+    (color ? (`${color}20` as ComponentProps<typeof YStack>['backgroundColor']) : '$primaryLight');
   const ordered = [...categories].sort(
     (a, b) => Number(Boolean(b.isFavorite)) - Number(Boolean(a.isFavorite)),
   );
@@ -75,13 +78,16 @@ export function CategoryPicker({
         {ordered.map((category) => {
           const isSelected = category.id === selectedId;
           const iconColor = category.color ?? theme.primary?.val;
-          const badgeColor = category.color ? `${category.color}20` : '$primaryLight';
+          const badgeColor = resolveBadgeColor(category.color);
 
           return (
             <CategoryCard
               key={category.id}
               selected={isSelected}
-              onPress={() => onSelect?.(category)}
+              onPress={() => {
+                triggerHaptic('selection');
+                onSelect?.(category);
+              }}
             >
               <IconBadge backgroundColor={badgeColor}>
                 {category.icon ? (

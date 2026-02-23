@@ -1,7 +1,7 @@
 import { FlatList, type ListRenderItem } from 'react-native';
 import type { ComponentProps } from 'react';
-import { YStack } from 'tamagui';
-import { AppSpinner } from '../atoms';
+import { XStack, YStack } from 'tamagui';
+import { AppCard, AppSkeleton } from '../atoms';
 import { EmptyState, ErrorCard, ExpenseListItem } from '../molecules';
 
 export interface ExpenseListItemData {
@@ -54,8 +54,24 @@ export function ExpenseList({
 }: ExpenseListProps) {
   if (isLoading && data.length === 0) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical={32}>
-        <AppSpinner size="large" />
+      <YStack gap={12} paddingVertical={8}>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <AppCard key={`skeleton-${index}`} padding={16}>
+            <XStack alignItems="center" justifyContent="space-between" gap={12}>
+              <XStack alignItems="center" gap={12} flex={1}>
+                <AppSkeleton width={44} height={44} borderRadius={14} />
+                <YStack gap={6} flex={1}>
+                  <AppSkeleton height={12} width="60%" borderRadius={6} />
+                  <AppSkeleton height={10} width="40%" borderRadius={6} />
+                </YStack>
+              </XStack>
+              <YStack alignItems="flex-end" gap={6}>
+                <AppSkeleton height={12} width={60} borderRadius={6} />
+                <AppSkeleton height={10} width={48} borderRadius={6} />
+              </YStack>
+            </XStack>
+          </AppCard>
+        ))}
       </YStack>
     );
   }

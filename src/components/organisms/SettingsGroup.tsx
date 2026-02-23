@@ -3,6 +3,7 @@ import { Switch } from 'react-native';
 import { Text, XStack, YStack, styled, useTheme } from 'tamagui';
 import type { ReactNode } from 'react';
 import { AppDivider } from '../atoms';
+import { triggerHaptic } from '../../services/haptics';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -73,7 +74,17 @@ export function SettingsGroup({ title, rows }: SettingsGroupProps) {
 
           return (
             <YStack key={row.id}>
-              <RowContainer interactive={Boolean(row.onPress)} onPress={row.onPress}>
+              <RowContainer
+                interactive={Boolean(row.onPress)}
+                onPress={
+                  row.onPress
+                    ? () => {
+                        triggerHaptic('selection');
+                        row.onPress?.();
+                      }
+                    : undefined
+                }
+              >
                 <XStack alignItems="center" gap={12} flex={1}>
                   {row.iconName ? (
                     <Ionicons
@@ -98,7 +109,10 @@ export function SettingsGroup({ title, rows }: SettingsGroupProps) {
                 ) : isToggle ? (
                   <Switch
                     value={Boolean(row.value)}
-                    onValueChange={(next) => row.onToggle?.(next)}
+                    onValueChange={(next) => {
+                      triggerHaptic('selection');
+                      row.onToggle?.(next);
+                    }}
                     trackColor={{
                       false: theme.border?.val ?? '#DDD',
                       true: theme.primary?.val ?? '#6366F1',

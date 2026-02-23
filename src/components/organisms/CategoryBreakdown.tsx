@@ -13,12 +13,16 @@ interface CategoryBreakdownProps {
   title?: string;
   data: CategoryBreakdownItem[];
   totalLabel?: string;
+  emptyActionLabel?: string;
+  onEmptyAction?: () => void;
 }
 
 export function CategoryBreakdown({
   title = 'Category Breakdown',
   data,
   totalLabel = 'Total',
+  emptyActionLabel,
+  onEmptyAction,
 }: CategoryBreakdownProps) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
@@ -28,6 +32,8 @@ export function CategoryBreakdown({
         <EmptyState
           title="No category data yet"
           description="Add expenses to see category trends."
+          actionLabel={emptyActionLabel}
+          onAction={onEmptyAction}
         />
       </AppCard>
     );

@@ -11,6 +11,7 @@ import { settingsStorage } from '../../services/storage/mmkv';
 import { validateExpenseInput } from '../../domain/validators/expense.validator';
 import { resolveCategoryColor, resolveCategoryIcon } from '../../utils/categories';
 import { getCurrencySymbol, parseAmountToMinor } from '../../utils/formatters';
+import { haptics } from '../../services/haptics';
 
 export default function AddExpenseScreen() {
   const router = useRouter();
@@ -102,6 +103,7 @@ export default function AddExpenseScreen() {
         merchant: merchant.trim() ? merchant.trim() : undefined,
         paymentMethod: paymentMethod.trim() ? paymentMethod.trim() : undefined,
       });
+      haptics.success();
       handleClose();
     } catch (err) {
       Alert.alert(

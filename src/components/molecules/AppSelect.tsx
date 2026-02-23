@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { FontSizeTokens, SelectProps } from 'tamagui';
 import {
@@ -13,6 +13,7 @@ import {
 } from 'tamagui';
 import { LinearGradient } from 'tamagui/linear-gradient';
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons';
+import { triggerHaptic } from '../../services/haptics';
 
 export interface AppSelectItem {
   value: string;
@@ -82,16 +83,24 @@ export function AppSelect({
     [items],
   );
 
+  const handleValueChange = useCallback(
+    (nextValue: string) => {
+      triggerHaptic('selection');
+      onValueChange(nextValue);
+    },
+    [onValueChange],
+  );
+
   return (
     <YStack gap="$2">
       {label ? (
-        <Label htmlFor={id} flex={1} minW={80} color="$textSecondary" fontSize={12}>
+        <Label htmlFor={id} flex={1} minWidth={80} color="$textSecondary" fontSize={12}>
           {label}
         </Label>
       ) : null}
       <Select
         value={value}
-        onValueChange={onValueChange}
+        onValueChange={handleValueChange}
         disablePreventBodyScroll
         {...props}
         renderValue={getItemLabel}
@@ -110,31 +119,31 @@ export function AppSelect({
           </Select.Trigger>
         )}
 
-          <Adapt when="md" platform="touch">
-            <Sheet native={!!native} modal dismissOnSnapToBottom transition="medium">
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay
-                bg="$overlay"
-                transition="lazy"
-                enterStyle={{ opacity: 0 }}
-                exitStyle={{ opacity: 0 }}
-              />
-            </Sheet>
-          </Adapt>
+        <Adapt when="md" platform="touch">
+          <Sheet native={!!native} modal dismissOnSnapToBottom animation="medium">
+            <Sheet.Frame>
+              <Sheet.ScrollView>
+                <Adapt.Contents />
+              </Sheet.ScrollView>
+            </Sheet.Frame>
+            <Sheet.Overlay
+              bg="$overlay"
+              animation="lazy"
+              enterStyle={{ opacity: 0 }}
+              exitStyle={{ opacity: 0 }}
+            />
+          </Sheet>
+        </Adapt>
 
         <Select.Content zIndex={200000}>
           <Select.ScrollUpButton
-            items="center"
-            justify="center"
+            alignItems="center"
+            justifyContent="center"
             position="relative"
             width="100%"
             height="$3"
           >
-            <YStack z={10}>
+            <YStack zIndex={10}>
               <ChevronUp size={20} />
             </YStack>
             <LinearGradient
@@ -142,13 +151,13 @@ export function AppSelect({
               end={[0, 1]}
               fullscreen
               colors={['$background', 'transparent']}
-              rounded="$4"
+              borderRadius="$4"
             />
           </Select.ScrollUpButton>
           <Select.Viewport
-            minW={width}
+            minWidth={width}
             bg="$background"
-            rounded="$4"
+            borderRadius="$4"
             borderWidth={1}
             borderColor="$border"
           >
@@ -158,8 +167,8 @@ export function AppSelect({
                 position="absolute"
                 right={0}
                 top={16}
-                items="center"
-                justify="center"
+                alignItems="center"
+                justifyContent="center"
                 width="$4"
                 pointerEvents="none"
               >
@@ -171,13 +180,13 @@ export function AppSelect({
           </Select.Viewport>
 
           <Select.ScrollDownButton
-            items="center"
-            justify="center"
+            alignItems="center"
+            justifyContent="center"
             position="relative"
             width="100%"
             height="$3"
           >
-            <YStack z={10}>
+            <YStack zIndex={10}>
               <ChevronDown size={20} />
             </YStack>
             <LinearGradient
@@ -185,7 +194,7 @@ export function AppSelect({
               end={[0, 1]}
               fullscreen
               colors={['transparent', '$background']}
-              rounded="$4"
+              borderRadius="$4"
             />
           </Select.ScrollDownButton>
         </Select.Content>
