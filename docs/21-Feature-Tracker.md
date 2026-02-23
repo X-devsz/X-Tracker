@@ -124,15 +124,15 @@
 
 | #       | Feature                               | Status | Details                                                        |
 | ------- | ------------------------------------- | ------ | -------------------------------------------------------------- |
-| F-021.1 | `expensesRepo.create()`               | [ ]    | UUID, timestamps, validates amount > 0                         |
-| F-021.2 | `expensesRepo.update()`               | [ ]    | Updates `updatedAt`, partial update                            |
-| F-021.3 | `expensesRepo.softDelete()`           | [ ]    | Sets `deletedAt`, keeps data                                   |
-| F-021.4 | `expensesRepo.restore()`              | [ ]    | Clears `deletedAt` for undo                                    |
-| F-021.5 | `expensesRepo.getById()`              | [ ]    | Joins category, excludes soft-deleted                          |
-| F-021.6 | `expensesRepo.listByDateRange()`      | [ ]    | Filter by date range + optional category, ordered by date DESC |
-| F-021.7 | `expensesRepo.getMonthlySummary()`    | [ ]    | SUM(amountMinor), COUNT, for a given month                     |
-| F-021.8 | `expensesRepo.getCategoryBreakdown()` | [ ]    | GROUP BY category, SUM + COUNT + percentage                    |
-| F-021.9 | `categoriesRepo` (full CRUD)          | [ ]    | Create, update, archive, list active, list all                 |
+| F-021.1 | `expensesRepo.create()`               | [x]    | `src/repositories/expenses.repo.ts` with UUID + timestamps + amount validation |
+| F-021.2 | `expensesRepo.update()`               | [x]    | Partial update with `updatedAt` refresh                         |
+| F-021.3 | `expensesRepo.softDelete()`           | [x]    | Sets `deletedAt` + updates timestamp                            |
+| F-021.4 | `expensesRepo.restore()`              | [x]    | Clears `deletedAt` for undo                                     |
+| F-021.5 | `expensesRepo.getById()`              | [x]    | Joins category + excludes soft-deleted                          |
+| F-021.6 | `expensesRepo.listByDateRange()`      | [x]    | Date range + optional category, ordered by date DESC            |
+| F-021.7 | `expensesRepo.getMonthlySummary()`    | [x]    | SUM(amountMinor) + COUNT for a month                            |
+| F-021.8 | `expensesRepo.getCategoryBreakdown()` | [x]    | GROUP BY category + SUM + COUNT + percentage                    |
+| F-021.9 | `categoriesRepo` (full CRUD)          | [x]    | `src/repositories/categories.repo.ts` create/update/archive/list |
 
 ### F-022: State Management (Zustand Stores)
 
@@ -140,9 +140,9 @@
 | ------- | ----------------------------------------------------------- | ------ | ------------------------------------------------------ |
 | F-022.1 | `useSettingsStore` - theme, currency, onboarding            | [x]    | Persisted to AsyncStorage                              |
 | F-022.2 | `useAuthStore` - user, isAuthenticated, isLoading           | [x]    | Persisted to AsyncStorage                              |
-| F-022.3 | `useExpenseStore` - recentExpenses, summary, CRUD actions   | [ ]    | Reads from SQLite repos                                |
-| F-022.4 | `useCategoryStore` - categories list, CRUD actions          | [ ]    | Reads from SQLite repos                                |
-| F-022.5 | `useFilterStore` - dateRange, category filter, search, sort | [ ]    | Not persisted (reset on app restart)                   |
+| F-022.3 | `useExpenseStore` - recentExpenses, summary, CRUD actions   | [x]    | `src/store/useExpenseStore.ts` uses repositories       |
+| F-022.4 | `useCategoryStore` - categories list, CRUD actions          | [x]    | `src/store/useCategoryStore.ts` uses repositories      |
+| F-022.5 | `useFilterStore` - dateRange, category filter, search, sort | [x]    | `src/store/useFilterStore.ts` (not persisted)          |
 | F-022.6 | MMKV persist middleware for Zustand                         | [/]    | AsyncStorage adapter in `src/services/storage/mmkv.ts` |
 
 ### F-023: MMKV Settings Storage
@@ -313,8 +313,8 @@
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
 | Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 45        | 9           | 2        |
+| Phase 1 - Core MVP        | 86             | 57        | 9           | 2        |
 | Phase 1.5 - Stabilization | 18             | 0         | 1           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **67**    | **11**      | **13**   |
+| **Total**                 | **151**        | **79**    | **11**      | **13**   |
