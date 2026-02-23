@@ -1,4 +1,5 @@
 export { AmountInput } from './AmountInput';
+export { AppSelect } from './AppSelect';
 export { AuthField } from './AuthField';
 export { AuthFooter } from './AuthFooter';
 export { CategoryPicker } from './CategoryPicker';

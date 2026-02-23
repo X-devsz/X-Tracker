@@ -4,16 +4,32 @@
  * Theme toggle, currency, account info.
  */
 import { Alert } from 'react-native';
-import { Text, XStack, YStack } from 'tamagui';
-import { useAuthStore, useSettingsStore, type ThemeMode } from '../../store';
+import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { Text, useTheme } from 'tamagui';
+import {
+  useAuthStore,
+  useFilterStore,
+  useSettingsStore,
+  type ThemeMode,
+} from '../../store';
 import { useGoogleSignIn } from '../../services/auth';
-import { AppAvatar, ScreenContainer, SettingsGroup } from '../../components';
-import { SUPPORTED_CURRENCY_CODES, formatCurrency } from '../../utils/formatters';
+import { AppAvatar, AppSelect, ScreenContainer, SettingsGroup } from '../../components';
+import { expensesRepo } from '../../repositories';
+import {
+  SUPPORTED_CURRENCY_CODES,
+  formatCurrency,
+  getCurrencySymbol,
+} from '../../utils/formatters';
+import {
+  exportExpensesXlsx,
+  filterExpensesByQuery,
+} from '../../services/export/expenses';
 
-const themeOptions: { value: ThemeMode; label: string }[] = [
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-  { value: 'system', label: 'System' },
+const themeOptions: { value: ThemeMode; label: string; iconName: string }[] = [
+  { value: 'system', label: 'System', iconName: 'desktop-outline' },
+  { value: 'light', label: 'Light', iconName: 'sunny-outline' },
+  { value: 'dark', label: 'Dark', iconName: 'moon-outline' },
 ];
 
 const getInitials = (email?: string | null) => {
@@ -23,30 +39,39 @@ const getInitials = (email?: string | null) => {
 };
 
 export default function SettingsScreen() {
+  const theme = useTheme();
   const { themeMode, setThemeMode, currency, setCurrency } = useSettingsStore();
+  const { dateRange, categoryId, searchQuery } = useFilterStore();
   const { user } = useAuthStore();
   const { signOut } = useGoogleSignIn();
+  const iconColor = theme.textSecondary?.val ?? '#6B7280';
+  const [isExporting, setIsExporting] = useState(false);
 
-  const handleThemeSelect = () => {
-    Alert.alert('Select theme', 'Choose the appearance mode', [
-      ...themeOptions.map((option) => ({
-        text: option.label,
-        onPress: () => setThemeMode(option.value),
-      })),
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  };
+  const themeItems = themeOptions.map((option) => ({
+    value: option.value,
+    label: option.label,
+    icon: (
+      <Ionicons
+        name={option.iconName as keyof typeof Ionicons.glyphMap}
+        size={16}
+        color={iconColor}
+      />
+    ),
+  }));
 
-  const handleCurrencySelect = () => {
-    const options = SUPPORTED_CURRENCY_CODES;
-    Alert.alert('Select currency', 'Choose the default currency', [
-      ...options.map((code) => ({
-        text: `${code} • ${formatCurrency(123400, code)}`,
-        onPress: () => setCurrency(code),
-      })),
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  };
+  const currencyItems = SUPPORTED_CURRENCY_CODES.map((code) => {
+    const symbol = getCurrencySymbol(code).trim();
+    return {
+      value: code,
+      label: code,
+      description: formatCurrency(123400, code),
+      icon: (
+        <Text color="$textSecondary" fontSize={12}>
+          {symbol}
+        </Text>
+      ),
+    };
+  });
 
   const handleSignOut = () => {
     Alert.alert('Sign out', 'Are you sure you want to sign out?', [
@@ -59,6 +84,36 @@ export default function SettingsScreen() {
         },
       },
     ]);
+  };
+
+  const handleExport = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const expenses = await expensesRepo.listByDateRange(
+        dateRange.startDate,
+        dateRange.endDate,
+        categoryId ?? undefined,
+      );
+      const filtered = filterExpensesByQuery(expenses, searchQuery);
+
+      if (filtered.length === 0) {
+        Alert.alert('No expenses', 'No expenses match the current filters.');
+        return;
+      }
+
+      const { shared } = await exportExpensesXlsx(filtered, currency);
+      if (!shared) {
+        Alert.alert('Export saved', 'CSV saved to your device.');
+      }
+    } catch (error) {
+      Alert.alert(
+        'Export failed',
+        error instanceof Error ? error.message : 'Unable to export expenses.',
+      );
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -75,18 +130,30 @@ export default function SettingsScreen() {
             label: 'Theme',
             description: 'Match your device or pick a mode',
             iconName: 'color-palette-outline',
-            type: 'navigation',
-            detail: themeOptions.find((option) => option.value === themeMode)?.label ?? 'System',
-            onPress: handleThemeSelect,
+            rightElement: (
+              <AppSelect
+                id="theme-select"
+                value={themeMode}
+                items={themeItems}
+                onValueChange={(value) => setThemeMode(value as ThemeMode)}
+                width={160}
+              />
+            ),
           },
           {
             id: 'currency',
             label: 'Currency',
             description: 'Default currency for new expenses',
             iconName: 'cash-outline',
-            type: 'navigation',
-            detail: `${currency} • ${formatCurrency(123400, currency)}`,
-            onPress: handleCurrencySelect,
+            rightElement: (
+              <AppSelect
+                id="currency-select"
+                value={currency}
+                items={currencyItems}
+                onValueChange={setCurrency}
+                width={190}
+              />
+            ),
           },
         ]}
       />
@@ -96,11 +163,12 @@ export default function SettingsScreen() {
         rows={[
           {
             id: 'export',
-            label: 'Export CSV',
-            description: 'Download your expense history',
+            label: 'Export Excel',
+            description: 'Download your expense history (.xlsx)',
             iconName: 'download-outline',
-            type: 'navigation',
-            onPress: () => {},
+            type: 'action',
+            onPress: handleExport,
+            detail: isExporting ? 'Exporting...' : undefined,
           },
           {
             id: 'clear',
