@@ -2,14 +2,36 @@ import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-si
 import { GoogleAuthProvider, signInWithCredential, signOut } from 'firebase/auth';
 import { getFirebaseAuth } from './firebase';
 import { setAuthToken } from './secureStore';
+import { AUTH_ENABLED } from '../../config/featureFlags';
 
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-  offlineAccess: true,
-});
+let isConfigured = false;
+
+const ensureConfigured = () => {
+  if (isConfigured) {
+    return;
+  }
+  GoogleSignin.configure({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    offlineAccess: true,
+  });
+  isConfigured = true;
+};
 
 export const useGoogleSignIn = () => {
   type SignInResult = { status: 'success' | 'cancelled' };
+
+  if (!AUTH_ENABLED) {
+    // Auth is feature-flagged off; keep a stub for future enablement.
+    const disabledResult: SignInResult = { status: 'cancelled' };
+    return {
+      signInWithGoogle: async () => disabledResult,
+      signInAsync: async () => disabledResult,
+      signOut: async () => undefined,
+    };
+  }
+
+  ensureConfigured();
 
   const signInWithGoogle = async () => {
     try {
@@ -22,10 +44,13 @@ export const useGoogleSignIn = () => {
       console.log('Starting Google Sign-In...');
 
       const response = await GoogleSignin.signIn();
-      const idToken = response.idToken;
+      const tokens = await GoogleSignin.getTokens();
+      const idToken = tokens?.idToken;
 
       if (!idToken) {
-        throw new Error('No ID token received from Google.');
+        throw new Error(
+          'No ID token received from Google. Check EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID and Google Sign-In setup.',
+        );
       }
 
       const auth = getFirebaseAuth();
@@ -38,7 +63,7 @@ export const useGoogleSignIn = () => {
       const googleCredential = GoogleAuthProvider.credential(idToken);
       const userCredential = await signInWithCredential(auth, googleCredential);
 
-      console.log('Firebase sign-in success:', userCredential.user.email);
+      console.log('Firebase sign-in success:', userCredential.user.email ?? 'unknown');
 
       return { status: 'success' as const } satisfies SignInResult;
     } catch (error: any) {

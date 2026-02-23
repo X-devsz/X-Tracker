@@ -1,6 +1,6 @@
 # Feature Tracker - Expense Tracker (End-to-End Development Checklist)
 
-**Last updated:** 2026-02-14  
+**Last updated:** 2026-02-17  
 **Purpose:** Comprehensive, trackable feature list extracted from all project docs. Designed to be given to an AI agent or developer so they understand exactly what each feature requires.
 
 > **Legend:** `[ ]` = Not started | `[/]` = In Progress | `[x]` = Completed | `[~]` = Deferred
@@ -18,8 +18,8 @@
 | F-000.3 | Path aliases configured (`@/*`)             | [x]    | `tsconfig.json` + metro resolver                                      |
 | F-000.4 | Babel config (Tamagui + Reanimated plugins) | [x]    | `babel.config.js`                                                     |
 | F-000.5 | Tamagui root config                         | [x]    | `tamagui.config.ts` imports from `src/theme/`                         |
-| F-000.6 | EAS build config                            | [ ]    | `eas.json` with dev/preview/prod profiles                             |
-| F-000.7 | ESLint + Prettier config                    | [ ]    | Consistent code formatting                                            |
+| F-000.6 | EAS build config                            | [x]    | `eas.json` with dev/preview/prod profiles                             |
+| F-000.7 | ESLint + Prettier config                    | [x]    | `.eslintrc.cjs` + `.prettierrc.cjs` + lint/format scripts              |
 | F-000.8 | Atomic folder structure created             | [x]    | `src/components` (atoms, molecules, organisms, templates) + exports   |
 | F-000.9 | Custom dev client path                      | [x]    | Google Sign-In plugin enabled + prebuild script added                 |
 
@@ -33,7 +33,7 @@
 | F-001.4 | Spacing scale (4px base)           | [x]    | 0, xs(4), sm(8), md(12), lg(16), xl(20), 2xl(24), 3xl(32)                      |
 | F-001.5 | Typography system (Inter font)     | [x]    | h1-h4, body, bodySm, label, caption, amount, button variants                   |
 | F-001.6 | Border radius scale                | [x]    | xs(4), sm(8), md(12), lg(16), xl(24), full(9999)                               |
-| F-001.7 | Shadow presets (sm, md, lg)        | [/]    | Shadows applied in key screens; tokenized presets pending                      |
+| F-001.7 | Shadow presets (sm, md, lg)        | [x]    | Tokenized presets applied to cards, FAB, hero                                  |
 | F-001.8 | Animation presets                  | [x]    | fast, medium, slow, bouncy configs used for section entrances + press feedback |
 | F-001.9 | Theme toggle (light/dark/system)   | [x]    | Persisted in AsyncStorage, reads system preference as default                  |
 
@@ -43,8 +43,8 @@
 | ------- | ------------------------------------------------- | ------ | ----------------------------------------------------------------- |
 | F-002.1 | Root layout with TamaguiProvider                  | [x]    | Wraps entire app in theme + font provider                         |
 | F-002.2 | Tab navigator (Home, History, Insights, Settings) | [x]    | Bottom tab bar with icons, themed colors                          |
-| F-002.3 | Auth stack (Welcome, Sign-In)                     | [x]    | Welcome, Login, Signup screens wired + routes linked from Welcome |
-| F-002.4 | Auth guard (redirect logic)                       | [x]    | Root layout checks auth state + index redirect to Welcome         |
+| F-002.3 | Auth stack (Welcome, Sign-In)                     | [x]    | Welcome always available; Login/Signup gated by `EXPO_PUBLIC_AUTH_ENABLED` |
+| F-002.4 | Auth guard (redirect logic)                       | [x]    | Guard enabled only when `EXPO_PUBLIC_AUTH_ENABLED=true`           |
 | F-002.5 | Expense modal stack (Add, Edit)                   | [x]    | Modal presentation, themed header                                 |
 | F-002.6 | Deep linking scheme                               | [x]    | `expensetracker://` scheme configured in app.json                 |
 | F-002.7 | 404/Not Found screen                              | [x]    | Graceful fallback for unknown routes                              |
@@ -143,7 +143,7 @@
 | F-022.3 | `useExpenseStore` - recentExpenses, summary, CRUD actions   | [x]    | `src/store/useExpenseStore.ts` uses repositories       |
 | F-022.4 | `useCategoryStore` - categories list, CRUD actions          | [x]    | `src/store/useCategoryStore.ts` uses repositories      |
 | F-022.5 | `useFilterStore` - dateRange, category filter, search, sort | [x]    | `src/store/useFilterStore.ts` (not persisted)          |
-| F-022.6 | MMKV persist middleware for Zustand                         | [/]    | AsyncStorage adapter in `src/services/storage/mmkv.ts` |
+| F-022.6 | MMKV persist middleware for Zustand                         | [x]    | AsyncStorage adapter wired to persisted stores         |
 
 ### F-023: MMKV Settings Storage
 
@@ -166,7 +166,7 @@
 | F-030.5 | **Insights Screen** - charts and analytics                      | [x]    | `(tabs)/insights.tsx` - breakdown + trend data from DB                                     |
 | F-030.6 | **Settings Screen** - app configuration                         | [x]    | Theme toggle, currency picker, account info, sign-out                                      |
 | F-030.7 | **Welcome Screen** - onboarding                                 | [x]    | `(auth)/welcome.tsx` - Landing hero + CTA                                                 |
-| F-030.8 | **Sign-In Screen** - Google auth                                | [x]    | `(auth)/login.tsx` + `(auth)/signup.tsx` - styled for light/dark themes                   |
+| F-030.8 | **Sign-In Screen** - Google auth                                | [x]    | Feature-flagged via `EXPO_PUBLIC_AUTH_ENABLED`; UI remains wired for future enablement   |
 
 ---
 
@@ -198,16 +198,18 @@
 
 ### F-060: Authentication
 
+> **Note:** Auth is currently feature-flagged off via `EXPO_PUBLIC_AUTH_ENABLED=false` (guest mode). Set to `true` to enable the items below.
+
 | #       | Feature                                  | Status | Details                                                       |
 | ------- | ---------------------------------------- | ------ | ------------------------------------------------------------- |
-| F-060.1 | Google Sign-In via Firebase              | [x]    | Native Google Sign-In + Firebase Auth                         |
+| F-060.1 | Google Sign-In via Firebase              | [x]    | Native Google Sign-In + Firebase Auth (flag-gated)            |
 | F-060.2 | Token stored in SecureStore              | [x]    | SecureStore-backed Firebase persistence + ID token stored     |
 | F-060.3 | Sign-in success -> redirect to Home      | [x]    | Auth guard routes to `(tabs)`                                 |
 | F-060.4 | Sign-in cancelled -> stay on auth screen | [x]    | Google sign-in cancellation handled without alerts            |
 | F-060.5 | Sign-out -> clear session, stay on auth  | [x]    | Sign-out wired in Settings                                    |
 | F-060.6 | Auth state persistence across restarts   | [x]    | Firebase Auth persistence via SecureStore                     |
 | F-060.7 | Account switch confirmation              | [x]    | Settings action prompts before switching accounts             |
-| F-060.8 | Guest mode (optional)                    | [~]    | Deferred - skippable for MVP                                  |
+| F-060.8 | Guest mode (optional)                    | [~]    | Feature-flagged via `EXPO_PUBLIC_AUTH_ENABLED=false`          |
 
 ---
 
@@ -230,18 +232,18 @@
 | #       | Feature                     | Status | Details                                              |
 | ------- | --------------------------- | ------ | ---------------------------------------------------- |
 | F-071.1 | Virtualized expense lists   | [x]    | FlatList tuning: key extraction + batching/window configs |
-| F-071.2 | Cold start < 2.5s           | [/]    | Budgeted cold-start logs with OK/SLOW warning        |
-| F-071.3 | Screen render < 300ms       | [/]    | Budgeted render timing logs with OK/SLOW warning     |
+| F-071.2 | Cold start < 2.5s           | [x]    | Budgeted cold-start logs with OK/SLOW warning        |
+| F-071.3 | Screen render < 300ms       | [x]    | Budgeted render timing logs with OK/SLOW warning     |
 | F-071.4 | Cached summary computations | [x]    | Summary + breakdown cached with invalidation on writes |
 
 ### F-072: Categories Management
 
 | #       | Feature                | Status | Details                                  |
 | ------- | ---------------------- | ------ | ---------------------------------------- |
-| F-072.1 | Create custom category | [ ]    | Name + icon + color picker               |
-| F-072.2 | Rename category        | [ ]    | Updates all related views                |
-| F-072.3 | Archive category       | [ ]    | Hidden from picker, preserved in history |
-| F-072.4 | Reorder categories     | [ ]    | Drag or manual sort order                |
+| F-072.1 | Create custom category | [x]    | Categories screen form with name/icon/color picker |
+| F-072.2 | Rename category        | [x]    | Edit flow updates all related views                |
+| F-072.3 | Archive category       | [x]    | Archive action hides from picker, preserves history |
+| F-072.4 | Reorder categories     | [x]    | Manual reorder via up/down controls                |
 
 ### F-073: Budgets (Optional Post-MVP)
 
@@ -312,9 +314,9 @@
 
 | Phase                     | Total Features | Completed | In Progress | Deferred |
 | ------------------------- | -------------- | --------- | ----------- | -------- |
-| Phase 0 - Foundation      | 25             | 22        | 1           | 0        |
-| Phase 1 - Core MVP        | 86             | 83        | 1           | 2        |
-| Phase 1.5 - Stabilization | 18             | 9         | 2           | 3        |
+| Phase 0 - Foundation      | 25             | 25        | 0           | 0        |
+| Phase 1 - Core MVP        | 86             | 84        | 0           | 2        |
+| Phase 1.5 - Stabilization | 18             | 15        | 0           | 3        |
 | Phase 2 - Cloud Sync      | 8              | 0         | 0           | 8        |
 | Quality Gates             | 14             | 0         | 0           | 0        |
-| **Total**                 | **151**        | **114**   | **4**       | **13**   |
+| **Total**                 | **151**        | **124**   | **0**       | **13**   |

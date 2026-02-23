@@ -8,6 +8,7 @@ import {
   signOut as firebaseSignOut,
 } from "firebase/auth";
 import { getFirebaseAuth } from "./firebase";
+import { AUTH_ENABLED } from "../../config/featureFlags";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -79,6 +80,7 @@ export const useGoogleSignIn = () => {
   const redirectUri = resolveRedirectUri();
   const isExpoGo =
     Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+  const authEnabled = AUTH_ENABLED;
 
   const requestConfig = isExpoGo
     ? {
@@ -94,6 +96,9 @@ export const useGoogleSignIn = () => {
     Google.useIdTokenAuthRequest(requestConfig);
 
   const signInWithGoogle = async (): Promise<SignInResult> => {
+    if (!authEnabled) {
+      return { status: "cancelled" };
+    }
     const auth = getFirebaseAuth();
     if (!auth) {
       throw new Error("Firebase is not configured for Google sign-in.");
@@ -121,6 +126,9 @@ export const useGoogleSignIn = () => {
   };
 
   const signOut = async () => {
+    if (!authEnabled) {
+      return;
+    }
     const auth = getFirebaseAuth();
     if (!auth) {
       return;

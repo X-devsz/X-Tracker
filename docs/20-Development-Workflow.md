@@ -1,6 +1,6 @@
 # Development Workflow — Commands, EAS Builds & CI/CD Pipeline
 
-**Last updated:** 2026-02-11  
+**Last updated:** 2026-02-17  
 **Build system:** Expo + EAS Build | **CI:** GitHub Actions (recommended)
 
 ---
@@ -279,7 +279,27 @@ style: fix lint warnings in theme
 const apiKey = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 ```
 
-### 6.3 EAS Secrets (Production)
+### 6.3 Feature Flags (Public env)
+
+```text
+# Toggle Firebase auth UI + guards
+EXPO_PUBLIC_AUTH_ENABLED=false
+```
+
+```json
+// eas.json (per-profile env overrides for dev/preview)
+{
+  "build": {
+    "development": {
+      "env": {
+        "EXPO_PUBLIC_AUTH_ENABLED": "false"
+      }
+    }
+  }
+}
+```
+
+### 6.4 EAS Secrets (Production)
 
 ```bash
 # Set secrets for EAS builds

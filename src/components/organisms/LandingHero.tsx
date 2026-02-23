@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, XStack, YStack, styled, useTheme } from 'tamagui';
 import { AppButton } from '../atoms';
+import { shadows } from '../../theme';
 
 const HeroCard = styled(YStack, {
   height: 440,
@@ -11,11 +12,7 @@ const HeroCard = styled(YStack, {
   justifyContent: 'space-between',
   animation: 'medium',
   enterStyle: { opacity: 0, y: 12 },
-  shadowColor: '#0B1220',
-  shadowOpacity: 0.35,
-  shadowRadius: 18,
-  shadowOffset: { width: 0, height: 14 },
-  elevation: 12,
+  ...shadows.lg,
 });
 
 const HeroGlow = styled(YStack, {

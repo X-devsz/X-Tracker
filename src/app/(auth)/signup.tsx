@@ -3,17 +3,23 @@
  */
 import { Ionicons } from '@expo/vector-icons';
 import { Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { XStack, useTheme } from 'tamagui';
 import { AppIconButton, AuthForm, AuthTemplate, SectionHeader } from '../../components';
 import { useGoogleSignIn } from '../../services/auth';
 import { useAuthStore } from '../../store';
+import { AUTH_ENABLED } from '../../config/featureFlags';
 
 export default function SignUpScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { signInWithGoogle } = useGoogleSignIn();
   const { user } = useAuthStore();
+
+  if (!AUTH_ENABLED) {
+    // Auth screens are feature-flagged for future use.
+    return <Redirect href="/(auth)/welcome" />;
+  }
 
   const confirmAccountSwitch = () =>
     new Promise<boolean>((resolve) => {
