@@ -130,7 +130,7 @@ export function ExpenseForm({
           <AppInput
             placeholder="Add a note"
             placeholderTextColor={theme.textTertiary?.val}
-            value={note}
+            value={note ?? ''}
             onChangeText={onNoteChange}
             multiline
             textAlignVertical="top"
@@ -152,7 +152,7 @@ export function ExpenseForm({
           <AppInput
             placeholder="Where did you spend?"
             placeholderTextColor={theme.textTertiary?.val}
-            value={merchant}
+            value={merchant ?? ''}
             onChangeText={onMerchantChange}
           />
         </InputShell>
@@ -171,7 +171,7 @@ export function ExpenseForm({
           <AppInput
             placeholder="Card, cash, bank"
             placeholderTextColor={theme.textTertiary?.val}
-            value={paymentMethod}
+            value={paymentMethod ?? ''}
             onChangeText={onPaymentMethodChange}
           />
         </InputShell>

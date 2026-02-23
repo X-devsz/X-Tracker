@@ -7,6 +7,8 @@ import { useRouter } from 'expo-router';
 import type { CategoryOption } from '../../components/molecules/CategoryPicker';
 import { AppSpinner, ErrorCard, ExpenseForm, ModalLayout } from '../../components';
 import { useCategoryStore, useExpenseStore, useSettingsStore } from '../../store';
+import { settingsStorage } from '../../services/storage/mmkv';
+import { validateExpenseInput } from '../../domain/validators/expense.validator';
 import { resolveCategoryColor, resolveCategoryIcon } from '../../utils/categories';
 import { getCurrencySymbol, parseAmountToMinor } from '../../utils/formatters';
 
@@ -46,9 +48,26 @@ export default function AddExpenseScreen() {
   );
 
   useEffect(() => {
-    if (!selectedCategoryId && categoryOptions.length > 0) {
+    let isActive = true;
+    const selectDefault = async () => {
+      if (selectedCategoryId || categoryOptions.length === 0) {
+        return;
+      }
+
+      const lastUsed = await settingsStorage.getLastUsedCategory();
+      if (!isActive) return;
+      if (lastUsed && categoryOptions.some((category) => category.id === lastUsed)) {
+        setSelectedCategoryId(lastUsed);
+        return;
+      }
       setSelectedCategoryId(categoryOptions[0]?.id);
-    }
+    };
+
+    selectDefault();
+
+    return () => {
+      isActive = false;
+    };
   }, [categoryOptions, selectedCategoryId]);
 
   const handleClose = useCallback(() => {
@@ -60,18 +79,12 @@ export default function AddExpenseScreen() {
   }, [router]);
 
   const handleSubmit = useCallback(async () => {
-    const nextErrors: { amount?: string; category?: string; date?: string } = {};
     const amountMinor = parseAmountToMinor(amount);
-
-    if (!amount || amountMinor <= 0) {
-      nextErrors.amount = 'Enter a valid amount.';
-    }
-    if (!selectedCategoryId) {
-      nextErrors.category = 'Select a category.';
-    }
-    if (!date) {
-      nextErrors.date = 'Pick a date.';
-    }
+    const nextErrors = validateExpenseInput({
+      amountMinor,
+      categoryId: selectedCategoryId,
+      occurredAt: date ?? null,
+    });
 
     setFormErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {

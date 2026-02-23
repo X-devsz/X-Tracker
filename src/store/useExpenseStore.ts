@@ -6,6 +6,7 @@ import {
   type MonthlySummary,
   type CategoryBreakdown,
 } from '../repositories';
+import { settingsStorage } from '../services/storage/mmkv';
 
 type ExpenseCreateInput = Omit<NewExpense, 'id' | 'createdAt' | 'updatedAt'>;
 type ExpenseUpdateInput = Partial<Omit<NewExpense, 'id' | 'createdAt' | 'updatedAt'>>;
@@ -109,6 +110,7 @@ export const useExpenseStore = create<ExpenseStoreState>((set, get) => ({
   createExpense: async (data) => {
     set({ error: null });
     await expensesRepo.create(data);
+    await settingsStorage.setLastUsedCategory(data.categoryId);
     const { recentQuery, summaryQuery } = get();
     await get().fetchRecent(recentQuery);
     await get().fetchMonthlySummary(summaryQuery.year, summaryQuery.month);
@@ -117,6 +119,9 @@ export const useExpenseStore = create<ExpenseStoreState>((set, get) => ({
   updateExpense: async (id, data) => {
     set({ error: null });
     await expensesRepo.update(id, data);
+    if (data.categoryId) {
+      await settingsStorage.setLastUsedCategory(data.categoryId);
+    }
     const { recentQuery, summaryQuery } = get();
     await get().fetchRecent(recentQuery);
     await get().fetchMonthlySummary(summaryQuery.year, summaryQuery.month);

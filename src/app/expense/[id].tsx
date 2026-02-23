@@ -7,6 +7,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { CategoryOption } from '../../components/molecules/CategoryPicker';
 import { AppSpinner, ErrorCard, ExpenseForm, ModalLayout } from '../../components';
 import { useCategoryStore, useExpenseStore, useSettingsStore } from '../../store';
+import { validateExpenseInput } from '../../domain/validators/expense.validator';
 import { resolveCategoryColor, resolveCategoryIcon } from '../../utils/categories';
 import { getCurrencySymbol, parseAmountToMinor } from '../../utils/formatters';
 
@@ -111,18 +112,13 @@ export default function EditExpenseScreen() {
 
   const handleSubmit = useCallback(async () => {
     if (!id || Array.isArray(id)) return;
-    const nextErrors: { amount?: string; category?: string; date?: string } = {};
     const amountMinor = parseAmountToMinor(amount);
 
-    if (!amount || amountMinor <= 0) {
-      nextErrors.amount = 'Enter a valid amount.';
-    }
-    if (!selectedCategoryId) {
-      nextErrors.category = 'Select a category.';
-    }
-    if (!date) {
-      nextErrors.date = 'Pick a date.';
-    }
+    const nextErrors = validateExpenseInput({
+      amountMinor,
+      categoryId: selectedCategoryId,
+      occurredAt: date ?? null,
+    });
 
     setFormErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {

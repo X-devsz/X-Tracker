@@ -64,7 +64,7 @@ export const settingsStorage = {
   setThemeMode: (mode: ThemeMode) =>
     appStorage.setString(StorageKeys.THEME_MODE, mode),
   getCurrencyCode: async (): Promise<string> =>
-    (await appStorage.getString(StorageKeys.CURRENCY_CODE)) ?? 'INR',
+    (await appStorage.getString(StorageKeys.CURRENCY_CODE)) ?? 'LKR',
   setCurrencyCode: (code: string) =>
     appStorage.setString(StorageKeys.CURRENCY_CODE, code),
   getHasOnboarded: () =>
